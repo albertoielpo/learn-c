@@ -15,7 +15,7 @@ int main2(void)
 {
     char test[] = "test"; // sizeof 5 strlen 4
     printf("%ld\n", sizeof(test));
-    for (int ii = 0; ii < strlen(test); ii++)
+    for (size_t ii = 0; ii < strlen(test); ii++)
     {
         printf("%c\n", test[ii]);
     }
@@ -51,6 +51,7 @@ int main_3(void)
     printf("x:%d y:%d\n", x, y);
     swap_int(&x, &y);
     printf("x:%d y:%d\n", x, y);
+    return 0;
 }
 
 int main_str(void)
@@ -83,7 +84,7 @@ int main_str(void)
 
     // memory can be deallocated
     free(heap_str);
-    printf("%p %s\n", heap_str, heap_str); // bad access
+    // printf("%p %s\n", heap_str, heap_str); // bad access
     return 0;
 }
 
