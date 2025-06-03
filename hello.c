@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#define DATA_SIZE 10
+
 void print_it(char *x)
 {
     printf("%s\n", x);
@@ -51,7 +53,7 @@ int main_3(void)
     printf("x:%d y:%d\n", x, y);
 }
 
-int main(void)
+int main_str(void)
 {
     // this string is allocated in the stack
     char stack_str[] = "my_string"; // read write
@@ -82,4 +84,41 @@ int main(void)
     // memory can be deallocated
     free(heap_str);
     printf("%p %s\n", heap_str, heap_str); // bad access
+    return 0;
+}
+
+// int main(void)
+// {
+//     // int a[] = {1, 2, 3, 4};
+//     // a[0] = 2;
+//     // for (int ii = 0; ii < sizeof(a) / sizeof(a[0]); ii++)
+//     // {
+//     //     printf("%d\n", a[ii]);
+//     // }
+
+//     char data[DATA_SIZE];
+//     printf("Enter data: \n");
+//     scanf("%[^\n]", data); // read all until new line
+
+//     printf("sizeof: %ld strlen: %ld\n", sizeof(data), strlen(data));
+//     for (int ii = 0; ii < strlen(data); ii++)
+//     {
+//         // if used strlen is not required to if break with \0
+//         // if (data[ii] == '\0')
+//         //     break;
+//         printf("%c", data[ii]);
+//     }
+
+//     printf("\n");
+
+//     return 0;
+// }
+
+int main(void)
+{
+    char emoji[] = "😃"; // 4 bytes for emoji
+    char eur[] = "€";    // 3 bytes for eur
+    // char problem = '€';        // this is a problem (overflow)
+    printf("%s sizeof %ld strlen %ld\n", emoji, sizeof(emoji), strlen(emoji));
+    printf("%s sizeof %ld strlen %ld\n", eur, sizeof(eur), strlen(eur));
 }
