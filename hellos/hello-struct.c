@@ -59,9 +59,11 @@ int main(void)
     }
     printf("\n************\n");
 
-    float a = 0.01;
-    float b = 0.05;
-    printf("%f", a + b);
+    double a = 0.01;
+    double b = 0.05;
+
+    printf("%f\n", a + b);
+    printf("%.15f", a + b); // formatted print
 
     return 0;
 }

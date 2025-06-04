@@ -5,7 +5,8 @@ Some examples including vscode configuration to make the approach easier
 - gcc
 
 # Build
-gcc hello.c -o hello
+- navigate in the desired folder
+- gcc hello.c -o hello
 
 ## Build with vscode
 - Press ctrl+maiusc+B to launch the default task

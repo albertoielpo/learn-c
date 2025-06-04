@@ -1,3 +1,5 @@
 hello
 hello-utf8
 hello-struct
+*.o
+dates

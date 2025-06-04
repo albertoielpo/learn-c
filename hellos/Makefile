@@ -3,7 +3,7 @@ CC      := gcc
 CFLAGS  := -std=c99 -Wall -Wextra
 
 # Name of the final executable
-PROGRAM_NAME  := hello
+PROGRAM_NAME  := hello-utf8
 
 # Source files
 # Main source must be PROGRAM_NAME with .c ext
