@@ -4,7 +4,7 @@
 /*
  * snprintf writes at most sizeof(buffer) bytes (including the trailing '\0')
  */
-void *date_human(char *buffer, size_t buffer_size, struct tm *tm_localtime)
+void date_human(char *buffer, size_t buffer_size, struct tm *tm_localtime)
 {
     snprintf(buffer, buffer_size, "%d/%d/%d", tm_localtime->tm_mday, tm_localtime->tm_mon + 1, tm_localtime->tm_year + 1900);
 }
