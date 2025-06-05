@@ -11,7 +11,7 @@ typedef struct
 void *foo(void *param)
 {
     FooParam *num = (FooParam *)(param);
-    sleep(num->sleep_seconds); // second sleep
+    sleep(num->sleep_seconds); // sleep in seconds
     printf("Thread %s that sleep %d seconds\n", num->name, num->sleep_seconds);
     // always return a void*. Return NULL in case of no value
     return NULL;
