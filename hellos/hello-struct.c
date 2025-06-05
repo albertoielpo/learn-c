@@ -20,7 +20,6 @@ void edit_x_point(Point *p, int new_value)
 
 int main(void)
 {
-
     // init
     Point p1 = {10, 20};
 
@@ -57,13 +56,36 @@ int main(void)
             printf("%d", data[ii][jj]);
         }
     }
+    free(p4);
     printf("\n************\n");
 
     double a = 0.01;
     double b = 0.05;
 
     printf("%f\n", a + b);
-    printf("%.15f", a + b); // formatted print
+    printf("%.15f\n", a + b); // formatted print
+
+    printf("************\n");
+    // array of points with malloc
+    int point_length = 3;
+    Point *points = malloc(sizeof(Point) * point_length);
+
+    /**
+     * Syntax: points[0] == (*(points + 1)).x == (points + 1)->x
+     */
+    points[0].x = 1;
+    points[0].y = 1;
+    (*(points + 1)).x = 2;
+    (*(points + 1)).y = 2;
+    (points + 2)->x = 3;
+    (points + 2)->y = 3;
+
+    for (int ii = 0; ii < point_length; ii++)
+    {
+        printf("%d (%d,%d)\n", ii, points[ii].x, points[ii].y);
+    }
+
+    free(points);
 
     return 0;
 }
