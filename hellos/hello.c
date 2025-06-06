@@ -115,11 +115,45 @@ int main_str(void)
 //     return 0;
 // }
 
-int main(void)
+int main_utf8(void)
 {
     char emoji[] = "😃"; // 4 bytes for emoji
     char eur[] = "€";    // 3 bytes for eur
     // char problem = '€';        // this is a problem (overflow)
     printf("%s sizeof %ld strlen %ld\n", emoji, sizeof(emoji), strlen(emoji));
     printf("%s sizeof %ld strlen %ld\n", eur, sizeof(eur), strlen(eur));
+    return 0;
+}
+
+void print_binary_recursive(unsigned int x, int bits)
+{
+    if (bits == 0)
+        return;
+    // First print all higher bits
+    print_binary_recursive(x >> 1, bits - 1);
+    // Then print this bit (LSB of the shifted value above)
+    putchar(((x & 1U) ? '1' : '0'));
+}
+
+int main(void)
+{
+    unsigned int number = 0b1111;
+    // shift to right
+    unsigned int number_right = number >> 2;
+    // shift to left
+    unsigned int number_left = number << 2;
+    print_binary_recursive(number, 8);
+    printf("\n");
+    print_binary_recursive(number_right, 8);
+
+    printf("\n");
+    print_binary_recursive(number_left, 8);
+
+    // 00001111
+    // 00000011 // shift right
+    // 00111100 // shift left
+    // 15 3 60  // in decimal
+    printf("\n%d %d %d\n", number, number_right, number_left);
+
+    return 0;
 }

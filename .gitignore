@@ -1,6 +1,7 @@
-hello
-hello-utf8
-hello-struct
+hellos/hello
+hellos/hello-utf8
+hellos/hello-struct
 *.o
-dates
-thread
+how-dates/dates
+threads/thread
+how-sds/hello-sds
