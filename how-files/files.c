@@ -37,8 +37,8 @@ int main(void)
 
     uint8_t products_length = 2;
     Product products[] = {
-        {65535, 10},
-        {255, 11}};
+        {1, 65535},
+        {2, 262140}};
 
     uint8_t res = write_products(file_dat, products, products_length);
     uint8_t res2 = write_products_text(file_txt, products, products_length);
@@ -113,7 +113,7 @@ uint8_t write_products_text(char *filename, Product *products, uint32_t total)
         return 1;
     }
 
-    if (fprintf(file, "%d\n", total) < 0)
+    if (fprintf(file, "%d", total) < 0)
     {
         printf("cannot write total to file");
         fclose(file);
@@ -121,7 +121,7 @@ uint8_t write_products_text(char *filename, Product *products, uint32_t total)
     }
     for (uint32_t ii = 0; ii < total; ii++)
     {
-        if (fprintf(file, "%d %d\n", products[ii].id, products[ii].value) < 0)
+        if (fprintf(file, "%d%d", products[ii].id, products[ii].value) < 0)
         {
             printf("cannot write products to file");
             fclose(file);
