@@ -14,13 +14,26 @@ typedef struct
     uint32_t value;
 } Product;
 
+/**
+ * Write products in bin format
+ */
 uint8_t write_products(char *filename, Product *products, uint32_t total);
+
+/**
+ * Write products in text format
+ */
+uint8_t write_products_text(char *filename, Product *products, uint32_t total);
+
+/**
+ * Read products from bin format
+ */
 Product *read_products(char *filename, uint32_t *total);
 
 int main(void)
 {
 
     char *file_dat = "my_file.dat";
+    char *file_txt = "my_file.txt";
 
     uint8_t products_length = 2;
     Product products[] = {
@@ -28,7 +41,8 @@ int main(void)
         {255, 11}};
 
     uint8_t res = write_products(file_dat, products, products_length);
-    if (res != 0)
+    uint8_t res2 = write_products_text(file_txt, products, products_length);
+    if (res != 0 || res2 != 0)
     {
         printf("write_products in error");
         return 1;
@@ -84,6 +98,35 @@ uint8_t write_products(char *filename, Product *products, uint32_t total)
         printf("cannot write products to file");
         close_file(file);
         return 1;
+    }
+
+    return close_file(file);
+}
+
+uint8_t write_products_text(char *filename, Product *products, uint32_t total)
+{
+    FILE *file;
+    file = fopen(filename, "w");
+    if (file == NULL)
+    {
+        printf("Cannot open file");
+        return 1;
+    }
+
+    if (fprintf(file, "%d\n", total) < 0)
+    {
+        printf("cannot write total to file");
+        fclose(file);
+        return 1;
+    }
+    for (uint32_t ii = 0; ii < total; ii++)
+    {
+        if (fprintf(file, "%d %d\n", products[ii].id, products[ii].value) < 0)
+        {
+            printf("cannot write products to file");
+            fclose(file);
+            return 1;
+        }
     }
 
     return close_file(file);
