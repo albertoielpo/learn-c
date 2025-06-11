@@ -127,6 +127,7 @@ int main_utf8(void)
 
 void print_binary_recursive(unsigned int x, int bits)
 {
+
     if (bits == 0)
         return;
     // First print all higher bits
@@ -137,6 +138,14 @@ void print_binary_recursive(unsigned int x, int bits)
 
 int main(void)
 {
+    unsigned char a = 32;
+    unsigned char b = ~a; // 223
+    printf("%u %u\n", a, b);
+    print_binary_recursive(a, 8);
+    printf("\n");
+    print_binary_recursive(b, 8);
+    printf("\n*********\n");
+
     unsigned int number = 0b1111;
     // shift to right
     unsigned int number_right = number >> 2;

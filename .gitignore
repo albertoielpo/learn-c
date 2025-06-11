@@ -7,3 +7,5 @@ threads/thread
 how-sds/hello-sds
 how-types/types
 how-feistel/feistel
+how-files/my_file.dat
+how-files/files
