@@ -1,17 +1,14 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include "../third-party/sds/sds.h"
-
-// compile and run
-// gcc ../third-party/sds/sds.c files.c -o files && ./files
+#include <string.h>
 
 // write and read data using files
 
 typedef struct
 {
     uint32_t id;
-    uint32_t value;
+    char value[50]; // 49+1 always allocated
 } Product;
 
 /**
@@ -21,27 +18,47 @@ uint8_t write_products(char *filename, Product *products, uint32_t total);
 
 /**
  * Write products in text format
+ * The goal is to produce the same result of write_products exept than the file is human readable
+ * No spaces, No logic
  */
 uint8_t write_products_text(char *filename, Product *products, uint32_t total);
 
 /**
- * Read products from bin format
+ * Read products from file
  */
 Product *read_products(char *filename, uint32_t *total);
 
 int main(void)
 {
 
-    char *file_dat = "my_file.dat";
-    char *file_txt = "my_file.txt";
+    char *file_dat = "fss.dat";
+    char *file_txt = "fss.txt";
 
     uint8_t products_length = 2;
-    Product products[] = {
-        {1, 65535},
-        {2, 262140}};
+
+    // stack allocation
+    // Product products[] = {
+    //     {1, "this is my string"},
+    //     {2, "this is another string"}};
+
+    // heap allocation
+    Product *products = malloc(sizeof(Product) * products_length);
+    products[0].id = 1;
+    strcpy(products[0].value, "this is my string");
+
+    products[1].id = 2;
+    strcpy(products[1].value, "this is another string");
 
     uint8_t res = write_products(file_dat, products, products_length);
     uint8_t res2 = write_products_text(file_txt, products, products_length);
+
+    // deallocate products
+    free(products);
+
+    // in dat format is writen 116 bytes because is fixed length
+    // -rw-rw-r--  1 alberto alberto   116 Jun 12 11:04 fss.dat
+    // -rw-rw-r--  1 alberto alberto    42 Jun 12 11:04 fss.txt
+
     if (res != 0 || res2 != 0)
     {
         printf("write_products in error");
@@ -54,10 +71,21 @@ int main(void)
     printf("Read from file %d products\n", total);
     for (uint32_t ii = 0; ii < total; ii++)
     {
-        printf("id %d, name %d\n", products_res[ii].id, products_res[ii].value);
+        printf("id %d, name %s\n", products_res[ii].id, products_res[ii].value);
     }
 
     free(products_res);
+
+    // read from file text
+    uint32_t total_text = 0;
+    Product *products_res_text = read_products(file_dat, &total_text);
+    printf("Read from file text %d products\n", total_text);
+    for (uint32_t ii = 0; ii < total_text; ii++)
+    {
+        printf("id %d, name %s\n", products_res_text[ii].id, products_res_text[ii].value);
+    }
+
+    free(products_res_text);
 
     return 0;
 }
@@ -121,7 +149,7 @@ uint8_t write_products_text(char *filename, Product *products, uint32_t total)
     }
     for (uint32_t ii = 0; ii < total; ii++)
     {
-        if (fprintf(file, "%d%d", products[ii].id, products[ii].value) < 0)
+        if (fprintf(file, "%d%s", products[ii].id, products[ii].value) < 0)
         {
             printf("cannot write products to file");
             fclose(file);

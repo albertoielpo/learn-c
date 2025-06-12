@@ -10,3 +10,9 @@ how-feistel/feistel
 how-files/my_file.dat
 how-files/files
 how-files/my_file.txt
+how-files/files-struct-stack
+how-files/files-struct-sds
+how-files/fsds.dat
+how-files/fsds.txt
+how-files/fss.dat
+how-files/fss.txt
