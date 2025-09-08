@@ -12,7 +12,7 @@
 void print_human(uint8_t *str, size_t row_offset)
 {
     size_t offset = row_offset % VISUAL_ROW == 0 ? VISUAL_ROW : row_offset % VISUAL_ROW;
-    printf("\t |");
+    printf("  |");
     size_t ii = 0;
     for (; ii < offset; ii++)
     {
@@ -38,23 +38,35 @@ void print_pad(size_t pad)
  * Decdump implementation
  * It simulates the hexdump behavior except that print in dec
  */
-void dec_dump(uint8_t *str, size_t strlen)
+void dec_dump(uint8_t *buf, uint8_t len, uint32_t row_counter)
 {
     size_t ii = 0;
-    for (; ii < strlen; ii++)
+    printf("%08d  ", row_counter);
+    printf("%03d ", buf[ii]); // print the left side (dec value)
+    for (ii = 1; ii < len; ii++)
     {
-        if (ii % VISUAL_ROW == 0 && ii > 0)
+
+        if (ii % 8 == 0)
         {
-            print_human(str, ii); // print the right side
+            putchar(' '); // additional space every byte
         }
-        printf("%03d ", str[ii]); // print the left side (dec value)
+
+        // this code is used only if dec_dump is invoked with len > and multiple of VISUAL_ROW
+        // in this case is dead code
+        // if (ii % VISUAL_ROW == 0)
+        // {
+        //     print_human(buf, ii); // print the right side
+        // }
+
+        printf("%03d ", buf[ii]); // print the left side (dec value)
     }
 
-    if (strlen % VISUAL_ROW > 0)
+    size_t rem = len % VISUAL_ROW;
+    if (rem > 0)
     {
-        print_pad(VISUAL_ROW - (strlen % VISUAL_ROW));
+        print_pad(VISUAL_ROW - rem); // print pad in the left side
     }
-    print_human(str, ii);
+    print_human(buf, ii); // print the right side
 }
 
 /**
@@ -85,6 +97,7 @@ int file_dump(char *filename)
     int cur;                 // current character
     uint8_t buf[VISUAL_ROW]; // line buffer. Each position is an unsigned char
     uint8_t ii = 0;          // max goes to VISUAL_ROW value
+    uint32_t row_counter = 0;
 
     while ((cur = fgetc(file)) != EOF)
     {
@@ -93,15 +106,19 @@ int file_dump(char *filename)
         if (ii % VISUAL_ROW == 0 && ii != 0)
         {
             // dump
-            dec_dump(buf, VISUAL_ROW);
+            dec_dump(buf, VISUAL_ROW, row_counter);
             ii = 0;
+            row_counter += VISUAL_ROW;
         }
     }
-    dec_dump(buf, ii);
-
+    dec_dump(buf, ii, row_counter);
+    printf("%08d\n", row_counter + ii);
     return close_file(file);
 }
 
+/**
+ * This program simulates the behavior of hexdump -C <filename>
+ */
 int main(int argc, char **argv)
 {
     if (argc != 2)
