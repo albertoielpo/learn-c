@@ -3,8 +3,11 @@
     "editor.defaultFormatter": "ms-vscode.cpptools",
     "editor.formatOnSave": true,
     "files.associations": {
+        "*.hbs": "handlebars",
         "my_lib.h": "c",
         "limits.h": "c",
-        "compare": "c"
+        "compare": "c",
+        "sds.h": "c",
+        "stdint.h": "c"
     }
 }

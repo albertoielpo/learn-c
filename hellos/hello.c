@@ -164,5 +164,11 @@ int main(void)
     // 15 3 60  // in decimal
     printf("\n%d %d %d\n", number, number_right, number_left);
 
+    char *ab = calloc(1, sizeof(char));
+    char *buffer = ab;
+    *buffer = 'A';
+    printf("%p %d %d", ab, *ab, *buffer);
+    free(ab);
+
     return 0;
 }
