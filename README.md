@@ -7,6 +7,7 @@ Some examples including vscode configuration to make the approach easier
 # Build
 - navigate in the desired folder
 - gcc hello.c -o hello
+- gcc -Wall -Wextra -Wpedantic -O2 -g -std=c99 -o myprogram myprogram.c
 
 ## Build with vscode
 - Press ctrl+maiusc+B to launch the default task

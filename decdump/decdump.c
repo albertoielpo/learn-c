@@ -1,10 +1,13 @@
-#define VISUAL_ROW 16
-#define DOT 46
-
+/**
+ * This program simulates the behavior of hexdump -C <filename>
+ */
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdint.h>
+
+#define VISUAL_ROW 16
+#define DOT 46
 
 /**
  * Print human readable dec characters
@@ -48,7 +51,7 @@ void dec_dump(uint8_t *buf, uint8_t len, uint32_t row_counter)
 
         if (ii % 8 == 0)
         {
-            putchar(' '); // additional space every byte
+            putchar(' '); // additional space every 8 bytes
         }
 
         // this code is used only if dec_dump is invoked with len > and multiple of VISUAL_ROW
@@ -116,9 +119,6 @@ int file_dump(char *filename)
     return close_file(file);
 }
 
-/**
- * This program simulates the behavior of hexdump -C <filename>
- */
 int main(int argc, char **argv)
 {
     if (argc != 2)
