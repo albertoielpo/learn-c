@@ -15,7 +15,7 @@
 void print_human(uint8_t *str, size_t row_offset)
 {
     size_t offset = row_offset % VISUAL_ROW == 0 ? VISUAL_ROW : row_offset % VISUAL_ROW;
-    printf("  |");
+    printf("\t|");
     size_t ii = 0;
     for (; ii < offset; ii++)
     {
