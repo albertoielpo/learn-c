@@ -130,7 +130,6 @@ int main(int argc, char const *argv[])
         {
             if (host[ii] == 0)
                 break;
-            printf("%d ", host[ii]);
         }
         printf("host: %s\n", host);
         if (argc > 2)

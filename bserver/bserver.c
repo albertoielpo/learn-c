@@ -161,11 +161,11 @@ void s_read_client(int client_fd)
 };
 
 /**
- * server handle sigint signal (ctrl+c)
+ * server handle sigint signal (ctrl+c or kill -2)
  */
 void c_handle_sigint(int sig)
 {
-    printf("\nCaught signal %d\n", sig);
+    printf("\nReceived sigint %d\n", sig);
     s_close();
     exit(0);
 }
