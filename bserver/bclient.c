@@ -48,7 +48,6 @@ void c_close()
 
 void c_connect(char *server_host, uint16_t server_port)
 {
-
     // pton
     struct sockaddr_in server_addr;
     server_addr.sin_family = AF_INET;
@@ -107,11 +106,6 @@ void c_write()
         // reset the buffer
         memset(buffer, 0, BUFFER_SIZE);
     }
-}
-
-void c_read()
-{
-    // read data from the server
 }
 
 /**

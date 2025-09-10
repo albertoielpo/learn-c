@@ -127,9 +127,9 @@ int s_accept()
 /**
  * server write data to the client
  */
-void s_write_client(int client_fd)
+void s_write_client(int client_fd, char *msg, size_t msg_length)
 {
-    if (write(client_fd, "OK", 3) < 0)
+    if (write(client_fd, msg, msg_length) < 0)
     {
         printf("Buffer not written to server");
     }
@@ -155,7 +155,7 @@ void s_read_client(int client_fd)
         }
 
         printf("%s", buffer);
-        s_write_client(client_fd);
+        s_write_client(client_fd, "OK", 3);
     }
 };
 
