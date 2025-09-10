@@ -78,7 +78,7 @@ void c_write()
 {
     char buffer[BUFFER_SIZE];
 
-    while (fgets(buffer, sizeof(buffer), stdin))
+    while (fgets(buffer, BUFFER_SIZE - 1, stdin))
     {
         // quit sequence is ":q!" or 58 113 33
         if (buffer[0] == 58 && buffer[1] == 113 && buffer[2] == 33)
@@ -88,15 +88,30 @@ void c_write()
         }
 
         // Send to server
-        if (write(client_fd, buffer, strlen(buffer)) < 0)
+        if (write(client_fd, buffer, BUFFER_SIZE - 1) < 0)
         {
             printf("Buffer not written to server");
             break;
         }
 
+        // wait here until the server sends a message
+        int n = read(client_fd, buffer, BUFFER_SIZE - 1);
+        if (n <= 0)
+        {
+            printf("Server closed connection.\n");
+            break;
+        }
+        buffer[n] = 0;
+        printf("> %s\n", buffer);
+
         // reset the buffer
         memset(buffer, 0, BUFFER_SIZE);
     }
+}
+
+void c_read()
+{
+    // read data from the server
 }
 
 /**

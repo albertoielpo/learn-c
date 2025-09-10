@@ -125,12 +125,22 @@ int s_accept()
 }
 
 /**
+ * server write data to the client
+ */
+void s_write_client(int client_fd)
+{
+    if (write(client_fd, "OK", 3) < 0)
+    {
+        printf("Buffer not written to server");
+    }
+};
+
+/**
  * server read data from client
  */
 void s_read_client(int client_fd)
 {
     char buffer[BUFFER_SIZE];
-    int quit_sequence = 0;
 
     // until I have data...
     while (1)
@@ -145,10 +155,9 @@ void s_read_client(int client_fd)
         }
 
         printf("%s", buffer);
+        s_write_client(client_fd);
     }
 };
-
-void s_write() {};
 
 /**
  * server handle sigint signal (ctrl+c)
@@ -187,9 +196,6 @@ int main(void)
 
         // read data from client
         s_read_client(client_fd);
-
-        // write
-        // TODO
 
         // close the client socket (fd)
         c_close(client_fd);
