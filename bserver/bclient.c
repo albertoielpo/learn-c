@@ -15,9 +15,11 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <signal.h>
+#include <errno.h>
+#include <limits.h>
 
 #define SERVER_IP "127.0.0.1"
-#define SERVER_PORT 1234
+#define SERVER_DEFAULT_PORT 1234
 #define BUFFER_SIZE 1024
 
 // ------ global ------
@@ -26,8 +28,7 @@ int client_fd = -1;
 
 void c_socket()
 {
-    // AF_INET (Ipv4), SOCK_STREAM (byte stream), 0 (AUTO)
-    if ((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    if ((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) // AF_INET (Ipv4), SOCK_STREAM (byte stream), 0 (AUTO)
     {
         printf("Cannot open socket\n");
         exit(1);
@@ -51,7 +52,6 @@ void c_connect(char *server_host, uint16_t server_port)
     // pton
     struct sockaddr_in server_addr;
     server_addr.sin_family = AF_INET;
-    // server_addr.sin_addr.s_addr = INADDR_ANY; // listen on all interfaces
     server_addr.sin_port = htons(server_port);
 
     if (inet_pton(AF_INET, server_host, &server_addr.sin_addr) <= 0)
@@ -118,10 +118,37 @@ void c_handle_sigint(int sig)
     exit(0);
 }
 
-int main(void)
+int main(int argc, char const *argv[])
 {
+    uint8_t IP_SIZE = 16;
+    char host[] = {"127.127.127.127"};
+    uint16_t port = SERVER_DEFAULT_PORT;
+    if (argc > 1)
+    {
+        memcpy(host, argv[1], IP_SIZE);
+        for (int ii = 0; ii < IP_SIZE; ii++)
+        {
+            if (host[ii] == 0)
+                break;
+            printf("%d ", host[ii]);
+        }
+        printf("host: %s\n", host);
+        if (argc > 2)
+        {
+            char *endptr;
+            errno = 0;
+            uint64_t argv_port = strtoul(argv[2], &endptr, 10);
+            if (errno != 0 || *endptr != '\0' || argv_port > USHRT_MAX)
+            {
+                printf("Conversion error or out of range\n");
+                exit(1);
+            }
+
+            port = (uint16_t)argv_port;
+        }
+    }
     c_socket();
-    c_connect("127.0.0.1", 1234);
+    c_connect(host, port);
     signal(SIGINT, c_handle_sigint);
     c_write();
     c_close();

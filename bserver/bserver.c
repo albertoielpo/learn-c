@@ -21,10 +21,11 @@
 #include <arpa/inet.h>
 #include <signal.h>
 #include <limits.h>
+#include <errno.h>
 
-#define PORT 1234
 #define BUFFER_SIZE 1024
 #define CONN_QUEUE_SIZE 128
+#define DEFAULT_PORT 1234
 
 // ------ global ------
 int socket_fd = -1;
@@ -172,8 +173,23 @@ void c_handle_sigint(int sig)
 /**
  * server start
  */
-int main(void)
+int main(int argc, char const *argv[])
 {
+    uint16_t port = DEFAULT_PORT;
+    if (argc > 1)
+    {
+        char *endptr;
+        errno = 0;
+        uint64_t argv_port = strtoul(argv[1], &endptr, 10);
+        if (errno != 0 || *endptr != '\0' || argv_port > USHRT_MAX)
+        {
+            printf("Conversion error or out of range\n");
+            exit(1);
+        }
+
+        port = (uint16_t)argv_port;
+    }
+
     pid_t pid = getpid();
     printf("Starting bserver with pid %d\n", pid);
 
@@ -181,7 +197,7 @@ int main(void)
     s_socket();
 
     // bind the server socket on port
-    s_bind(PORT);
+    s_bind(port);
 
     // server socket in listen mode
     s_listen(CONN_QUEUE_SIZE);
