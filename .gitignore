@@ -19,3 +19,5 @@ how-files/fss.txt
 a.out
 decdump/decdump
 decdump/test.txt
+bserver/bserver
+bserver/bclient
