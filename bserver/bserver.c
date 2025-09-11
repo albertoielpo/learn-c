@@ -2,15 +2,14 @@
  * Author: Alberto Ielpo
  * Bserver, Basic server using socket from scratch
  *
- * Server flow
- *
- * socket()
- * bind()
- * listen()
- * accept()
- * read()
- * write()
- * close()
+ * Acceptance flow:
+ * 1. create socket
+ * 2. bind
+ * 3. listen
+ * 4. accept
+ * 5. read
+ * 6. write
+ * 7. close
  *
  */
 
@@ -25,7 +24,7 @@
 
 #define BUFFER_SIZE 1024
 #define CONN_QUEUE_SIZE 128
-#define DEFAULT_PORT 1234
+#define SERVER_DEFAULT_PORT 1234
 
 // ------ global ------
 int socket_fd = -1;
@@ -175,7 +174,7 @@ void c_handle_sigint(int sig)
  */
 int main(int argc, char const *argv[])
 {
-    uint16_t port = DEFAULT_PORT;
+    uint16_t port = SERVER_DEFAULT_PORT;
     if (argc > 1)
     {
         char *endptr;

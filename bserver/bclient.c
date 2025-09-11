@@ -2,11 +2,12 @@
  * Author: Alberto Ielpo
  * Bserver client: communication is text plain
  *
- * Client logic flow
- * socket()
- * connect()
- * write()
- * close()
+ * Bserver client flow
+ * 1. create socket
+ * 2. connect
+ * 3. write
+ * 4. read
+ * 5. close
  *
  */
 #include <stdio.h>
@@ -18,9 +19,10 @@
 #include <errno.h>
 #include <limits.h>
 
-#define SERVER_IP "127.0.0.1"
+#define SERVER_DEFAULT_IP "127.0.0.1"
 #define SERVER_DEFAULT_PORT 1234
 #define BUFFER_SIZE 1024
+#define IP_SIZE 16
 
 // ------ global ------
 int client_fd = -1;
@@ -120,9 +122,9 @@ void c_handle_sigint(int sig)
 
 int main(int argc, char const *argv[])
 {
-    uint8_t IP_SIZE = 16;
-    char host[] = {"127.127.127.127"};
+    char host[IP_SIZE] = {SERVER_DEFAULT_IP};
     uint16_t port = SERVER_DEFAULT_PORT;
+
     if (argc > 1)
     {
         memcpy(host, argv[1], IP_SIZE);
@@ -131,7 +133,7 @@ int main(int argc, char const *argv[])
             if (host[ii] == 0)
                 break;
         }
-        printf("host: %s\n", host);
+
         if (argc > 2)
         {
             char *endptr;
