@@ -106,7 +106,7 @@ int file_dump(char *filename)
     {
         buf[ii] = cur;
         ii++;
-        if (ii % VISUAL_ROW == 0 && ii != 0)
+        if (ii % VISUAL_ROW == 0)
         {
             // dump
             dec_dump(buf, VISUAL_ROW, row_counter);
