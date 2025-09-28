@@ -14,7 +14,6 @@ int main(void)
   // here can be a padding and free space
   char str[] = {"hello world"};
   printf("stack allocation: %s ---> %p\n", str, str); // stack address
-  // here it frees the variable str
 
   char *str2 = "hello world";
   printf("static allocation: %s ---> %p\n", str2, str2); // static memory address
