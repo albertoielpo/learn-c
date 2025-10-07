@@ -9,6 +9,8 @@
         "compare": "c",
         "sds.h": "c",
         "stdint.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "sha1.h": "c",
+        "string.h": "c"
     }
 }
