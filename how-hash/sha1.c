@@ -131,17 +131,15 @@ static void sha1_final(SHA1_CTX *ctx, uint8_t hash[])
 
 /**
  * Sha1 function
- * @param data the string to encode
- * @param len the data len without null terminator
- * @param hash the result. Must be hash[20]
+ * data, the string to encode
+ * len, data len without null terminator
+ * hash, the result. Must be hash[20]
  */
-uint8_t *sha1(uint8_t *data, size_t len, uint8_t *hash)
+void sha1(uint8_t *data, size_t len, uint8_t *hash)
 {
     SHA1_CTX ctx;
 
     sha1_init(&ctx);
     sha1_update(&ctx, data, len);
     sha1_final(&ctx, hash);
-
-    return hash;
 }

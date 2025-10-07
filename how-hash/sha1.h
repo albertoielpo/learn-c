@@ -6,6 +6,6 @@
 
 #define SHA1_LENGTH 20
 
-uint8_t *sha1(uint8_t *data, size_t len, uint8_t *hash);
+void sha1(uint8_t *data, size_t len, uint8_t *hash);
 
 #endif // SHA1_H
