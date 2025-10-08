@@ -1,5 +1,7 @@
 #include <string.h>
 #include <stdio.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include "sha1.h"
 
 typedef struct
@@ -10,6 +12,7 @@ typedef struct
 } SHA1_CTX;
 
 #define ROTLEFT(a, b) (((a) << (b)) | ((a) >> (32 - (b))))
+#define FSHA_BUFF_LEN 8192 // // 8kb
 
 static void sha1_transform(SHA1_CTX *ctx, const uint8_t data[])
 {
@@ -132,10 +135,77 @@ static void sha1_final(SHA1_CTX *ctx, uint8_t hash[])
 /**
  * @copydoc sha1
  */
-void sha1(const uint8_t *data, size_t len, uint8_t *hash)
+bool sha1(const uint8_t *data, size_t len, uint8_t *hash)
 {
+    if (data == NULL || len <= 0 || hash == NULL)
+    {
+        printf("Invalid parameters! data, len and hash output must be valid!\n");
+        return false;
+    }
+
     SHA1_CTX ctx;
     sha1_init(&ctx);
     sha1_update(&ctx, data, len);
     sha1_final(&ctx, hash);
+
+    return true;
+}
+
+/**
+ * If path is not a regular file than return 0
+ * @param[in] path
+ */
+static int is_regular_file(const char *path)
+{
+    struct stat path_stat;
+    if (stat(path, &path_stat) != 0)
+        return 0; // stat failed
+
+    // check if is a regular file
+    return S_ISREG(path_stat.st_mode);
+}
+
+/**
+ * @copydoc fsha1
+ */
+bool fsha1(const char *filename, uint8_t *hash)
+{
+    if (filename == NULL || hash == NULL)
+    {
+        printf("Invalid parameters! filename and hash output must be valid!\n");
+        return false;
+    }
+
+    if (!is_regular_file(filename))
+    {
+        printf("%s is not a regular file\n", filename);
+        return false;
+    }
+
+    FILE *fd = fopen(filename, "r");
+    if (fd == NULL)
+    {
+        printf("Cannot open file with name %s\n", filename);
+        return false;
+    }
+
+    // init
+    uint8_t buffer[FSHA_BUFF_LEN];
+    size_t bytes_read;
+    SHA1_CTX ctx;
+    sha1_init(&ctx);
+
+    // sha1 is incremental, so is possible to compute in chunks
+    while (1)
+    {
+        bytes_read = fread(buffer, 1, sizeof(buffer), fd);
+        if (bytes_read <= 0)
+            break;
+        sha1_update(&ctx, buffer, bytes_read);
+    }
+
+    fclose(fd);             // close file immediately
+    sha1_final(&ctx, hash); // finalize the sha
+
+    return true;
 }

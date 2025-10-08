@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
 
 #define SHA1_LENGTH 20
 
@@ -16,6 +17,7 @@
  * @param[in]  data  Pointer to the data to hash. Must not be NULL.
  * @param[in]  len   Length of the data in bytes (excluding null terminator if string).
  * @param[out] hash  Pointer to buffer receiving the 20-byte hash. Must not be NULL.
+ * @returns true if the hash is calculated else false
  *
  * @note The hash buffer must be at least 20 bytes (SHA1_DIGEST_LENGTH).
  *
@@ -26,6 +28,15 @@
  * sha1((uint8_t*)message, strlen(message), hash);
  * @endcode
  */
-void sha1(const uint8_t *data, size_t len, uint8_t *hash);
+bool sha1(const uint8_t *data, size_t len, uint8_t *hash);
+
+/**
+ * @brief Computes the SHA-1 hash of a given file
+ *
+ * @param[in] filename The filename
+ * @param[out] hash  Pointer to buffer receiving the 20-byte hash. Must not be NULL.
+ * @returns true if the hash is calculated else false
+ */
+bool fsha1(const char *filename, uint8_t *hash);
 
 #endif // SHA1_H
