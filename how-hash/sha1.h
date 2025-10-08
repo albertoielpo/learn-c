@@ -50,4 +50,12 @@ bool fsha1(const char *filename, uint8_t *hash);
  */
 bool fhsha1(Fhash *fh);
 
+/**
+ * @brief print fhash to stdout
+ *
+ * 1e4e888ac66f8dd41e00c5a7ac36a32a9950d271  test.txt
+ * @param[in] fhash
+ */
+void fhprint(Fhash *fh);
+
 #endif // SHA1_H

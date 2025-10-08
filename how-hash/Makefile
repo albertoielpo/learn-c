@@ -2,19 +2,36 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -Wpedantic -O2 -g -std=c99
 
-# Target executable
-TARGET = hash
+# Target executables
+TARGETS = hash hashs deldup
 
-# Source files
-SRCS = sha1.c hash.c
-OBJS = $(SRCS:.c=.o)
+# Source files for each target
+HASH_SRCS = sha1.c hash.c
+HASHS_SRCS = sha1.c hashs.c
+DELDUP_SRCS = sha1.c deldup.c
 
-# Default target
-all: $(TARGET)
+# Object files for each target
+HASH_OBJS = $(HASH_SRCS:.c=.o)
+HASHS_OBJS = $(HASHS_SRCS:.c=.o)
+DELDUP_OBJS = $(DELDUP_SRCS:.c=.o)
 
-# Link object files into executable
-$(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS)
+# All object files (for cleanup)
+ALL_OBJS = sha1.o hash.o hashs.o deldup.o
+
+# Default target - build all executables
+all: $(TARGETS)
+
+# Link object files for hash
+hash: $(HASH_OBJS)
+	$(CC) $(CFLAGS) -o hash $(HASH_OBJS)
+
+# Link object files for hashs
+hashs: $(HASHS_OBJS)
+	$(CC) $(CFLAGS) -o hashs $(HASHS_OBJS)
+
+# Link object files for deldup
+deldup: $(DELDUP_OBJS)
+	$(CC) $(CFLAGS) -o deldup $(DELDUP_OBJS)
 
 # Compile source files into object files
 %.o: %.c
@@ -22,7 +39,7 @@ $(TARGET): $(OBJS)
 
 # Clean build artifacts
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(ALL_OBJS) $(TARGETS)
 
 # Phony targets (not actual files)
 .PHONY: all clean

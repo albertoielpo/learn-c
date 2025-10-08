@@ -222,3 +222,16 @@ bool fhsha1(Fhash *fh)
     }
     return fsha1(fh->filename, fh->hash);
 }
+
+/**
+ * @copydoc fhprint
+ */
+void fhprint(Fhash *fh)
+{
+    for (int ii = 0; ii < SHA1_LENGTH; ii++)
+    {
+        // print in hex format
+        printf("%02x", fh->hash[ii]);
+    }
+    printf("  %s\n", fh->filename); // 1e4e888ac66f8dd41e00c5a7ac36a32a9950d271  test.txt
+}
