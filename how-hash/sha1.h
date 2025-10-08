@@ -7,6 +7,12 @@
 
 #define SHA1_LENGTH 20
 
+typedef struct
+{
+    uint8_t hash[SHA1_LENGTH]; // 20 bytes sha1 hash
+    char *filename;            // filename pointer
+} Fhash;
+
 /**
  * @brief Computes the SHA-1 hash of the given data.
  *
@@ -38,5 +44,10 @@ bool sha1(const uint8_t *data, size_t len, uint8_t *hash);
  * @returns true if the hash is calculated else false
  */
 bool fsha1(const char *filename, uint8_t *hash);
+
+/**
+ * @brief wrap of fsha1 using Fhash struct
+ */
+bool fhsha1(Fhash *fh);
 
 #endif // SHA1_H

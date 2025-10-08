@@ -209,3 +209,16 @@ bool fsha1(const char *filename, uint8_t *hash)
 
     return true;
 }
+
+/**
+ * @copydoc fhsha1
+ */
+bool fhsha1(Fhash *fh)
+{
+    if (fh == NULL || fh->filename == NULL)
+    {
+        printf("Invalid parameters! filename and hash output must be valid!\n");
+        return false;
+    }
+    return fsha1(fh->filename, fh->hash);
+}

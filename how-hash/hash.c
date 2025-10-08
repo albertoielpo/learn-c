@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "sha1.h"
 
 /**
@@ -15,21 +16,28 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // uint8_t hashes[(argc - 1) * SHA1_LENGTH]; // XXXXXXXXXXXXXXXXXXXXYYYYYYYYYYYYYYYYYYYY...
+    // allocate one struct per file
+    int tot_files = argc - 1;
+    Fhash *fhs = malloc(sizeof(Fhash) * tot_files);
+    printf("Total files %d\n", tot_files);
 
-    for (int ii = 1; ii < argc; ii++)
+    for (int ii = 0; ii < tot_files; ii++)
     {
-        uint8_t hash[SHA1_LENGTH];
-        if (!fsha1(argv[ii], hash))
+        Fhash *fh = &fhs[ii];
+        fh->filename = argv[ii + 1]; // skip first argv
+
+        if (!fhsha1(fh))
             continue;
 
         for (int jj = 0; jj < SHA1_LENGTH; jj++)
         {
             // for each parameter calculate the sha1
-            printf("%02x", hash[jj]);
+            printf("%02x", fh->hash[jj]); // print in hex format
         }
-        printf("  %s\n", argv[ii]); // 1e4e888ac66f8dd41e00c5a7ac36a32a9950d271  test.txt
+        printf("  %s\n", fh->filename); // 1e4e888ac66f8dd41e00c5a7ac36a32a9950d271  test.txt
     }
+
+    free(fhs); // free the space
 
     return 0;
 }
