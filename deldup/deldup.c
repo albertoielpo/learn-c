@@ -1,3 +1,6 @@
+/**
+ * This program calculate sha1 hash of some input filenames and removes duplicates
+ */
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -9,7 +12,7 @@
  * Requires unistd.h
  * @param[in] filename
  */
-bool safe_remove_file(const char *filename)
+static bool delete_file(const char *filename)
 {
     if (!filename)
     {
@@ -43,13 +46,16 @@ bool safe_remove_file(const char *filename)
 }
 
 /**
- * This function finds duplicates inside an array of Fhash structure
+ * This function finds and remove duplicates inside an array of Fhash structure.
+ * fhs array is not sorted by hash
+ *
  * @param[in] fhs array of results
  * @param[in] len array length
  */
-void find_duplicates(Fhash *fhs, size_t len)
+static void remove_duplicates(Fhash *fhs, size_t len)
 {
-    uint8_t init[20] = {0}; // All zeros
+    // init to all zeros
+    uint8_t init[20] = {0};
     for (size_t ii = 0; ii < len - 1; ii++)
     {
         for (size_t jj = ii + 1; jj < len; jj++)
@@ -57,14 +63,15 @@ void find_duplicates(Fhash *fhs, size_t len)
             if (memcmp(fhs[ii].hash, fhs[jj].hash, SHA1_LENGTH) == 0 &&
                 memcmp(fhs[jj].hash, init, SHA1_LENGTH) != 0)
             {
-                safe_remove_file(fhs[jj].filename);
+                // if hashes are equals and are different from all zeros then the right (jj) file
+                delete_file(fhs[jj].filename);
             }
         }
     }
 }
 
 /**
- * This program calculate sha1 hash of some input filenames and removes duplicates
+ * Main function
  * @param[in]  argc  args count
  * @param[in]  argv  Filenames
  */
@@ -93,7 +100,7 @@ int main(int argc, char *argv[])
     }
 
     if (tot_files > 1)
-        find_duplicates(fhs, tot_files);
+        remove_duplicates(fhs, tot_files);
 
     free(fhs); // free the space
 
