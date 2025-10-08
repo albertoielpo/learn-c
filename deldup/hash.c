@@ -18,8 +18,8 @@ int main(int argc, char *argv[])
 
     // allocate one struct per file
     int tot_files = argc - 1;
-    Fhash *fhs = malloc(sizeof(Fhash) * tot_files);
-    printf("Total files %d\n", tot_files);
+    Fhash *fhs = calloc(argc - 1, sizeof(Fhash));
+    // printf("Total files %d\n", tot_files);
 
     for (int ii = 0; ii < tot_files; ii++)
     {

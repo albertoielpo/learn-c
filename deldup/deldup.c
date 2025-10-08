@@ -49,13 +49,16 @@ bool safe_remove_file(const char *filename)
  */
 void find_duplicates(Fhash *fhs, size_t len)
 {
+    uint8_t init[20] = {0}; // All zeros
     for (size_t ii = 0; ii < len - 1; ii++)
     {
         for (size_t jj = ii + 1; jj < len; jj++)
         {
-            int c = memcmp(fhs[ii].hash, fhs[jj].hash, SHA1_LENGTH);
-            if (c == 0)
+            if (memcmp(fhs[ii].hash, fhs[jj].hash, SHA1_LENGTH) == 0 &&
+                memcmp(fhs[jj].hash, init, SHA1_LENGTH) != 0)
+            {
                 safe_remove_file(fhs[jj].filename);
+            }
         }
     }
 }
@@ -75,8 +78,8 @@ int main(int argc, char *argv[])
 
     // allocate one struct per file
     int tot_files = argc - 1;
-    Fhash *fhs = malloc(sizeof(Fhash) * tot_files);
-    printf("Total files %d\n", tot_files);
+    Fhash *fhs = calloc(argc - 1, sizeof(Fhash));
+    // printf("Total files %d\n", tot_files);
 
     for (int ii = 0; ii < tot_files; ii++)
     {

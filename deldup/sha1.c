@@ -178,7 +178,7 @@ bool fsha1(const char *filename, uint8_t *hash)
 
     if (!is_regular_file(filename))
     {
-        printf("%s is not a regular file\n", filename);
+        // printf("%s is not a regular file\n", filename);
         return false;
     }
 
