@@ -81,13 +81,13 @@
                 "-g",
 
                 // 2. Add the include directory
-                "-I${workspaceFolder}/how-hash",
+                "-I${workspaceFolder}/deldup",
 
                 // 3. Compile your current file
                 "${file}",
 
                 // 4. Also compile the sha implementation                
-                "${workspaceFolder}/how-hash/sha1.c",
+                "${workspaceFolder}/deldup/sha1.c",
 
                 // 5. Produce the output executable in the same folder as the source
                 "-o",
