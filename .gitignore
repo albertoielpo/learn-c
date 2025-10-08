@@ -23,3 +23,5 @@ bserver/bserver
 bserver/bclient
 bingo/bingo
 how-hash/hash
+how-hash/hashs
+how-hash/deldup

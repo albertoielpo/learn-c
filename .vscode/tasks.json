@@ -67,6 +67,46 @@
                 "isDefault": true
             },
             "detail": "Build current file (with sds dependency) using gcc"
+        },
+        {
+            "type": "cppbuild",
+            "label": "C: gcc build hash",
+            "command": "/usr/bin/gcc",
+            "args": [
+                // 1. Generate debug symbols and treat warnings verbosely
+                "-std=c99",
+                "-Wall",
+                "-Wextra",
+                "-fdiagnostics-color=always",
+                "-g",
+
+                // 2. Add the include directory
+                "-I${workspaceFolder}/how-hash",
+
+                // 3. Compile your current file
+                "${file}",
+
+                // 4. Also compile the sha implementation                
+                "${workspaceFolder}/how-hash/sha1.c",
+
+                // 5. Produce the output executable in the same folder as the source
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}",
+
+                // 6. Link libm (sds may use malloc/free only; but if you need math funcs)
+                "-lm"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Build hash file using gcc"
         }
     ],
     "version": "2.0.0"
