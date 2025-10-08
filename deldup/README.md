@@ -1,25 +1,26 @@
 # Deldup
-deldup is a unix utils designed to remove files duplicates. If two files have the same hash then it means that are equals.
+Deldup is a Unix utility designed to remove duplicate files. When two files share the same hash, they are considered identical.
 
-## Please note
+## Important Notes
 
-The program 
-- uses SHA-1 as hash function
-- is single thread
-- check the files only in one folder, it's not recursive
-- the compilation inside Makefile uses -static flag. Remove it if the build and the target system are the same in order to reduce the program size.
-- is not cross platform. It's designed thinking about a linux system
+This program:
+
+- Uses SHA-1 as its hash function
+- Runs on a single thread
+- Only checks files within a single folder (non-recursive)
+- Compiles with the -static flag in the Makefile. Remove this flag if the build and target systems are identical to reduce binary size
+- Is not cross-platform and is designed specifically for Linux systems
 
 ## Build
 ```bash
 # build using make
 make clean && make
 ```
-It produces <code>deldup</code> executable.
+This produces three executables:
 
-<code>hash</code> executable does the same of deldup but does not deletes duplicates
-
-<code>hashs</code> create a sha1 hash from args
+<code>deldup</code> - Main executable that identifies and deletes duplicate files
+<code>hash</code> - Functions identically to deldup but does not delete duplicates
+<code>hashs</code> - Generates SHA-1 hashes from command-line arguments
 
 ## Usage
 ```bash
