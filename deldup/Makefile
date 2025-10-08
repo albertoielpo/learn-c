@@ -1,6 +1,7 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Wextra -Wpedantic -O2 -g -std=c99
+# Added -static for compatibility, remove if not needed anymore
+CFLAGS = -static -Wall -Wextra -Wpedantic -O2 -g -std=c99
 
 # Target executables
 TARGETS = hash hashs deldup
