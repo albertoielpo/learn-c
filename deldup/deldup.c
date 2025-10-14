@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "sha1.h"
+#include "../utils/sha1.h"
 #include "../third-party/hash-table/ht.h"
 
 /**
@@ -66,7 +66,7 @@ static void remove_duplicates(Fhash *fhs, size_t len)
     // init to all zeros
     uint8_t init[20] = {0};
 
-    for (size_t ii = 0; ii < len - 1; ii++)
+    for (size_t ii = 0; ii < len; ii++)
     {
         // convertion from uint8_t to hex string
         char hash_str[SHA1_LENGTH_CHAR]; // size needed 40 + \0

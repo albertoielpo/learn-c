@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "sha1.h"
+#include "../utils/sha1.h"
 
 /**
  * This program calculate sha1 hash of some input filenames
