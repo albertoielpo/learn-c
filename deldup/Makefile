@@ -9,7 +9,7 @@ TARGETS = hash hashs deldup
 # Source files for each target
 HASH_SRCS = sha1.c hash.c
 HASHS_SRCS = sha1.c hashs.c
-DELDUP_SRCS = sha1.c deldup.c
+DELDUP_SRCS = sha1.c ../third-party/hash-table/ht.c deldup.c
 
 # Object files for each target
 HASH_OBJS = $(HASH_SRCS:.c=.o)

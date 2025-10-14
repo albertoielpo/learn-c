@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "sha1.h"
+#include "../third-party/hash-table/ht.h"
 
 /**
  * Delete a file from the fs
@@ -54,20 +55,38 @@ static bool delete_file(const char *filename)
  */
 static void remove_duplicates(Fhash *fhs, size_t len)
 {
+    // create an hash table to reduce scan complexity
+    ht *table = ht_create();
+    if (table == NULL)
+    {
+        perror("Cannot allocate hash table");
+        exit(1);
+    }
+
     // init to all zeros
     uint8_t init[20] = {0};
     for (size_t ii = 0; ii < len - 1; ii++)
     {
-        for (size_t jj = ii + 1; jj < len; jj++)
+        const char *curHash = ((const char *)fhs[ii].hash); // cast pointer
+        if (memcmp(fhs[ii].hash, init, SHA1_LENGTH) == 0)
         {
-            if (memcmp(fhs[ii].hash, fhs[jj].hash, SHA1_LENGTH) == 0 &&
-                memcmp(fhs[jj].hash, init, SHA1_LENGTH) != 0)
-            {
-                // if hashes are equals and are different from all zeros then the right (jj) file
-                delete_file(fhs[jj].filename);
-            }
+            printf("Skip %s\n", fhs[ii].filename);
+            continue;
+        }
+
+        void *value = ht_get(table, curHash);
+        if (value == NULL)
+        {
+            // not found
+            ht_set(table, curHash, fhs[ii].filename);
+        }
+        else
+        {
+            // if found then it's a duplicate
+            delete_file(fhs[ii].filename);
         }
     }
+    ht_destroy(table);
 }
 
 /**
