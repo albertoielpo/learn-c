@@ -6,6 +6,7 @@
 #include <stdbool.h>
 
 #define SHA1_LENGTH 20
+#define SHA1_LENGTH_CHAR 41 // 40 + \0
 
 typedef struct
 {
@@ -57,5 +58,15 @@ bool fhsha1(Fhash *fh);
  * @param[in] fhash
  */
 void fhprint(Fhash *fh);
+
+/**
+ * Convert uint8_t[] to string[]
+ * Example SHA_1 uint8_t[20] to string[41]
+ * @param[in] hash pointer to first element
+ * @param[in] hash_len (20 for sha-1)
+ * @param[out] hex_str (converted string of size hash_len*2+1)
+ * @param[in] hex_str_len (41 for sha-1). This param is a safety check just to make sure that the dev know it
+ */
+bool hash_to_hex(const uint8_t *hash, size_t hash_len, char *hex_str, size_t hex_str_len);
 
 #endif // SHA1_H

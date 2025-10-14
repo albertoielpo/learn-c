@@ -65,24 +65,35 @@ static void remove_duplicates(Fhash *fhs, size_t len)
 
     // init to all zeros
     uint8_t init[20] = {0};
+
     for (size_t ii = 0; ii < len - 1; ii++)
     {
-        const char *curHash = ((const char *)fhs[ii].hash); // cast pointer
+        // convertion from uint8_t to hex string
+        char hash_str[SHA1_LENGTH_CHAR]; // size needed 40 + \0
+
         if (memcmp(fhs[ii].hash, init, SHA1_LENGTH) == 0)
         {
-            printf("Skip %s\n", fhs[ii].filename);
+            // hash not calculated, all zeros
             continue;
         }
 
-        void *value = ht_get(table, curHash);
+        // Convert binary hash to hex string
+        if (!hash_to_hex(fhs[ii].hash, SHA1_LENGTH, hash_str, SHA1_LENGTH_CHAR))
+        {
+            // cannot continue
+            exit(1);
+        }
+
+        void *value = ht_get(table, hash_str);
         if (value == NULL)
         {
             // not found
-            ht_set(table, curHash, fhs[ii].filename);
+            ht_set(table, hash_str, fhs[ii].filename);
         }
         else
         {
             // if found then it's a duplicate
+            printf("%s is a duplicate of %s\n", fhs[ii].filename, ((char *)value));
             delete_file(fhs[ii].filename);
         }
     }

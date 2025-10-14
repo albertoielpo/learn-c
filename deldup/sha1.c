@@ -235,3 +235,25 @@ void fhprint(Fhash *fh)
     }
     printf("  %s\n", fh->filename); // 1e4e888ac66f8dd41e00c5a7ac36a32a9950d271  test.txt
 }
+
+/**
+ * @copydoc hash_to_hex
+ */
+bool hash_to_hex(const uint8_t *hash, size_t hash_len, char *hex_str, size_t hex_str_len)
+{
+    if ((hash_len * 2 + 1) != hex_str_len)
+    {
+        // this is a safety check
+        printf("hex_str_len must be double size + 1 of or hash_len\n");
+        return false;
+    }
+    static const char hex_chars[] = "0123456789abcdef";
+
+    for (size_t ii = 0; ii < hash_len; ii++)
+    {
+        hex_str[ii * 2] = hex_chars[(hash[ii] >> 4) & 0xF];
+        hex_str[ii * 2 + 1] = hex_chars[hash[ii] & 0xF];
+    }
+    hex_str[hash_len * 2] = '\0';
+    return true;
+}

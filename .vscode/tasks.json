@@ -88,6 +88,7 @@
 
                 // 4. Also compile the sha implementation                
                 "${workspaceFolder}/deldup/sha1.c",
+                "${workspaceFolder}/third-party/hash-table/ht.c",
 
                 // 5. Produce the output executable in the same folder as the source
                 "-o",
