@@ -24,9 +24,7 @@ struct ht
     size_t length;     // number of items in hash table
 };
 
-#define INITIAL_CAPACITY 16 // must not be zero
-
-ht *ht_create(void)
+ht *ht_create(uint32_t capacity)
 {
     // Allocate space for hash table struct.
     ht *table = malloc(sizeof(ht));
@@ -35,7 +33,7 @@ ht *ht_create(void)
         return NULL;
     }
     table->length = 0;
-    table->capacity = INITIAL_CAPACITY;
+    table->capacity = capacity > 0 ? capacity : HT_INITIAL_CAPACITY;
 
     // Allocate (zero'd) space for entry buckets.
     table->entries = calloc(table->capacity, sizeof(ht_entry));

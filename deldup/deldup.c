@@ -56,7 +56,7 @@ static bool delete_file(const char *filename)
 static void remove_duplicates(Fhash *fhs, size_t len)
 {
     // create an hash table to reduce scan complexity
-    ht *table = ht_create();
+    ht *table = ht_create(1024);
     if (table == NULL)
     {
         perror("Cannot allocate hash table");
