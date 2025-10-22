@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "my_lib.h"
+#include "my-lib.h"
 
 void swapValue(int *a, int *b)
 {
