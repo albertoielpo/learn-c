@@ -3,26 +3,8 @@
  * Numeric Linked list implementation
  * In this case the element is a number with size_t as size
  */
-#include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-
-struct nllnode
-{
-    struct nllnode *prev;
-    size_t elem;
-    struct nllnode *next;
-};
-
-// numeric linked list node
-typedef struct nllnode NLLNode;
-
-typedef struct
-{
-    NLLNode *head;
-    NLLNode *tail;
-    size_t size;
-} NLinkedList;
+#include "n-linked-list.h"
 
 /**
  * Increment list size
@@ -47,7 +29,7 @@ static bool decrement_size(NLinkedList *list)
 }
 
 /**
- * Create the linked list
+ * @copydoc create_nlist
  */
 NLinkedList *create_nlist()
 {
@@ -64,8 +46,7 @@ NLinkedList *create_nlist()
 }
 
 /**
- * Deallocate linked list and all nodes
- * @param[in] list
+ * @copydoc destroy_nlist
  */
 void destroy_nlist(NLinkedList *list)
 {
@@ -114,10 +95,7 @@ static bool remove_nnode(NLinkedList *list, NLLNode *node)
 }
 
 /**
- * Get an element of a valid NLinkedList at index idx
- * @param[in] list
- * @param[in] idx
- * @returns NLLNode if found else NULL
+ * @copydoc get_nele
  */
 NLLNode *get_nele(NLinkedList *list, size_t idx)
 {
@@ -147,10 +125,7 @@ NLLNode *get_nele(NLinkedList *list, size_t idx)
 }
 
 /**
- * Add an element into the list
- * @param[in] list
- * @param[in] elem
- * @param[in] idx
+ * @copydoc add_nele
  */
 bool add_nele(NLinkedList *list, size_t elem, size_t idx)
 {
@@ -205,9 +180,7 @@ bool add_nele(NLinkedList *list, size_t elem, size_t idx)
 }
 
 /**
- * Remove an element from linked list
- * @param[in] list
- * @param[in] idx
+ * @copydoc remove_nele
  */
 bool remove_nele(NLinkedList *list, size_t idx)
 {
@@ -235,8 +208,7 @@ bool remove_nele(NLinkedList *list, size_t idx)
 }
 
 /**
- * Traverse list using head
- * @param[in] list
+ * @copydoc print_nlist
  */
 void print_nlist(const NLinkedList *list)
 {
@@ -249,8 +221,7 @@ void print_nlist(const NLinkedList *list)
 }
 
 /**
- * Traverse list using tail
- * @param[in] list
+ * @copydoc print_nlist_reverse
  */
 void print_nlist_reverse(const NLinkedList *list)
 {

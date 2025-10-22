@@ -74,4 +74,4 @@ void print_list(const LinkedList *list);
  * @param[in] list
  */
 void print_list_reverse(const LinkedList *list);
-#endif LINKEDLIST_H
+#endif // LINKEDLIST_H
