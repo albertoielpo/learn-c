@@ -12,6 +12,8 @@
         "stdio.h": "c",
         "sha1.h": "c",
         "string.h": "c",
-        "ht.h": "c"
+        "ht.h": "c",
+        "llist.h": "c",
+        "stddef.h": "c"
     }
 }

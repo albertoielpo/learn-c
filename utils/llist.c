@@ -28,10 +28,9 @@ static size_t ll_decrement_size(LList *list)
 }
 
 /**
- * Create and initialize a new linked list
- * @returns Pointer to newly allocated LList, or NULL on allocation failure
+ * @copydoc ll_create
  */
-LList *ll_create_list(void)
+LList *ll_create(void)
 {
     LList *cur = malloc(sizeof(LList));
     if (cur == NULL)
@@ -46,11 +45,9 @@ LList *ll_create_list(void)
 }
 
 /**
- * Deallocate linked list and all nodes
- * @param[in] list Pointer to the list to destroy (can be NULL)
- * @note Frees all nodes but not the element data they point to
+ * @copydoc ll_destroy
  */
-void ll_destroy_list(LList *list)
+void ll_destroy(LList *list)
 {
     if (list == NULL)
         return;
@@ -102,11 +99,7 @@ static size_t ll_remove_node(LList *list, LLNode *node)
 }
 
 /**
- * Get node at specified index with optimized traversal
- * @param[in] list Pointer to the list
- * @param[in] idx Zero-based index
- * @returns Pointer to node if found, NULL if index out of bounds
- * @note Traverses from head if idx < size/2, from tail otherwise for O(n/2) worst case
+ * @copydoc ll_get
  */
 LLNode *ll_get(LList *list, size_t idx)
 {
@@ -136,13 +129,7 @@ LLNode *ll_get(LList *list, size_t idx)
 }
 
 /**
- * Insert element at specified index
- * @param[in] list Pointer to the list
- * @param[in] elem Pointer to element data
- * @param[in] type Type of the element
- * @param[in] idx Zero-based index (0 = prepend, size = append)
- * @returns Pointer to newly created node, or NULL on failure
- * @note Handles three cases: empty list, insertion at head/tail, insertion in middle
+ * @copydoc ll_add
  */
 LLNode *ll_add(LList *list, void *elem, LLNodeType type, size_t idx)
 {
@@ -193,7 +180,7 @@ LLNode *ll_add(LList *list, void *elem, LLNodeType type, size_t idx)
     LLNode *cur = ll_get(list, idx);
     if (cur == NULL)
     {
-        printf("Cannot insert element in the list\n");
+        perror("Cannot insert element in the list\n");
         return NULL;
     }
 
@@ -208,11 +195,7 @@ LLNode *ll_add(LList *list, void *elem, LLNodeType type, size_t idx)
 }
 
 /**
- * Remove element at specified index
- * @param[in] list Pointer to the list
- * @param[in] idx Zero-based index
- * @returns New size of list after removal, or (size_t)-1 on failure
- * @note Handles edge cases: removing head, tail, or middle node
+ * @copydoc ll_remove
  */
 size_t ll_remove(LList *list, size_t idx)
 {
@@ -242,11 +225,9 @@ size_t ll_remove(LList *list, size_t idx)
 }
 
 /**
- * Print list from head to tail
- * @param[in] list Pointer to the list
- * @note Prints elements space-separated to stdout, format depends on type
+ * @copydoc ll_print
  */
-void ll_print_list(const LList *list)
+void ll_print(const LList *list)
 {
     LLNode *cur = list->head;
     for (size_t ii = 0; ii < list->size; ii++)
@@ -278,11 +259,9 @@ void ll_print_list(const LList *list)
 }
 
 /**
- * Print list from tail to head
- * @param[in] list Pointer to the list
- * @note Prints elements space-separated to stdout, format depends on type
+ * @copydoc ll_print_reverse
  */
-void ll_print_list_reverse(const LList *list)
+void ll_print_reverse(const LList *list)
 {
     LLNode *cur = list->tail;
     for (size_t ii = 0; ii < list->size; ii++)
@@ -314,9 +293,7 @@ void ll_print_list_reverse(const LList *list)
 }
 
 /**
- * Check if list is empty
- * @param[in] list Pointer to the list
- * @returns true if empty or NULL, false otherwise
+ * @copydoc ll_is_empty
  */
 int ll_is_empty(const LList *list)
 {
@@ -324,11 +301,99 @@ int ll_is_empty(const LList *list)
 }
 
 /**
- * Get size of list
- * @param[in] list Pointer to the list
- * @returns Number of elements in list, 0 if NULL
+ * @copydoc ll_get_size
  */
 size_t ll_get_size(const LList *list)
 {
     return list == NULL ? 0 : list->size;
+}
+
+/**
+ * @copydoc ll_append
+ */
+LLNode *ll_append(LList *list, void *elem, LLNodeType type)
+{
+    return ll_add(list, elem, type, list->size);
+}
+
+/**
+ * @copydoc ll_prepend
+ */
+LLNode *ll_prepend(LList *list, void *elem, LLNodeType type)
+{
+    return ll_add(list, elem, type, 0);
+}
+
+/**
+ * @copydoc ll_pop
+ */
+void *ll_pop(LList *list)
+{
+    LLNode *node = ll_get(list, list->size - 1);
+    if (node == NULL)
+    {
+        perror("Cannot get element\n");
+        return NULL;
+    }
+    void *elem = node->elem;
+    ll_remove(list, list->size - 1);
+    return elem;
+}
+
+/**
+ * @copydoc ll_get_value
+ */
+void *ll_get_value(LList *list, size_t idx)
+{
+    LLNode *node = ll_get(list, idx);
+    if (node == NULL)
+    {
+        perror("Cannot get element\n");
+        return NULL;
+    }
+    return node->elem;
+}
+
+/**
+ * @copydoc ll_get_head
+ */
+LLNode *ll_get_head(LList *list)
+{
+    return list->head;
+}
+
+/**
+ * @copydoc ll_get_value_head
+ */
+void *ll_get_value_head(LList *list)
+{
+    LLNode *head = ll_get_head(list);
+    if (head == NULL)
+    {
+        perror("Cannot get head\n");
+        return NULL;
+    }
+    return head->elem;
+}
+
+/**
+ * @copydoc ll_get_tail
+ */
+LLNode *ll_get_tail(LList *list)
+{
+    return list->tail;
+}
+
+/**
+ * @copydoc ll_get_value_tail
+ */
+void *ll_get_value_tail(LList *list)
+{
+    LLNode *tail = ll_get_tail(list);
+    if (tail == NULL)
+    {
+        perror("Cannot get tail\n");
+        return NULL;
+    }
+    return tail->elem;
 }

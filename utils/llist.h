@@ -39,14 +39,14 @@ typedef struct
  * Create and initialize a new linked list
  * @returns Pointer to new LList, or NULL on allocation failure
  */
-LList *ll_create_list(void);
+LList *ll_create(void);
 
 /**
  * Deallocate linked list and all nodes
  * @param[in] list Pointer to the list to destroy (can be NULL)
  * @note Does not free the elements themselves, only the nodes
  */
-void ll_destroy_list(LList *list);
+void ll_destroy(LList *list);
 
 /**
  * Get node at specified index
@@ -82,14 +82,14 @@ size_t ll_remove(LList *list, size_t idx);
  * @param[in] list Pointer to the list
  * @note Prints to stdout with space-separated values
  */
-void ll_print_list(const LList *list);
+void ll_print(const LList *list);
 
 /**
  * Print list from tail to head
  * @param[in] list Pointer to the list
  * @note Prints to stdout with space-separated values
  */
-void ll_print_list_reverse(const LList *list);
+void ll_print_reverse(const LList *list);
 
 /**
  * Check if list is empty
@@ -104,5 +104,66 @@ int ll_is_empty(const LList *list);
  * @returns Number of elements in list, 0 if NULL
  */
 size_t ll_get_size(const LList *list);
+
+/**
+ * Append element at the tail
+ * @param[in] list Pointer to the list
+ * @param[in] elem Pointer to element data
+ * @param[in] type Type of the element
+ * @returns Pointer to newly created node, or NULL on failure
+ */
+LLNode *ll_append(LList *list, void *elem, LLNodeType type);
+
+/**
+ * Prepend element at the head
+ * @param[in] list Pointer to the list
+ * @param[in] elem Pointer to element data
+ * @param[in] type Type of the element
+ * @returns Pointer to newly created node, or NULL on failure
+ */
+LLNode *ll_prepend(LList *list, void *elem, LLNodeType type);
+
+/**
+ * Pop last element from the list
+ * @param[in] list Pointer to the list
+ * @returns Pointer to the popped element. Make sure to know the type to do a proper cast
+ */
+void *ll_pop(LList *list);
+
+/**
+ * Get an element from the list given the index
+ * @param[in] list Pointer to the list
+ * @param[in] idx Index
+ * @returns Pointer to the element. Make sure to know the type to do a proper cast
+ */
+void *ll_get_value(LList *list, size_t idx);
+
+/**
+ * Get head node from the list
+ * @param[in] list Pointer to the list
+ * @returns Pointer to the head node
+ */
+LLNode *ll_get_head(LList *list);
+
+/**
+ * Get head element from the list
+ * @param[in] list Pointer to the list
+ * @returns Pointer to the head element. Make sure to know the type to do a proper cast
+ */
+void *ll_get_value_head(LList *list);
+
+/**
+ * Get tail node from the list
+ * @param[in] list Pointer to the list
+ * @returns Pointer to the tail node
+ */
+LLNode *ll_get_tail(LList *list);
+
+/**
+ * Get tail element from the list
+ * @param[in] list Pointer to the list
+ * @returns Pointer to the tail element. Make sure to know the type to do a proper cast
+ */
+void *ll_get_value_tail(LList *list);
 
 #endif // LList_H

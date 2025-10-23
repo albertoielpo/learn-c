@@ -90,4 +90,67 @@ int nll_is_empty(const NLList *list);
  */
 size_t nll_get_size(const NLList *list);
 
+/**
+ * Insert element at the end
+ * @param[in] list Pointer to the list
+ * @param[in] elem Numeric value to insert
+ * @returns Pointer to newly created node, or NULL on failure
+ */
+NLLNode *nll_append(NLList *list, size_t elem);
+
+/**
+ * Insert element at the beginning
+ * @param[in] list Pointer to the list
+ * @param[in] elem Numeric value to insert
+ * @returns Pointer to newly created node, or NULL on failure
+ */
+NLLNode *nll_prepend(NLList *list, size_t elem);
+
+/**
+ * Pop last element from the list
+ * @param[in] list Pointer to the list
+ * @param[out] res The popped element
+ * @returns list size. -1 in case of error
+ */
+size_t nll_pop(NLList *list, size_t *res);
+
+/**
+ * Get an element from the list given the index
+ * @param[in] list Pointer to the list
+ * @param[in] idx Index
+ * @param[out] res The retrived
+ * @returns 1 ok, 0 error
+ */
+int nll_get_value(NLList *list, size_t idx, size_t *res);
+
+/**
+ * Get head node from the list
+ * @param[in] list Pointer to the list
+ * @returns Pointer to the head node
+ */
+NLLNode *nll_get_head(NLList *list);
+
+/**
+ * Get head element from the list
+ * @param[in] list Pointer to the list
+ * @param[out] res The head element
+ * @returns 1 ok, 0 error
+ */
+int nll_get_value_head(NLList *list, size_t *res);
+
+/**
+ * Get tail node from the list
+ * @param[in] list Pointer to the list
+ * @returns Pointer to the tail node
+ */
+NLLNode *nll_get_tail(NLList *list);
+
+/**
+ * Get tail element from the list
+ * @param[in] list Pointer to the list
+ * @param[out] res The tail element
+ * @returns 1 ok, 0 error
+ */
+int nll_get_value_tail(NLList *list, size_t *res);
+
 #endif // NLINKED_LIST_H
