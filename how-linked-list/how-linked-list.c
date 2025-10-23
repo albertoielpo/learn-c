@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <assert.h>
 #include "../utils/nllist.h"
 #include "../utils/llist.h"
 
@@ -19,6 +20,12 @@ int main(void)
         printf("head ele %ld\n", head_ele);
     if (nll_get_value_tail(nl, &tail_ele))
         printf("tail ele %ld\n", tail_ele);
+
+    {
+        // assertion block
+        assert(head_ele == 151);
+        assert(tail_ele == 150);
+    }
 
     nll_print(nl);
     nll_print_reverse(nl);
@@ -56,6 +63,15 @@ int main(void)
     {
         int *vt = (int *)value_tail;
         printf("tail ele %d\n", *vt);
+    }
+
+    {
+        // assertion block
+        char *vh = (char *)value_head;
+        int *vt = (int *)value_tail;
+
+        assert(vh[0] == 'h');
+        assert(*vt == 1);
     }
 
     ll_print(l);
