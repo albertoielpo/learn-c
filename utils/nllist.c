@@ -1,0 +1,307 @@
+/**
+ * @author Alberto Ielpo
+ * Numeric doubly linked list implementation
+ * Stores size_t values directly in nodes (not pointers)
+ */
+#include <stdlib.h>
+#include <stdio.h>
+#include "nllist.h"
+
+/**
+ * Increment list size by one
+ * @param[in] list A valid (non-NULL) NLList pointer
+ * @returns The new list size after incrementing
+ */
+static size_t nll_increment_size(NLList *list)
+{
+    return ++list->size;
+}
+
+/**
+ * Decrement list size by one
+ * @param[in] list A valid (non-NULL) NLList pointer
+ * @returns The new list size after decrementing
+ */
+static size_t nll_decrement_size(NLList *list)
+{
+    return --list->size;
+}
+
+/**
+ * Create and initialize a new numeric linked list
+ * @returns Pointer to newly allocated NLList, or NULL on allocation failure
+ */
+NLList *nll_create(void)
+{
+    NLList *cur = malloc(sizeof(NLList));
+    if (cur == NULL)
+    {
+        perror("Cannot create a new linked list");
+        return NULL;
+    }
+    cur->head = NULL;
+    cur->tail = NULL;
+    cur->size = 0;
+    return cur;
+}
+
+/**
+ * Deallocate linked list and all nodes
+ * @param[in] list Pointer to the list to destroy (can be NULL)
+ */
+void nll_destroy(NLList *list)
+{
+    if (list == NULL)
+        return;
+
+    NLLNode *cur = list->head;
+    while (cur != NULL)
+    {
+        NLLNode *next = cur->next;
+        free(cur);
+        cur = next;
+    }
+    free(list);
+}
+
+/**
+ * Create a new numeric linked list node
+ * @param[in] prev Pointer to previous node (NULL if first node)
+ * @param[in] elem Numeric value to store
+ * @param[in] next Pointer to next node (NULL if last node)
+ * @returns Pointer to newly allocated NLLNode, or NULL on allocation failure
+ */
+static NLLNode *nll_create_node(NLLNode *prev, size_t elem, NLLNode *next)
+{
+    NLLNode *node = malloc(sizeof(NLLNode));
+    if (node == NULL)
+    {
+        perror("Cannot create a new node");
+        return NULL;
+    }
+    node->prev = prev;
+    node->elem = elem;
+    node->next = next;
+    return node;
+}
+
+/**
+ * Remove a node from the list and free its memory
+ * @param[in] list Pointer to the list
+ * @param[in] node Pointer to node to remove
+ * @returns The new list size after removal
+ */
+static size_t nll_remove_node(NLList *list, NLLNode *node)
+{
+    free(node);
+    return nll_decrement_size(list);
+}
+
+/**
+ * Get node at specified index with optimized traversal
+ * @param[in] list Pointer to the list
+ * @param[in] idx Zero-based index
+ * @returns Pointer to node if found, NULL if index out of bounds
+ * @note Traverses from head if idx < size/2, from tail otherwise for O(n/2) worst case
+ */
+NLLNode *nll_get(const NLList *list, size_t idx)
+{
+    if (list == NULL || list->size <= idx)
+    {
+        printf("Index %zu not valid because size is %zu\n", idx, list ? list->size : 0);
+        return NULL;
+    }
+
+    NLLNode *res = NULL;
+    if (idx < list->size / 2)
+    {
+        // Traverse from head (closer to target)
+        res = list->head;
+        for (size_t ii = 0; ii < idx; ii++)
+            res = res->next;
+    }
+    else
+    {
+        // Traverse from tail (closer to target)
+        res = list->tail;
+        for (size_t ii = 0; ii < (list->size - 1 - idx); ii++)
+            res = res->prev;
+    }
+
+    return res;
+}
+
+/**
+ * Insert element at specified index
+ * @param[in] list Pointer to the list
+ * @param[in] elem Numeric value to insert
+ * @param[in] idx Zero-based index (0 = prepend, size = append)
+ * @returns Pointer to newly created node, or NULL on failure
+ * @note Handles three cases: empty list, insertion at head/tail, insertion in middle
+ */
+NLLNode *nll_add(NLList *list, size_t elem, size_t idx)
+{
+    if (list == NULL || idx > list->size)
+    {
+        printf("Index %zu out of bounds (size: %zu)\n", idx, list ? list->size : 0);
+        return NULL;
+    }
+
+    // Case 1: Insert at head (idx == 0)
+    if (idx == 0)
+    {
+        if (list->head == NULL)
+        {
+            // List is empty - create first node
+            NLLNode *node = nll_create_node(NULL, elem, NULL);
+            if (node == NULL)
+                return NULL;
+            list->head = node;
+            list->tail = node;
+            nll_increment_size(list);
+            return node;
+        }
+
+        // List not empty - prepend to head
+        NLLNode *node = nll_create_node(NULL, elem, list->head);
+        if (node == NULL)
+            return NULL;
+        list->head->prev = node;
+        list->head = node;
+        nll_increment_size(list);
+        return node;
+    }
+
+    // Case 2: Insert at tail (idx == size)
+    if (idx == list->size)
+    {
+        NLLNode *node = nll_create_node(list->tail, elem, NULL);
+        if (node == NULL)
+            return NULL;
+        list->tail->next = node;
+        list->tail = node;
+        nll_increment_size(list);
+        return node;
+    }
+
+    // Case 3: Insert in middle
+    NLLNode *cur = nll_get(list, idx);
+    if (cur == NULL)
+    {
+        printf("Cannot insert element in the list\n");
+        return NULL;
+    }
+
+    NLLNode *node = nll_create_node(cur->prev, elem, cur);
+    if (node == NULL)
+        return NULL;
+
+    cur->prev->next = node;
+    cur->prev = node;
+    nll_increment_size(list);
+    return node;
+}
+
+/**
+ * Remove element at specified index
+ * @param[in] list Pointer to the list
+ * @param[in] idx Zero-based index
+ * @returns New size of list after removal, or (size_t)-1 on failure
+ * @note Handles edge cases: removing head, tail, or middle node
+ */
+size_t nll_remove(NLList *list, size_t idx)
+{
+    if (list == NULL)
+    {
+        printf("Cannot remove element from NULL list\n");
+        return (size_t)-1;
+    }
+
+    NLLNode *node = nll_get(list, idx);
+    if (node == NULL)
+    {
+        printf("Cannot remove element from the list\n");
+        return (size_t)-1;
+    }
+
+    NLLNode *prevNode = node->prev;
+    NLLNode *nextNode = node->next;
+
+    // Update head if removing first node
+    if (prevNode == NULL)
+        list->head = nextNode;
+    else
+        prevNode->next = nextNode;
+
+    // Update tail if removing last node
+    if (nextNode == NULL)
+        list->tail = prevNode;
+    else
+        nextNode->prev = prevNode;
+
+    return nll_remove_node(list, node);
+}
+
+/**
+ * Print list from head to tail
+ * @param[in] list Pointer to the list
+ * @note Prints elements space-separated to stdout
+ */
+void nll_print(const NLList *list)
+{
+    if (list == NULL)
+    {
+        printf("(empty list)\n");
+        return;
+    }
+
+    NLLNode *cur = list->head;
+    for (size_t ii = 0; ii < list->size; ii++)
+    {
+        printf("%zu ", cur->elem);
+        cur = cur->next;
+    }
+    printf("\n");
+}
+
+/**
+ * Print list from tail to head
+ * @param[in] list Pointer to the list
+ * @note Prints elements space-separated to stdout
+ */
+void nll_print_reverse(const NLList *list)
+{
+    if (list == NULL)
+    {
+        printf("(empty list)\n");
+        return;
+    }
+
+    NLLNode *cur = list->tail;
+    for (size_t ii = 0; ii < list->size; ii++)
+    {
+        printf("%zu ", cur->elem);
+        cur = cur->prev;
+    }
+    printf("\n");
+}
+
+/**
+ * Check if list is empty
+ * @param[in] list Pointer to the list
+ * @returns 1 if empty or NULL, 0 otherwise
+ */
+int nll_is_empty(const NLList *list)
+{
+    return (list == NULL || list->size == 0) ? 1 : 0;
+}
+
+/**
+ * Get size of list
+ * @param[in] list Pointer to the list
+ * @returns Number of elements in list, 0 if NULL
+ */
+size_t nll_get_size(const NLList *list)
+{
+    return list == NULL ? 0 : list->size;
+}
