@@ -1,8 +1,3 @@
-/**
- * @author Alberto Ielpo
- * Numeric doubly linked list implementation
- * Stores size_t values directly in nodes (not pointers)
- */
 #include <stdlib.h>
 #include <stdio.h>
 #include "nllist.h"

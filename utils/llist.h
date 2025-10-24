@@ -1,7 +1,15 @@
-#ifndef LList_H
-#define LList_H
+/**
+ * @brief Linked list implementation
+ *
+ * Heterogeneous Doubly linked list implementation with void* elements
+ * Supports multiple data types through type tagging
+ *
+ * @author Alberto Ielpo <alberto.ielpo@gmail.com>
+ */
+#ifndef LLIST_H
+#define LLIST_H
 
-#include <stddef.h> // for size_t
+#include <stddef.h>
 
 /**
  * Enumeration of supported data types for linked list elements
@@ -167,4 +175,4 @@ LLNode *ll_get_tail(LList *list);
  */
 void *ll_get_value_tail(LList *list);
 
-#endif // LList_H
+#endif // LLIST_H

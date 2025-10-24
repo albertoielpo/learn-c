@@ -1,7 +1,15 @@
-#ifndef NLINKED_LIST_H
-#define NLINKED_LIST_H
+/**
+ * @brief Linked list implementation
+ *
+ * Numeric doubly linked list implementation
+ * Stores size_t values directly in nodes (not pointers)
+ *
+ * @author Alberto Ielpo <alberto.ielpo@gmail.com>
+ */
+#ifndef NLLIST_H
+#define NLLIST_H
 
-#include <stddef.h> // for size_t
+#include <stddef.h>
 
 /**
  * Node structure for doubly linked list of numeric values
@@ -153,4 +161,4 @@ NLLNode *nll_get_tail(NLList *list);
  */
 int nll_get_value_tail(NLList *list, size_t *res);
 
-#endif // NLINKED_LIST_H
+#endif // NLLIST_H

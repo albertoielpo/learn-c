@@ -1,8 +1,3 @@
-/**
- * @author Alberto Ielpo
- * Doubly linked list implementation with void* elements
- * Supports multiple data types through type tagging
- */
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>

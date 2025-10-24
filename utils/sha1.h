@@ -1,3 +1,11 @@
+/**
+ * @brief SHA-1 implementation
+ *
+ * SHA-1 implementation + some utils
+ *
+ * @note sha1_transform, sha1_init, sha1_update, sha1_final functions, are taken from public domain
+ * @author Alberto Ielpo <alberto.ielpo@gmail.com>
+ */
 #ifndef SHA1_H
 #define SHA1_H
 
