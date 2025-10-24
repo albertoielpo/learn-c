@@ -57,6 +57,15 @@ void test_2(void)
         assert(list->capacity == 10);
         assert(list->size == 3);
         assert(list->type == AL_TYPE_INT32);
+
+        for (int ii = 0; ii < 10; ii++)
+            al_append(list, &a);
+        printf("List capacity: %ld size: %ld type %d\n", list->capacity, list->size, list->type);
+        for (int ii = 0; ii < 10; ii++)
+            al_remove(list, 2); // remove 10 elements consecutevely
+
+        al_print(list);
+        printf("List capacity: %ld size: %ld type %d\n", list->capacity, list->size, list->type);
     }
     al_destroy(list);
 }

@@ -92,6 +92,18 @@ void *al_get(AList *list, size_t idx);
 size_t al_insert(AList *list, void *ele, size_t idx);
 
 /**
+ * @brief Remove an element at the index
+ *
+ * Dynamic array with autoscale feature using realloc
+ * and the elements from the same index will be left shifted
+ *
+ * @param[in] list List pointer
+ * @param[in] idx Index
+ * @return 1 OK, 0 Error
+ */
+int al_remove(AList *list, size_t idx);
+
+/**
  * @brief Print all elements
  *
  * Print elements inside the list

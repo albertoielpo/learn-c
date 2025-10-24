@@ -69,6 +69,29 @@
             // Optional: if your C program needs environment variables, place them here:
             "environment": [],
             "stopAtEntry": false
-        }
+        },
+        {
+            "name": "Debug array list",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/${fileBasenameNoExtension}",
+            "args": [],
+
+            // Set the working directory to where the binary lives (usually same as ${fileDirname})
+            "cwd": "${fileDirname}",
+
+            // Before launching the debugger, run the build task above
+            "preLaunchTask": "C: gcc build arraylist",
+
+            // On Linux/macOS use "gdb"; on Windows, if you have MingW, also "gdb"
+            "MIMode": "gdb",
+
+            // If gdb isn't on your PATH, give the full path, e.g. "/usr/bin/gdb"
+            "miDebuggerPath": "/usr/bin/gdb",
+
+            // Optional: if your C program needs environment variables, place them here:
+            "environment": [],
+            "stopAtEntry": false
+        },
     ]
 }
