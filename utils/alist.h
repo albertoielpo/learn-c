@@ -2,7 +2,7 @@
  * @brief Array List implementation
  *
  * Homogeneous Array list implementation
- * All elements must be of the type
+ * All elements must be of the same type defined as ALType
  *
  * @author Alberto Ielpo <alberto.ielpo@gmail.com>
  */
