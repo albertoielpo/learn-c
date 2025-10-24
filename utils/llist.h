@@ -103,7 +103,7 @@ void ll_print_reverse(const LList *list);
 /**
  * Check if list is empty
  * @param[in] list Pointer to the list
- * @returns true if empty or NULL, false otherwise
+ * @returns 1 if empty or 0 otherwise
  */
 int ll_is_empty(const LList *list);
 

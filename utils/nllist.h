@@ -87,7 +87,7 @@ void nll_print_reverse(const NLList *list);
 /**
  * Check if list is empty
  * @param[in] list Pointer to the list
- * @returns true if empty or NULL, false otherwise
+ * @returns 1 if is empty or 0 otherwise
  */
 int nll_is_empty(const NLList *list);
 
