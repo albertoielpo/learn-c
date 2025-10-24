@@ -21,8 +21,9 @@ typedef struct llnode
 {
     struct llnode *prev; // Pointer to previous node
     void *elem;          // Pointer to element data
-    LLNodeType type;     // Type of the element
     struct llnode *next; // Pointer to next node
+    LLNodeType type;     // Type of the element (4 bytes)
+                         // 4 bytes padding
 } LLNode;
 
 /**

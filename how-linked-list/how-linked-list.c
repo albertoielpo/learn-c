@@ -33,6 +33,17 @@ int main(void)
 
     printf("---------- void* list test ----------\n");
 
+    printf("LLNode size: %zu bytes\n", sizeof(LLNode));
+    printf("prev offset: %zu\n", offsetof(LLNode, prev));
+    printf("elem offset: %zu\n", offsetof(LLNode, elem));
+    printf("next offset: %zu\n", offsetof(LLNode, next));
+    printf("type offset: %zu\n", offsetof(LLNode, type));
+
+    printf("LList size: %zu bytes\n", sizeof(LList));
+    printf("head offset: %zu\n", offsetof(LList, head));
+    printf("tail offset: %zu\n", offsetof(LList, tail));
+    printf("size offset: %zu\n", offsetof(LList, size));
+
     // void* list test
     LList *l = ll_create();
     char data[] = {"hello"};

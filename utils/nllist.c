@@ -27,9 +27,7 @@ static size_t nll_decrement_size(NLList *list)
     return --list->size;
 }
 
-/**
- * @copydoc nll_create
- */
+/** @copydoc nll_create */
 NLList *nll_create(void)
 {
     NLList *cur = malloc(sizeof(NLList));
@@ -44,9 +42,7 @@ NLList *nll_create(void)
     return cur;
 }
 
-/**
- * @copydoc nll_destroy
- */
+/** @copydoc nll_destroy */
 void nll_destroy(NLList *list)
 {
     if (list == NULL)
@@ -95,9 +91,7 @@ static size_t nll_remove_node(NLList *list, NLLNode *node)
     return nll_decrement_size(list);
 }
 
-/**
- * @copydoc nll_get
- */
+/** @copydoc nll_get */
 NLLNode *nll_get(const NLList *list, size_t idx)
 {
     if (list == NULL || list->size <= idx)
@@ -125,9 +119,7 @@ NLLNode *nll_get(const NLList *list, size_t idx)
     return res;
 }
 
-/**
- * @copydoc nll_add
- */
+/** @copydoc nll_add */
 NLLNode *nll_add(NLList *list, size_t elem, size_t idx)
 {
     if (list == NULL || idx > list->size)
@@ -191,9 +183,7 @@ NLLNode *nll_add(NLList *list, size_t elem, size_t idx)
     return node;
 }
 
-/**
- * @copydoc nll_remove
- */
+/** @copydoc nll_remove */
 size_t nll_remove(NLList *list, size_t idx)
 {
     if (list == NULL)
@@ -227,9 +217,7 @@ size_t nll_remove(NLList *list, size_t idx)
     return nll_remove_node(list, node);
 }
 
-/**
- * @copydoc nll_print
- */
+/** @copydoc nll_print */
 void nll_print(const NLList *list)
 {
     if (list == NULL)
@@ -247,9 +235,7 @@ void nll_print(const NLList *list)
     printf("\n");
 }
 
-/**
- * @copydoc nll_print_reverse
- */
+/** @copydoc nll_print_reverse */
 void nll_print_reverse(const NLList *list)
 {
     if (list == NULL)
@@ -267,47 +253,37 @@ void nll_print_reverse(const NLList *list)
     printf("\n");
 }
 
-/**
- * @copydoc nll_is_empty
- */
+/** @copydoc nll_is_empty */
 int nll_is_empty(const NLList *list)
 {
     return (list == NULL || list->size == 0) ? 1 : 0;
 }
 
-/**
- * @copydoc nll_get_size
- */
+/** @copydoc nll_get_size */
 size_t nll_get_size(const NLList *list)
 {
     return list == NULL ? 0 : list->size;
 }
 
-/**
- * @copydoc nll_prepend
- */
+/** @copydoc nll_prepend */
 NLLNode *nll_prepend(NLList *list, size_t elem)
 {
     return nll_add(list, elem, 0);
 }
 
-/**
- * @copydoc nll_append
- */
+/** @copydoc nll_append */
 NLLNode *nll_append(NLList *list, size_t elem)
 {
     return nll_add(list, elem, list->size);
 }
 
-/**
- * @copydoc nll_pop
- */
+/** @copydoc nll_pop */
 size_t nll_pop(NLList *list, size_t *res)
 {
     NLLNode *node = nll_get(list, list->size - 1);
     if (node == NULL)
     {
-        perror("Cannot get element\n");
+        perror("Cannot get element");
         return -1;
     }
     *res = node->elem;
@@ -315,61 +291,51 @@ size_t nll_pop(NLList *list, size_t *res)
     return list->size;
 }
 
-/**
- * @copydoc nll_get_value
- */
+/** @copydoc nll_get_value */
 int nll_get_value(NLList *list, size_t idx, size_t *res)
 {
     NLLNode *node = nll_get(list, idx);
     if (node == NULL)
     {
-        perror("Cannot get element\n");
+        perror("Cannot get element");
         return 0;
     }
     *res = node->elem;
     return 1;
 }
 
-/**
- * @copydoc nll_get_head
- */
+/** @copydoc nll_get_head */
 NLLNode *nll_get_head(NLList *list)
 {
     return list->head;
 }
 
-/**
- * @copydoc nll_get_value_head
- */
+/** @copydoc nll_get_value_head */
 int nll_get_value_head(NLList *list, size_t *res)
 {
     NLLNode *head = nll_get_head(list);
     if (head == NULL)
     {
-        perror("Cannot get head\n");
+        perror("Cannot get head");
         return 0;
     }
     *res = head->elem;
     return 1;
 }
 
-/**
- * @copydoc nll_get_tail
- */
+/** @copydoc nll_get_tail */
 NLLNode *nll_get_tail(NLList *list)
 {
     return list->tail;
 }
 
-/**
- * @copydoc nll_get_value_tail
- */
+/** @copydoc nll_get_value_tail */
 int nll_get_value_tail(NLList *list, size_t *res)
 {
     NLLNode *tail = nll_get_tail(list);
     if (tail == NULL)
     {
-        perror("Cannot get tail\n");
+        perror("Cannot get tail");
         return 0;
     }
     *res = tail->elem;

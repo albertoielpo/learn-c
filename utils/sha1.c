@@ -132,9 +132,7 @@ static void sha1_final(SHA1_CTX *ctx, uint8_t hash[])
     }
 }
 
-/**
- * @copydoc sha1
- */
+/** @copydoc sha1 */
 bool sha1(const uint8_t *data, size_t len, uint8_t *hash)
 {
     if (data == NULL || len <= 0 || hash == NULL)
@@ -152,8 +150,12 @@ bool sha1(const uint8_t *data, size_t len, uint8_t *hash)
 }
 
 /**
+ * @brief is a regular file?
+ *
  * If path is not a regular file than return 0
+ *
  * @param[in] path
+ * @return >0 if is a regular file, 0 if is not
  */
 static int is_regular_file(const char *path)
 {
@@ -165,9 +167,7 @@ static int is_regular_file(const char *path)
     return S_ISREG(path_stat.st_mode);
 }
 
-/**
- * @copydoc fsha1
- */
+/** @copydoc fsha1 */
 bool fsha1(const char *filename, uint8_t *hash)
 {
     if (filename == NULL || hash == NULL)
@@ -210,9 +210,7 @@ bool fsha1(const char *filename, uint8_t *hash)
     return true;
 }
 
-/**
- * @copydoc fhsha1
- */
+/** @copydoc fhsha1 */
 bool fhsha1(Fhash *fh)
 {
     if (fh == NULL || fh->filename == NULL)
@@ -223,9 +221,7 @@ bool fhsha1(Fhash *fh)
     return fsha1(fh->filename, fh->hash);
 }
 
-/**
- * @copydoc fhprint
- */
+/** @copydoc fhprint */
 void fhprint(Fhash *fh)
 {
     for (int ii = 0; ii < SHA1_LENGTH; ii++)
@@ -236,9 +232,7 @@ void fhprint(Fhash *fh)
     printf("  %s\n", fh->filename); // 1e4e888ac66f8dd41e00c5a7ac36a32a9950d271  test.txt
 }
 
-/**
- * @copydoc hash_to_hex
- */
+/** @copydoc hash_to_hex */
 bool hash_to_hex(const uint8_t *hash, size_t hash_len, char *hex_str, size_t hex_str_len)
 {
     if ((hash_len * 2 + 1) != hex_str_len)

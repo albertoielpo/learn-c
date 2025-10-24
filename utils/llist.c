@@ -1,4 +1,5 @@
 /**
+ * @author Alberto Ielpo
  * Doubly linked list implementation with void* elements
  * Supports multiple data types through type tagging
  */
@@ -180,7 +181,7 @@ LLNode *ll_add(LList *list, void *elem, LLNodeType type, size_t idx)
     LLNode *cur = ll_get(list, idx);
     if (cur == NULL)
     {
-        perror("Cannot insert element in the list\n");
+        perror("Cannot insert element in the list");
         return NULL;
     }
 
@@ -332,7 +333,7 @@ void *ll_pop(LList *list)
     LLNode *node = ll_get(list, list->size - 1);
     if (node == NULL)
     {
-        perror("Cannot get element\n");
+        perror("Cannot get element");
         return NULL;
     }
     void *elem = node->elem;
@@ -348,7 +349,7 @@ void *ll_get_value(LList *list, size_t idx)
     LLNode *node = ll_get(list, idx);
     if (node == NULL)
     {
-        perror("Cannot get element\n");
+        perror("Cannot get element");
         return NULL;
     }
     return node->elem;
@@ -370,7 +371,7 @@ void *ll_get_value_head(LList *list)
     LLNode *head = ll_get_head(list);
     if (head == NULL)
     {
-        perror("Cannot get head\n");
+        perror("Cannot get head");
         return NULL;
     }
     return head->elem;
@@ -392,7 +393,7 @@ void *ll_get_value_tail(LList *list)
     LLNode *tail = ll_get_tail(list);
     if (tail == NULL)
     {
-        perror("Cannot get tail\n");
+        perror("Cannot get tail");
         return NULL;
     }
     return tail->elem;
