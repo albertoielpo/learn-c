@@ -5,7 +5,7 @@
 
 void test_1(void)
 {
-    AList *list = al_create(3, AL_TYPE_CHAR);
+    AList *list = al_create(3, AL_TYPE_STR);
     {
         char str1[] = {"Append world!"};
         char str2[] = {"1 index world but will be at index 2"};
@@ -34,7 +34,7 @@ void test_1(void)
 
         assert(list->capacity == 12);
         assert(list->size == 7);
-        assert(list->type == AL_TYPE_CHAR);
+        assert(list->type == AL_TYPE_STR);
     }
 
     al_destroy(list);
@@ -70,11 +70,41 @@ void test_2(void)
     al_destroy(list);
 }
 
+void test_3(void)
+{
+    AList *list = al_create(10, AL_TYPE_INT8);
+
+    {
+        char h = 'h';
+        char e = 'e';
+        char l = 'l';
+        char o = 'o';
+        al_append(list, &h);
+        al_append(list, &e);
+        al_append(list, &l);
+        al_append(list, &l);
+        al_append(list, &o);
+
+        al_print(list);
+        for (size_t ii = 0; ii < list->size; ii++)
+        {
+            char *val = (char *)al_get(list, ii); // get char*
+            putchar(*val);                        // dereference
+        }
+        printf("\n");
+    }
+
+    al_destroy(list);
+}
+
+// gcc -Wall -Wextra -Wpedantic -O2 -g -std=c99 ../utils/alist.c how-array-list.c
 int main(void)
 {
     printf("--- Test 1 ---\n");
     test_1();
     printf("--- Test 2 ---\n");
     test_2();
+    printf("--- Test 3 ---\n");
+    test_3();
     return 0;
 }

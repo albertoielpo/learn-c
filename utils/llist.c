@@ -228,10 +228,15 @@ void ll_print(const LList *list)
     LLNode *cur = list->head;
     for (size_t ii = 0; ii < list->size; ii++)
     {
-        if (cur->type == LL_TYPE_CHAR)
+        if (cur->type == LL_TYPE_STR)
         {
             char *ele = (char *)cur->elem;
             printf("%s ", ele);
+        }
+        else if (cur->type == LL_TYPE_INT8)
+        {
+            int8_t *ele = (int8_t *)cur->elem;
+            printf("%d ", *ele);
         }
         else if (cur->type == LL_TYPE_INT16)
         {
@@ -262,10 +267,15 @@ void ll_print_reverse(const LList *list)
     LLNode *cur = list->tail;
     for (size_t ii = 0; ii < list->size; ii++)
     {
-        if (cur->type == LL_TYPE_CHAR)
+        if (cur->type == LL_TYPE_STR)
         {
             char *ele = (char *)cur->elem;
             printf("%s ", ele);
+        }
+        else if (cur->type == LL_TYPE_INT8)
+        {
+            int8_t *ele = (int8_t *)cur->elem;
+            printf("%d ", *ele);
         }
         else if (cur->type == LL_TYPE_INT16)
         {

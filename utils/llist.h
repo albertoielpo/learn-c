@@ -16,7 +16,8 @@
  */
 typedef enum
 {
-    LL_TYPE_CHAR,  // char pointer (string)
+    LL_TYPE_STR,   // string \0 terminated (char*)
+    LL_TYPE_INT8,  //  8-bit signed integer pointer
     LL_TYPE_INT16, // 16-bit signed integer pointer
     LL_TYPE_INT32, // 32-bit signed integer pointer
     LL_TYPE_INT64  // 64-bit signed integer pointer

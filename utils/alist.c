@@ -32,6 +32,7 @@ void al_destroy(AList *list)
 
     if (list->data != NULL)
         free(list->data);
+
     list->capacity = 0;
     list->size = 0;
     free(list);
@@ -174,10 +175,15 @@ void al_print(AList *list)
 {
     ALType type = list->type;
     void **data = list->data;
-    if (type == AL_TYPE_CHAR)
+    if (type == AL_TYPE_STR)
     {
         for (size_t ii = 0; ii < list->size; ii++)
             printf("%s\n", (char *)data[ii]);
+    }
+    else if (type == AL_TYPE_INT8)
+    {
+        for (size_t ii = 0; ii < list->size; ii++)
+            printf("%d\n", *(int8_t *)data[ii]);
     }
     else if (type == AL_TYPE_INT16)
     {
