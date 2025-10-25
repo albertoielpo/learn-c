@@ -32,7 +32,10 @@ typedef struct llnode
     void *elem;          // Pointer to element data
     struct llnode *next; // Pointer to next node
     LLNodeType type;     // Type of the element (4 bytes)
-                         // 4 bytes padding
+
+    uint32_t elem_size; // element size: 1 or >1 in case of pointer to an array.
+                        // With type LL_TYPE_STR is not mandatory to indicate the size because is \0 terminated
+                        // Is uint32_t (4 bytes) to fit in the padding
 } LLNode;
 
 /**
@@ -71,12 +74,13 @@ LLNode *ll_get(LList *list, size_t idx);
  * Insert element at specified index
  * @param[in] list Pointer to the list
  * @param[in] elem Pointer to element data (caller maintains ownership)
+ * @param[in] elem_size 1 or >1 in case of array
  * @param[in] type Type of the element
  * @param[in] idx Zero-based index (0 = prepend, size = append)
  * @returns Pointer to newly created node, or NULL on failure
  * @note idx must be in range [0, size]
  */
-LLNode *ll_add(LList *list, void *elem, LLNodeType type, size_t idx);
+LLNode *ll_add(LList *list, void *elem, uint32_t elem_size, LLNodeType type, size_t idx);
 
 /**
  * Remove element at specified index
@@ -119,34 +123,28 @@ size_t ll_get_size(const LList *list);
  * Append element at the tail
  * @param[in] list Pointer to the list
  * @param[in] elem Pointer to element data
+ * @param[in] elem_size 1 or >1 in case of array
  * @param[in] type Type of the element
  * @returns Pointer to newly created node, or NULL on failure
  */
-LLNode *ll_append(LList *list, void *elem, LLNodeType type);
+LLNode *ll_append(LList *list, void *elem, uint32_t elem_size, LLNodeType type);
 
 /**
  * Prepend element at the head
  * @param[in] list Pointer to the list
  * @param[in] elem Pointer to element data
+ * @param[in] elem_size 1 or >1 in case of array
  * @param[in] type Type of the element
  * @returns Pointer to newly created node, or NULL on failure
  */
-LLNode *ll_prepend(LList *list, void *elem, LLNodeType type);
+LLNode *ll_prepend(LList *list, void *elem, uint32_t elem_size, LLNodeType type);
 
 /**
- * Pop last element from the list
+ * Pop last node from the list.
  * @param[in] list Pointer to the list
- * @returns Pointer to the popped element. Make sure to know the type to do a proper cast
+ * @returns A copy of the popped element
  */
-void *ll_pop(LList *list);
-
-/**
- * Get an element from the list given the index
- * @param[in] list Pointer to the list
- * @param[in] idx Index
- * @returns Pointer to the element. Make sure to know the type to do a proper cast
- */
-void *ll_get_value(LList *list, size_t idx);
+LLNode ll_pop(LList *list);
 
 /**
  * Get head node from the list
@@ -156,24 +154,10 @@ void *ll_get_value(LList *list, size_t idx);
 LLNode *ll_get_head(LList *list);
 
 /**
- * Get head element from the list
- * @param[in] list Pointer to the list
- * @returns Pointer to the head element. Make sure to know the type to do a proper cast
- */
-void *ll_get_value_head(LList *list);
-
-/**
  * Get tail node from the list
  * @param[in] list Pointer to the list
  * @returns Pointer to the tail node
  */
 LLNode *ll_get_tail(LList *list);
-
-/**
- * Get tail element from the list
- * @param[in] list Pointer to the list
- * @returns Pointer to the tail element. Make sure to know the type to do a proper cast
- */
-void *ll_get_value_tail(LList *list);
 
 #endif // LLIST_H

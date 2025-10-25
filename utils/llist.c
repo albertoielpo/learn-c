@@ -62,11 +62,12 @@ void ll_destroy(LList *list)
  * Create a new linked list node
  * @param[in] prev Pointer to previous node (NULL if first node)
  * @param[in] elem Pointer to element data
+ * @param[in] elem_size 1 or >1 in case of array
  * @param[in] type Type of the element
  * @param[in] next Pointer to next node (NULL if last node)
  * @returns Pointer to newly allocated LLNode, or NULL on allocation failure
  */
-static LLNode *ll_create_node(LLNode *prev, void *elem, LLNodeType type, LLNode *next)
+static LLNode *ll_create_node(LLNode *prev, void *elem, uint32_t elem_size, LLNodeType type, LLNode *next)
 {
     LLNode *node = malloc(sizeof(LLNode));
     if (node == NULL)
@@ -74,8 +75,14 @@ static LLNode *ll_create_node(LLNode *prev, void *elem, LLNodeType type, LLNode 
         perror("Cannot create a new node");
         return NULL;
     }
+    if (elem_size < 1)
+    {
+        printf("Cannot create a new node because element size must be >= 1\n");
+        return NULL;
+    }
     node->prev = prev;
     node->elem = elem;
+    node->elem_size = elem_size;
     node->type = type;
     node->next = next;
     return node;
@@ -127,7 +134,7 @@ LLNode *ll_get(LList *list, size_t idx)
 /**
  * @copydoc ll_add
  */
-LLNode *ll_add(LList *list, void *elem, LLNodeType type, size_t idx)
+LLNode *ll_add(LList *list, void *elem, uint32_t elem_size, LLNodeType type, size_t idx)
 {
     if (idx > list->size)
     {
@@ -141,7 +148,7 @@ LLNode *ll_add(LList *list, void *elem, LLNodeType type, size_t idx)
         if (list->head == NULL)
         {
             // List is empty - create first node
-            LLNode *node = ll_create_node(NULL, elem, type, NULL);
+            LLNode *node = ll_create_node(NULL, elem, elem_size, type, NULL);
             if (node == NULL)
                 return NULL;
             list->head = node;
@@ -151,7 +158,7 @@ LLNode *ll_add(LList *list, void *elem, LLNodeType type, size_t idx)
         }
 
         // List not empty - prepend to head
-        LLNode *node = ll_create_node(NULL, elem, type, list->head);
+        LLNode *node = ll_create_node(NULL, elem, elem_size, type, list->head);
         if (node == NULL)
             return NULL;
         list->head->prev = node;
@@ -163,7 +170,7 @@ LLNode *ll_add(LList *list, void *elem, LLNodeType type, size_t idx)
     // Insert at tail (idx == size)
     if (idx == list->size)
     {
-        LLNode *node = ll_create_node(list->tail, elem, type, NULL);
+        LLNode *node = ll_create_node(list->tail, elem, elem_size, type, NULL);
         if (node == NULL)
             return NULL;
         list->tail->next = node;
@@ -180,7 +187,7 @@ LLNode *ll_add(LList *list, void *elem, LLNodeType type, size_t idx)
         return NULL;
     }
 
-    LLNode *node = ll_create_node(cur->prev, elem, type, cur);
+    LLNode *node = ll_create_node(cur->prev, elem, elem_size, type, cur);
     if (node == NULL)
         return NULL;
 
@@ -221,6 +228,86 @@ size_t ll_remove(LList *list, size_t idx)
 }
 
 /**
+ * @brief Print single node
+ *
+ * Print a single node
+ * if cur->elem_size is 1 then dereference and print the value
+ * else loop through all elements
+ *
+ * @param[in] cur LLNode
+ */
+static void ll_print_node(const LLNode *cur)
+{
+    if (cur->elem_size < 1)
+    {
+        printf("Element size cannot be < 1\n");
+        return;
+    }
+
+    if (cur->type == LL_TYPE_STR)
+    {
+        char *ele = (char *)cur->elem;
+        printf("%s ", ele);
+    }
+    else if (cur->type == LL_TYPE_INT8)
+    {
+        if (cur->elem_size == 1)
+        {
+            int8_t *ele = (int8_t *)cur->elem;
+            printf("%d ", *ele);
+        }
+        else
+        {
+            int8_t *ele = (int8_t *)cur->elem;
+            for (size_t kk = 0; kk < cur->elem_size; kk++)
+                printf("%d ", ele[kk]);
+        }
+    }
+    else if (cur->type == LL_TYPE_INT16)
+    {
+        if (cur->elem_size == 1)
+        {
+            int16_t *ele = (int16_t *)cur->elem;
+            printf("%d ", *ele);
+        }
+        else
+        {
+            int16_t *ele = (int16_t *)cur->elem;
+            for (size_t kk = 0; kk < cur->elem_size; kk++)
+                printf("%d ", ele[kk]);
+        }
+    }
+    else if (cur->type == LL_TYPE_INT32)
+    {
+        if (cur->elem_size == 1)
+        {
+            int32_t *ele = (int32_t *)cur->elem;
+            printf("%d ", *ele);
+        }
+        else
+        {
+            int32_t *ele = (int32_t *)cur->elem;
+            for (size_t kk = 0; kk < cur->elem_size; kk++)
+                printf("%d ", ele[kk]);
+        }
+    }
+    else if (cur->type == LL_TYPE_INT64)
+    {
+        if (cur->elem_size == 1)
+        {
+            int64_t *ele = (int64_t *)cur->elem;
+            printf("%ld ", *ele);
+        }
+        else
+        {
+            int64_t *ele = (int64_t *)cur->elem;
+            for (size_t kk = 0; kk < cur->elem_size; kk++)
+                printf("%ld ", ele[kk]);
+        }
+    }
+}
+
+/**
  * @copydoc ll_print
  */
 void ll_print(const LList *list)
@@ -228,33 +315,9 @@ void ll_print(const LList *list)
     LLNode *cur = list->head;
     for (size_t ii = 0; ii < list->size; ii++)
     {
-        if (cur->type == LL_TYPE_STR)
-        {
-            char *ele = (char *)cur->elem;
-            printf("%s ", ele);
-        }
-        else if (cur->type == LL_TYPE_INT8)
-        {
-            int8_t *ele = (int8_t *)cur->elem;
-            printf("%d ", *ele);
-        }
-        else if (cur->type == LL_TYPE_INT16)
-        {
-            int16_t *ele = (int16_t *)cur->elem;
-            printf("%d ", *ele);
-        }
-        else if (cur->type == LL_TYPE_INT32)
-        {
-            int32_t *ele = (int32_t *)cur->elem;
-            printf("%d ", *ele);
-        }
-        else if (cur->type == LL_TYPE_INT64)
-        {
-            int64_t *ele = (int64_t *)cur->elem;
-            printf("%ld ", *ele);
-        }
-
+        ll_print_node(cur);
         cur = cur->next;
+        printf("\n");
     }
     printf("\n");
 }
@@ -267,33 +330,9 @@ void ll_print_reverse(const LList *list)
     LLNode *cur = list->tail;
     for (size_t ii = 0; ii < list->size; ii++)
     {
-        if (cur->type == LL_TYPE_STR)
-        {
-            char *ele = (char *)cur->elem;
-            printf("%s ", ele);
-        }
-        else if (cur->type == LL_TYPE_INT8)
-        {
-            int8_t *ele = (int8_t *)cur->elem;
-            printf("%d ", *ele);
-        }
-        else if (cur->type == LL_TYPE_INT16)
-        {
-            int16_t *ele = (int16_t *)cur->elem;
-            printf("%d ", *ele);
-        }
-        else if (cur->type == LL_TYPE_INT32)
-        {
-            int32_t *ele = (int32_t *)cur->elem;
-            printf("%d ", *ele);
-        }
-        else if (cur->type == LL_TYPE_INT64)
-        {
-            int64_t *ele = (int64_t *)cur->elem;
-            printf("%ld ", *ele);
-        }
-
+        ll_print_node(cur);
         cur = cur->prev;
+        printf("\n");
     }
     printf("\n");
 }
@@ -317,47 +356,34 @@ size_t ll_get_size(const LList *list)
 /**
  * @copydoc ll_append
  */
-LLNode *ll_append(LList *list, void *elem, LLNodeType type)
+LLNode *ll_append(LList *list, void *elem, uint32_t elem_size, LLNodeType type)
 {
-    return ll_add(list, elem, type, list->size);
+    return ll_add(list, elem, elem_size, type, list->size);
 }
 
 /**
  * @copydoc ll_prepend
  */
-LLNode *ll_prepend(LList *list, void *elem, LLNodeType type)
+LLNode *ll_prepend(LList *list, void *elem, uint32_t elem_size, LLNodeType type)
 {
-    return ll_add(list, elem, type, 0);
+    return ll_add(list, elem, elem_size, type, 0);
 }
 
 /**
  * @copydoc ll_pop
  */
-void *ll_pop(LList *list)
+LLNode ll_pop(LList *list)
 {
     LLNode *node = ll_get(list, list->size - 1);
     if (node == NULL)
     {
         perror("Cannot get element");
-        return NULL;
+        LLNode empty = {0}; // Initialize all fields to 0
+        return empty;
     }
-    void *elem = node->elem;
+    LLNode res = *node; // Dereference to copy the node's contents
     ll_remove(list, list->size - 1);
-    return elem;
-}
-
-/**
- * @copydoc ll_get_value
- */
-void *ll_get_value(LList *list, size_t idx)
-{
-    LLNode *node = ll_get(list, idx);
-    if (node == NULL)
-    {
-        perror("Cannot get element");
-        return NULL;
-    }
-    return node->elem;
+    return res;
 }
 
 /**
@@ -369,37 +395,9 @@ LLNode *ll_get_head(LList *list)
 }
 
 /**
- * @copydoc ll_get_value_head
- */
-void *ll_get_value_head(LList *list)
-{
-    LLNode *head = ll_get_head(list);
-    if (head == NULL)
-    {
-        perror("Cannot get head");
-        return NULL;
-    }
-    return head->elem;
-}
-
-/**
  * @copydoc ll_get_tail
  */
 LLNode *ll_get_tail(LList *list)
 {
     return list->tail;
-}
-
-/**
- * @copydoc ll_get_value_tail
- */
-void *ll_get_value_tail(LList *list)
-{
-    LLNode *tail = ll_get_tail(list);
-    if (tail == NULL)
-    {
-        perror("Cannot get tail");
-        return NULL;
-    }
-    return tail->elem;
 }
