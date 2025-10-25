@@ -273,17 +273,17 @@ NLLNode *nll_append(NLList *list, size_t elem)
 }
 
 /** @copydoc nll_pop */
-size_t nll_pop(NLList *list, size_t *res)
+int nll_pop(NLList *list, size_t *res)
 {
     NLLNode *node = nll_get(list, list->size - 1);
     if (node == NULL)
     {
         perror("Cannot get element");
-        return -1;
+        return 0;
     }
     *res = node->elem;
     nll_remove(list, list->size - 1);
-    return list->size;
+    return 1;
 }
 
 /** @copydoc nll_get_value */

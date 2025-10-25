@@ -118,9 +118,9 @@ NLLNode *nll_prepend(NLList *list, size_t elem);
  * Pop last element from the list
  * @param[in] list Pointer to the list
  * @param[out] res The popped element
- * @returns list size. -1 in case of error
+ * @returns 0 in case of error, 1 ok
  */
-size_t nll_pop(NLList *list, size_t *res);
+int nll_pop(NLList *list, size_t *res);
 
 /**
  * Get an element from the list given the index

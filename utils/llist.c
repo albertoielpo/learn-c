@@ -372,18 +372,23 @@ LLNode *ll_prepend(LList *list, void *elem, uint32_t elem_size, LLNodeType type)
 /**
  * @copydoc ll_pop
  */
-LLNode ll_pop(LList *list)
+int ll_pop(LList *list, LLNode *res)
 {
     LLNode *node = ll_get(list, list->size - 1);
     if (node == NULL)
     {
-        perror("Cannot get element");
-        LLNode empty = {0}; // Initialize all fields to 0
-        return empty;
+        perror("Cannot pop element");
+        return 0;
     }
-    LLNode res = *node; // Dereference to copy the node's contents
+
+    res->prev = NULL;
+    res->elem = node->elem;
+    res->next = NULL;
+    res->type = node->type;
+    res->elem_size = node->elem_size;
+
     ll_remove(list, list->size - 1);
-    return res;
+    return 1;
 }
 
 /**

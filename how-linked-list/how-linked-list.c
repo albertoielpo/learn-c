@@ -152,7 +152,13 @@ void test_5(void)
         printf("print list\n");
         ll_print(list);
 
-        LLNode node = ll_pop(list);
+        LLNode node;
+        if (!ll_pop(list, &node))
+        {
+            printf("Cannot pop the element!\n");
+            return;
+        }
+
         printf("popped elem size: %d\n", node.elem_size);
         char *cur = (char *)node.elem;
         for (size_t ii = 0; ii < node.elem_size; ii++)

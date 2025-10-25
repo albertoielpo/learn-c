@@ -140,11 +140,12 @@ LLNode *ll_append(LList *list, void *elem, uint32_t elem_size, LLNodeType type);
 LLNode *ll_prepend(LList *list, void *elem, uint32_t elem_size, LLNodeType type);
 
 /**
- * Pop last node from the list.
+ * Pop last element from the list
  * @param[in] list Pointer to the list
- * @returns A copy of the popped element
+ * @param[out] res The popped element node
+ * @returns 0 in case of error, 1 ok
  */
-LLNode ll_pop(LList *list);
+int ll_pop(LList *list, LLNode *res);
 
 /**
  * Get head node from the list
