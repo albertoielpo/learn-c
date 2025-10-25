@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <stdint.h>
 #include "../utils/alist.h"
+#include "../utils/u8list.h"
 
 void test_1(void)
 {
@@ -97,14 +98,43 @@ void test_3(void)
     al_destroy(list);
 }
 
-// gcc -Wall -Wextra -Wpedantic -O2 -g -std=c99 ../utils/alist.c how-array-list.c
+void test_4(void)
+{
+    U8List *list = u8list_create(10);
+    {
+        for (size_t ii = 0; ii < 6000; ii++)
+            u8list_append(list, ii % 256); // cast to uint8
+        uint8_t last;
+        uint8_t bast;
+        u8list_get(list, list->size - 1, &last);
+        u8list_get(list, list->size - 2, &bast);
+
+        printf("last two elements are %d %d\n", last, bast);
+        assert(last == 111);
+        assert(bast == 110);
+
+        printf("List capacity: %ld size: %ld\n", list->capacity, list->size);
+
+        for (size_t ii = 0; ii < 5998; ii++)
+            u8list_remove(list, 0); // remove at top
+
+        // only last two elements are expected
+        u8list_print(list);
+        printf("List capacity: %ld size: %ld\n", list->capacity, list->size);
+    }
+    u8list_destroy(list);
+}
+
+// gcc -Wall -Wextra -Wpedantic -O2 -g -std=c99 ../utils/alist.c ../utils/u8list.c how-array-list.c
 int main(void)
 {
-    printf("--- Test 1 ---\n");
+    printf("------- Test 1 -------\n");
     test_1();
-    printf("--- Test 2 ---\n");
+    printf("------- Test 2 -------\n");
     test_2();
-    printf("--- Test 3 ---\n");
+    printf("------- Test 3 -------\n");
     test_3();
+    printf("--- Test 4 Uint8[] ---\n");
+    test_4();
     return 0;
 }
