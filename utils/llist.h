@@ -161,4 +161,15 @@ LLNode *ll_get_head(LList *list);
  */
 LLNode *ll_get_tail(LList *list);
 
+/**
+ * Change a node
+ * @param[in] list Pointer to the list
+ * @param[in] elem Pointer to element data
+ * @param[in] elem_size 1 or >1 in case of array
+ * @param[in] type Type of the element
+ * @param[in] idx Node index to change
+ * @returns Pointer to the node, or NULL on failure
+ */
+LLNode *ll_change(LList *list, void *elem, uint32_t elem_size, LLNodeType type, size_t idx);
+
 #endif // LLIST_H

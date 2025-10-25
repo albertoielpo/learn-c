@@ -406,3 +406,26 @@ LLNode *ll_get_tail(LList *list)
 {
     return list->tail;
 }
+
+/**
+ * @copydoc ll_change
+ */
+LLNode *ll_change(LList *list, void *elem, uint32_t elem_size, LLNodeType type, size_t idx)
+{
+    size_t zero = 0;
+    if (idx < zero || elem_size < 1)
+    {
+        printf("Invalid parameters\n");
+        return NULL;
+    }
+    LLNode *node = ll_get(list, idx);
+    if (node == NULL)
+    {
+        printf("Node at index %ld not found", idx);
+        return NULL;
+    }
+    node->elem = elem;
+    node->elem_size = elem_size;
+    node->type = type;
+    return node;
+}

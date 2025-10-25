@@ -170,6 +170,11 @@ void test_5(void)
 
         printf("print list\n");
         ll_print(list);
+
+        // change the int8_t[] with another element of a different type
+        int64_t new_elem = 48763251;
+        ll_change(list, &new_elem, 1, LL_TYPE_INT64, 0);
+        ll_print(list);
     }
     ll_destroy(list);
 }
