@@ -75,11 +75,8 @@ static LLNode *ll_create_node(LLNode *prev, void *elem, uint32_t elem_size, LLNo
         perror("Cannot create a new node");
         return NULL;
     }
-    if (elem_size < 1)
-    {
-        printf("Cannot create a new node because element size must be >= 1\n");
-        return NULL;
-    }
+    // elem_size is unsigned, no checks needed
+
     node->prev = prev;
     node->elem = elem;
     node->elem_size = elem_size;
@@ -227,20 +224,18 @@ size_t ll_remove(LList *list, size_t idx)
     return ll_remove_node(list, node);
 }
 
-/**
- * @brief Print single node
- *
- * Print a single node
- * if cur->elem_size is 1 then dereference and print the value
- * else loop through all elements
- *
- * @param[in] cur LLNode
- */
-static void ll_print_node(const LLNode *cur)
+/** @copydoc ll_print_node */
+void ll_print_node(const LLNode *cur)
 {
-    if (cur->elem_size < 1)
+    if (cur == NULL || cur->elem == NULL)
     {
-        printf("Element size cannot be < 1\n");
+        printf("Invalid node\n");
+        return;
+    }
+
+    if (cur->elem_size == 0)
+    {
+        printf("Empty node\n");
         return;
     }
 
@@ -251,60 +246,29 @@ static void ll_print_node(const LLNode *cur)
     }
     else if (cur->type == LL_TYPE_INT8)
     {
-        if (cur->elem_size == 1)
-        {
-            int8_t *ele = (int8_t *)cur->elem;
-            printf("%d ", *ele);
-        }
-        else
-        {
-            int8_t *ele = (int8_t *)cur->elem;
-            for (size_t kk = 0; kk < cur->elem_size; kk++)
-                printf("%d ", ele[kk]);
-        }
+        int8_t *ele = (int8_t *)cur->elem;
+        for (size_t kk = 0; kk < cur->elem_size; kk++)
+            printf("%d ", ele[kk]);
     }
     else if (cur->type == LL_TYPE_INT16)
     {
-        if (cur->elem_size == 1)
-        {
-            int16_t *ele = (int16_t *)cur->elem;
-            printf("%d ", *ele);
-        }
-        else
-        {
-            int16_t *ele = (int16_t *)cur->elem;
-            for (size_t kk = 0; kk < cur->elem_size; kk++)
-                printf("%d ", ele[kk]);
-        }
+        int16_t *ele = (int16_t *)cur->elem;
+        for (size_t kk = 0; kk < cur->elem_size; kk++)
+            printf("%d ", ele[kk]);
     }
     else if (cur->type == LL_TYPE_INT32)
     {
-        if (cur->elem_size == 1)
-        {
-            int32_t *ele = (int32_t *)cur->elem;
-            printf("%d ", *ele);
-        }
-        else
-        {
-            int32_t *ele = (int32_t *)cur->elem;
-            for (size_t kk = 0; kk < cur->elem_size; kk++)
-                printf("%d ", ele[kk]);
-        }
+        int32_t *ele = (int32_t *)cur->elem;
+        for (size_t kk = 0; kk < cur->elem_size; kk++)
+            printf("%d ", ele[kk]);
     }
     else if (cur->type == LL_TYPE_INT64)
     {
-        if (cur->elem_size == 1)
-        {
-            int64_t *ele = (int64_t *)cur->elem;
-            printf("%ld ", *ele);
-        }
-        else
-        {
-            int64_t *ele = (int64_t *)cur->elem;
-            for (size_t kk = 0; kk < cur->elem_size; kk++)
-                printf("%ld ", ele[kk]);
-        }
+        int64_t *ele = (int64_t *)cur->elem;
+        for (size_t kk = 0; kk < cur->elem_size; kk++)
+            printf("%ld ", ele[kk]);
     }
+    printf("\n");
 }
 
 /**
@@ -317,9 +281,7 @@ void ll_print(const LList *list)
     {
         ll_print_node(cur);
         cur = cur->next;
-        printf("\n");
     }
-    printf("\n");
 }
 
 /**
@@ -332,9 +294,7 @@ void ll_print_reverse(const LList *list)
     {
         ll_print_node(cur);
         cur = cur->prev;
-        printf("\n");
     }
-    printf("\n");
 }
 
 /**
@@ -412,12 +372,7 @@ LLNode *ll_get_tail(LList *list)
  */
 LLNode *ll_change(LList *list, void *elem, uint32_t elem_size, LLNodeType type, size_t idx)
 {
-    size_t zero = 0;
-    if (idx < zero || elem_size < 1)
-    {
-        printf("Invalid parameters\n");
-        return NULL;
-    }
+    // idx and elem_size are unsigned, no need to check
     LLNode *node = ll_get(list, idx);
     if (node == NULL)
     {

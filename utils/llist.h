@@ -74,7 +74,7 @@ LLNode *ll_get(LList *list, size_t idx);
  * Insert element at specified index
  * @param[in] list Pointer to the list
  * @param[in] elem Pointer to element data (caller maintains ownership)
- * @param[in] elem_size 1 or >1 in case of array
+ * @param[in] elem_size must be >= 0
  * @param[in] type Type of the element
  * @param[in] idx Zero-based index (0 = prepend, size = append)
  * @returns Pointer to newly created node, or NULL on failure
@@ -90,6 +90,8 @@ LLNode *ll_add(LList *list, void *elem, uint32_t elem_size, LLNodeType type, siz
  * @note Does not free the element data, only the node
  */
 size_t ll_remove(LList *list, size_t idx);
+
+void ll_print_node(const LLNode *cur);
 
 /**
  * Print list from head to tail
@@ -123,7 +125,7 @@ size_t ll_get_size(const LList *list);
  * Append element at the tail
  * @param[in] list Pointer to the list
  * @param[in] elem Pointer to element data
- * @param[in] elem_size 1 or >1 in case of array
+ * @param[in] elem_size must be >= 0
  * @param[in] type Type of the element
  * @returns Pointer to newly created node, or NULL on failure
  */
@@ -133,7 +135,7 @@ LLNode *ll_append(LList *list, void *elem, uint32_t elem_size, LLNodeType type);
  * Prepend element at the head
  * @param[in] list Pointer to the list
  * @param[in] elem Pointer to element data
- * @param[in] elem_size 1 or >1 in case of array
+ * @param[in] elem_size must be >= 0
  * @param[in] type Type of the element
  * @returns Pointer to newly created node, or NULL on failure
  */
@@ -165,7 +167,7 @@ LLNode *ll_get_tail(LList *list);
  * Change a node
  * @param[in] list Pointer to the list
  * @param[in] elem Pointer to element data
- * @param[in] elem_size 1 or >1 in case of array
+ * @param[in] elem_size must be >= 0
  * @param[in] type Type of the element
  * @param[in] idx Node index to change
  * @returns Pointer to the node, or NULL on failure

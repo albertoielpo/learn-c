@@ -179,6 +179,33 @@ void test_5(void)
     ll_destroy(list);
 }
 
+void test_6()
+{
+    // empty array
+    LList *list = ll_create();
+    {
+        // init an array with capacity 3 but all content init to 0
+        int32_t empty_array[3] = {0};
+        int32_t not_init_array[3]; // this array has capacity 3 but is not initialized
+        int32_t data[] = {5, 4, 3};
+        ll_append(list, empty_array, 3, LL_TYPE_INT32);    // size is 3 so is not empty
+        ll_append(list, empty_array, 0, LL_TYPE_INT32);    // size is 0 so is empty
+        ll_append(list, not_init_array, 0, LL_TYPE_INT32); // is important to set 0 the size
+        ll_append(list, data, 3, LL_TYPE_INT32);
+
+        LLNode *head = ll_get_head(list);
+
+        while (head != NULL)
+        {
+            ll_print_node(head);
+            printf("Remove the head\n");
+            ll_remove(list, 0);
+            head = ll_get_head(list);
+        }
+    }
+    ll_destroy(list);
+}
+
 // gcc -Wall -Wextra -Wpedantic -O2 -g -std=c99 ../utils/llist.c ../utils/nllist.c how-linked-list.c
 int main(void)
 {
@@ -192,5 +219,7 @@ int main(void)
     test_4();
     printf("----- void* list new func test ------\n");
     test_5();
+    printf("--- void* empty array test ---\n");
+    test_6();
     return 0;
 }
