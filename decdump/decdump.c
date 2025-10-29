@@ -79,7 +79,7 @@ int close_file(FILE *file)
 {
     if (fclose(file) == EOF)
     {
-        printf("Cannot close file");
+        fprintf(stderr, "Cannot close file\n");
         return 1;
     }
     return 0;
@@ -93,7 +93,7 @@ int file_dump(char *filename)
     FILE *file = fopen(filename, "r");
     if (file == NULL)
     {
-        printf("Cannot open file\n");
+        fprintf(stderr, "Cannot open file\n");
         exit(1);
     }
 
@@ -123,8 +123,8 @@ int main(int argc, char **argv)
 {
     if (argc != 2)
     {
-        printf("Missing filename\n");
-        return 1;
+        printf("Usage: %s <filename>\n", argv[0]);
+        return EXIT_FAILURE;
     }
     return file_dump(argv[1]);
 }
