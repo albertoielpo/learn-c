@@ -12,7 +12,8 @@ int main(int argc, char *argv[])
 {
     if (argc < 2)
     {
-        printf("Usage: %s <file_1>...<file_n>\n", argv[0]);
+        printf("hashs calculate the sha1 of some input strings\n");
+        printf("usage: %s <str1>...<strn>\n", argv[0]);
         return EXIT_FAILURE;
     }
 

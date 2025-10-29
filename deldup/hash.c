@@ -12,8 +12,9 @@ int main(int argc, char *argv[])
 {
     if (argc < 2)
     {
-        printf("Missing parameters\n");
-        return 1;
+        printf("Hash calculate the sha1 of some input filenames\n");
+        printf("Usage: %s <file_1>...<file_n>\n", argv[0]);
+        return EXIT_FAILURE;
     }
 
     // allocate one struct per file
@@ -27,12 +28,15 @@ int main(int argc, char *argv[])
         fh->filename = argv[ii + 1]; // skip first argv
 
         if (!fhsha1(fh))
+        {
+            fprintf(stderr, "Error: hash not calculated for %s\n", fh->filename);
             continue;
+        }
 
         fhprint(fh);
     }
 
     free(fhs); // free the space
 
-    return 0;
+    return EXIT_SUCCESS;
 }
