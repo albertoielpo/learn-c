@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 {
     if (argc < 2)
     {
-        printf("Missing parameters\n");
+        printf("Usage: %s <file_1>...<file_n>\n", argv[0]);
         return EXIT_FAILURE;
     }
 

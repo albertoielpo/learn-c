@@ -18,6 +18,7 @@
         "type_traits": "c",
         "alist.h": "c",
         "stdlib.h": "c",
-        "u8list.h": "c"
+        "u8list.h": "c",
+        "utf8.h": "c"
     }
 }
