@@ -24,8 +24,20 @@ struct ht
     size_t length;     // number of items in hash table
 };
 
+// Check if is a power of 2
+static int is_power_of_two(size_t n)
+{
+    return (n > 0 && (n & (n - 1)) == 0) ? 1 : 0;
+}
+
 ht *ht_create(uint32_t capacity)
 {
+    // capacity must be a power of two
+    if (!is_power_of_two(capacity))
+    {
+        return NULL;
+    }
+
     // Allocate space for hash table struct.
     ht *table = malloc(sizeof(ht));
     if (table == NULL)
