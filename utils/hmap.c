@@ -12,6 +12,7 @@
 
 typedef enum
 {
+    HE_TYPE_NULL,  // tombstone for element deleted
     HE_TYPE_STR,   // string \0 terminated (char*)
     HE_TYPE_INT8,  //  8-bit signed integer pointer
     HE_TYPE_INT16, // 16-bit signed integer pointer
@@ -21,8 +22,8 @@ typedef enum
 
 typedef struct
 {
-    char *key;
-    void *value;
+    char *key;           // 8 bytes
+    void *value;         // 8 bytes
     HEType type;         // 4 bytes
     uint32_t value_size; // value_size size: 1 or >1 in case of pointer to an array.
                          // With type HE_TYPE_STR is not mandatory to indicate the size because is \0 terminated
@@ -36,20 +37,60 @@ typedef struct
     size_t capacity;
 } HMap;
 
-// TODO: doc
+/**
+ * @brief Create an hash map
+ *
+ * Hash map creation given an initial capacity
+ *
+ * @param[in] capacity must be a power of two
+ * @return hash map pointer or NULL
+ */
 HMap *hmap_create(size_t capacity);
 
-// TODO: doc
+/**
+ * @brief Destroy an hash map
+ *
+ * Hash map destroy method
+ *
+ * @param[in] map
+ */
 void hmap_destroy(HMap *map);
 
-// TODO: doc
-void hmap_add(HMap *map, char *key, void *value, HEType type, uint32_t value_size);
+/**
+ * @brief Add an element to hash map
+ *
+ * Add an element given the pair key and value
+ *
+ * @param[in] map
+ * @param[in] key
+ * @param[in] value
+ * @param[in] type value type (HEType)
+ * @param[in] value_size 1 in case of single element, > 1 in case of array
+ * @return 1 if inserted, 0 in case of error
+ */
+int hmap_add(HMap *map, char *key, void *value, HEType type, uint32_t value_size);
 
-// TODO: doc
+/**
+ * @brief Get an element given the key
+ *
+ * Hash map get element function
+ *
+ * @param[in] map
+ * @param[in] key
+ * @return HEntry or NULL
+ */
 HEntry *hmap_get(HMap *map, char *key);
 
-// TODO: doc
-void hmap_remove(HMap *map, char *key);
+/**
+ * @brief Remove an element given the key
+ *
+ * Hash map logical deletion
+ *
+ * @param[in] map
+ * @param[in] key
+ * @return 1 if success, 0 in case of error
+ */
+int hmap_remove(HMap *map, char *key);
 
 /**
  * @brief Print all hashmap entries
@@ -62,19 +103,32 @@ void hmap_print_all(HMap *map);
 
 // .c
 
+/**
+ * @brief n is power of two?
+ *
+ * Check if a size_t input is a power of two
+ *
+ * @param[in] n
+ * @return 1 if is a power of two else 0
+ */
+static int is_power_of_two(size_t n)
+{
+    return (n > 0 && (n & (n - 1)) == 0) ? 1 : 0;
+}
+
 /** @copydoc hmap_create */
 HMap *hmap_create(size_t capacity)
 {
-    if (capacity <= 0)
+    if (capacity <= 0 || !is_power_of_two(capacity))
     {
-        fprintf(stderr, "Invalid capacity\n");
+        fprintf(stderr, "[hmap_create] Invalid capacity\n");
         return NULL;
     }
 
     HMap *map = calloc(sizeof(HMap), 1);
     if (map == NULL)
     {
-        perror("Cannot create hmap: out of memory\n");
+        perror("[hmap_create] Cannot create hmap: out of memory\n");
         return NULL;
     }
 
@@ -83,14 +137,20 @@ HMap *hmap_create(size_t capacity)
     map->entries = calloc(sizeof(HEntry *), capacity);
     if (map->entries == NULL)
     {
-        perror("Cannot create entries: out of memory\n");
+        perror("[hmap_create] Cannot create entries: out of memory\n");
         free(map);
         return NULL;
     }
     return map;
 }
 
-// TODO: doc
+/**
+ * @brief destroy the hash map entry
+ *
+ * Free the memory of the hash map entry
+ *
+ * @param[in] entry to destroy
+ */
 static void hentry_destroy(HEntry *entry)
 {
     if (entry == NULL)
@@ -141,12 +201,24 @@ static size_t hmap_build_idx(char *key, size_t capacity)
         acc += *pos;
         pos++;
     }
-    size_t idx = acc % capacity;
-    // printf("[DEBUG] key %s index %ld\n", key, idx);
-    return idx;
+
+    // more efficient (acc % capacity)
+    // with the constraint the capacity must be a power of two
+    return acc & (capacity - 1);
 }
 
-// TODO: doc
+/**
+ * @brief Hash map get first element given a key
+ *
+ * This is an internal method that retrieve the first HEntry which match a key.
+ * In the param out_idx set the index position.
+ * In case of collision return the first element
+ *
+ * @param[in] map
+ * @param[in] key
+ * @param[out] out_idx
+ * @return HEntry if found else NULL
+ */
 static HEntry *hmap_get_first(HMap *map, char *key, size_t *out_idx)
 {
     size_t idx = hmap_build_idx(key, map->capacity);
@@ -161,7 +233,9 @@ HEntry *hmap_get(HMap *map, char *key)
     HEntry *cur = map->entries[idx];
     if (cur == NULL)
         return NULL;
-    while (strcmp(cur->key, key) != 0)
+
+    // if the element was previously deleted OR the key is a collision then find the next spot
+    while (cur->type == HE_TYPE_NULL || strcmp(cur->key, key) != 0)
     {
         idx++;
 
@@ -175,11 +249,21 @@ HEntry *hmap_get(HMap *map, char *key)
         if (cur == NULL)
             return NULL;
     }
-    // found
+    // element found!
     return cur;
 }
 
-// TODO: doc
+/**
+ * @brief Get HEntry given the index
+ *
+ * Return the HEntry given the main array index. In case of collision is returned the first one.
+ * Set 1 to the out param needs_grow if input idx is out of bound
+ *
+ * @param[in] map
+ * @param[in] idx
+ * @param[out] needs_grow
+ * @return Return description
+ */
 static HEntry *hmap_get_by_idx(HMap *map, size_t idx, int *needs_grow)
 {
     if (idx >= map->capacity)
@@ -191,7 +275,14 @@ static HEntry *hmap_get_by_idx(HMap *map, size_t idx, int *needs_grow)
     return map->entries[idx];
 }
 
-// TODO: doc
+/**
+ * @brief Hash map grow
+ *
+ * Increase hash map capacity
+ *
+ * @param[in] map
+ * @return new capacity or 0 in case of error
+ */
 static size_t hmap_grow(HMap *map)
 {
     // if capacity if full then resize
@@ -222,20 +313,16 @@ static size_t hmap_grow(HMap *map)
     map->entries = new_entries;   // assign new ones
     map->capacity = new_capacity; // with new capacity
 
-    // printf("[DEBUG] new capacity is %ld\n", new_capacity);
-
     return map->capacity;
 }
 
 /** @copydoc hmap_add */
-void hmap_add(HMap *map, char *key, void *value, HEType type, uint32_t value_size)
+int hmap_add(HMap *map, char *key, void *value, HEType type, uint32_t value_size)
 {
     if (map->capacity == map->len)
     {
         if (!hmap_grow(map))
-        {
-            return;
-        }
+            return 0;
     }
 
     size_t idx = (size_t)-1;
@@ -243,18 +330,21 @@ void hmap_add(HMap *map, char *key, void *value, HEType type, uint32_t value_siz
 
     if (idx == (size_t)-1)
     {
-        fprintf(stderr, "An error occured getting idx\n");
-        return;
+        fprintf(stderr, "[hmap_add] An error occured getting idx\n");
+        return 0;
     }
 
     while (cur != NULL)
     {
         // the spot is already occupied
-        if (strcmp(cur->key, key) == 0)
+        if (cur->type == HE_TYPE_NULL || strcmp(cur->key, key) == 0)
         {
-            // if the key is equals then override
+            // if the key is equals or the previous element is deleted logically then override
+            cur->key = key; // reassign the key in case of collision
             cur->value = value;
-            return;
+            cur->type = type;
+            cur->value_size = value_size;
+            return 1;
         }
 
         // else is a collision then go to the right one until one free is found
@@ -264,7 +354,7 @@ void hmap_add(HMap *map, char *key, void *value, HEType type, uint32_t value_siz
         {
             // Grow and RESTART the insertion
             if (!hmap_grow(map))
-                return;
+                return 0;
 
             // Restart from scratch with new capacity
             idx = (size_t)-1;
@@ -287,8 +377,20 @@ void hmap_add(HMap *map, char *key, void *value, HEType type, uint32_t value_siz
 
     map->entries[idx] = entry;
     map->len++;
+    return 1;
 }
 
+/** @copydoc hmap_remove */
+int hmap_remove(HMap *map, char *key)
+{
+    HEntry *entry = hmap_get(map, key);
+    if (entry == NULL)
+        return 0;
+    entry->type = HE_TYPE_NULL;
+    return 1;
+}
+
+/** @copydoc hmap_print_all */
 void hmap_print_all(HMap *map)
 {
     for (size_t ii = 0; ii < map->capacity; ii++)
@@ -327,6 +429,10 @@ void hmap_print_all(HMap *map)
             for (size_t kk = 0; kk < entry->value_size; kk++)
                 printf("%ld ", value[kk]);
         }
+        // else if (entry->type == HE_TYPE_NULL)
+        // {
+        //     printf("this element is deleted ");
+        // }
         printf("}\n");
     }
 }
@@ -334,7 +440,11 @@ void hmap_print_all(HMap *map)
 // gcc -Wall -Wextra -Wpedantic -O2 -g -std=c99 hmap.c
 int main(void)
 {
-    HMap *map = hmap_create(2);
+    size_t init_capacity = 16;
+    HMap *map = hmap_create(init_capacity);
+    if (map == NULL)
+        return 1;
+
     hmap_add(map, "a", "pluto", HE_TYPE_STR, 1);
     hmap_add(map, "c", "paperino", HE_TYPE_STR, 1);
     hmap_add(map, "b", "xyz", HE_TYPE_STR, 1);
@@ -344,6 +454,10 @@ int main(void)
 
     int y[] = {1230, 9920, 84530};
     hmap_add(map, "e", &y, HE_TYPE_INT32, 3);
+    hmap_remove(map, "a"); // deleted logically
+
+    // 'Q' is 'a' - init_capacity
+    hmap_add(map, "Q", &x, HE_TYPE_INT8, 1); // replaced
 
     hmap_print_all(map);
     hmap_destroy(map);
