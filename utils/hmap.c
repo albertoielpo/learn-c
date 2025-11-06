@@ -82,38 +82,39 @@ void hmap_destroy(HMap *map)
 /**
  * @brief Hmap hash function
  *
- * Simple hash function algorithm based on sum numeric int8 values modulo capacity
+ * Hash function algorithm
+ * See description: https://en.wikipedia.org/wiki/Fowler–Noll–Vo_hash_function
  *
  * @param[in] key
  * @param[in] capacity
  * @return index
  */
-static size_t hmap_build_idx(char *key, size_t capacity)
+static size_t hmap_build_idx(const char *key, size_t capacity)
 {
-    char *pos = key;
-    size_t acc = 0;
-    while (*pos)
+    size_t hash = FNV_OFFSET;
+    for (const char *p = key; *p; p++)
     {
-        acc += *pos;
-        pos++;
+        hash ^= (size_t)(unsigned char)(*p);
+        hash *= FNV_PRIME;
     }
-
-    // more efficient (acc % capacity)
-    // with the constraint the capacity must be a power of two
-    return acc & (capacity - 1);
-}
-
-static size_t hmap_build_idx_improved(char *key, size_t capacity)
-{
-    size_t hash = 5381;
-    int c;
-
-    while ((c = *key++))
-        hash = ((hash << 5) + hash) + c; // hash * 33 + c
-
-    // Efficient modulo for power-of-2 capacity
     return hash & (capacity - 1);
 }
+
+// basic implementation
+// static size_t hmap_build_idx(char *key, size_t capacity)
+// {
+//     char *pos = key;
+//     size_t acc = 0;
+//     while (*pos)
+//     {
+//         acc += *pos;
+//         pos++;
+//     }
+
+//     // more efficient (acc % capacity)
+//     // with the constraint the capacity must be a power of two
+//     return acc & (capacity - 1);
+// }
 
 /**
  * @brief Hash map get first element given a key
@@ -358,6 +359,47 @@ int hmap_remove(HMap *map, char *key)
     return 1;
 }
 
+/** @copydoc hmap_print */
+int hmap_print(HEntry *entry)
+{
+    if (entry == NULL || entry->type == HE_TYPE_NULL)
+        return 0;
+
+    printf("{ key:%s, value:", entry->key);
+
+    if (entry->type == HE_TYPE_STR)
+    {
+        printf("%s ", (char *)entry->value);
+    }
+    else if (entry->type == HE_TYPE_INT8)
+    {
+        int8_t *value = (int8_t *)entry->value;
+        for (size_t kk = 0; kk < entry->value_size; kk++)
+            printf("%d ", value[kk]);
+    }
+    else if (entry->type == HE_TYPE_INT16)
+    {
+        int16_t *value = (int16_t *)entry->value;
+        for (size_t kk = 0; kk < entry->value_size; kk++)
+            printf("%d ", value[kk]);
+    }
+    else if (entry->type == HE_TYPE_INT32)
+    {
+        int32_t *value = (int32_t *)entry->value;
+        for (size_t kk = 0; kk < entry->value_size; kk++)
+            printf("%d ", value[kk]);
+    }
+    else if (entry->type == HE_TYPE_INT64)
+    {
+        int64_t *value = (int64_t *)entry->value;
+        for (size_t kk = 0; kk < entry->value_size; kk++)
+            printf("%ld ", value[kk]);
+    }
+
+    printf("}\n");
+    return 1;
+}
+
 /** @copydoc hmap_print_all */
 void hmap_print_all(HMap *map)
 {
@@ -367,70 +409,9 @@ void hmap_print_all(HMap *map)
     size_t ele_count = map->len;
     for (size_t ii = 0; ii < map->capacity && ele_count > 0; ii++)
     {
-        HEntry *entry = map->entries[ii];
-        if (entry == NULL || entry->type == HE_TYPE_NULL) // Already fixed in v2
+        if (!hmap_print(map->entries[ii]))
             continue;
 
-        printf("{ key:%s, value:", entry->key);
-
-        if (entry->type == HE_TYPE_STR)
-        {
-            printf("%s ", (char *)entry->value);
-        }
-        else if (entry->type == HE_TYPE_INT8)
-        {
-            int8_t *value = (int8_t *)entry->value;
-            for (size_t kk = 0; kk < entry->value_size; kk++)
-                printf("%d ", value[kk]);
-        }
-        else if (entry->type == HE_TYPE_INT16)
-        {
-            int16_t *value = (int16_t *)entry->value;
-            for (size_t kk = 0; kk < entry->value_size; kk++)
-                printf("%d ", value[kk]);
-        }
-        else if (entry->type == HE_TYPE_INT32)
-        {
-            int32_t *value = (int32_t *)entry->value;
-            for (size_t kk = 0; kk < entry->value_size; kk++)
-                printf("%d ", value[kk]);
-        }
-        else if (entry->type == HE_TYPE_INT64)
-        {
-            int64_t *value = (int64_t *)entry->value;
-            for (size_t kk = 0; kk < entry->value_size; kk++)
-                printf("%ld ", value[kk]);
-        }
-
         ele_count--;
-        printf("}\n");
     }
-}
-
-// gcc -Wall -Wextra -Wpedantic -O2 -g -std=c99 hmap.c
-int main(void)
-{
-    size_t init_capacity = 1024;
-    HMap *map = hmap_create(init_capacity);
-    if (map == NULL)
-        return 1;
-
-    hmap_add(map, "a", "pluto", HE_TYPE_STR, 1);
-    hmap_add(map, "c", "paperino", HE_TYPE_STR, 1);
-    hmap_add(map, "b", "xyz", HE_TYPE_STR, 1);
-
-    int8_t x = 112;
-    hmap_add(map, "d", &x, HE_TYPE_INT8, 1);
-
-    int y[] = {1230, 9920, 84530};
-    hmap_add(map, "e", &y, HE_TYPE_INT32, 3);
-    hmap_remove(map, "a"); // deleted logically
-
-    // 'Q' is 'a' - init_capacity
-    hmap_add(map, "Q", &x, HE_TYPE_INT8, 1); // replaced
-    hmap_add(map, "a", &x, HE_TYPE_INT8, 1); // added after 'e'
-
-    hmap_print_all(map);
-    hmap_destroy(map);
-    return 0;
 }

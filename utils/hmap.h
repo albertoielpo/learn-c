@@ -4,6 +4,8 @@
  */
 #ifndef HMAP_H
 #define HMAP_H
+#define FNV_OFFSET 14695981039346656037UL
+#define FNV_PRIME 1099511628211UL
 #include <stdlib.h>
 #include <stdint.h>
 
@@ -90,9 +92,27 @@ HEntry *hmap_get(HMap *map, char *key);
 int hmap_remove(HMap *map, char *key);
 
 /**
+ * @brief Print the entry
+ *
+ * Print pattern
+ * { key: *key, value, *value }
+ *
+ * Example
+ * { key:690c9cb47da9ec53f99414de, value:112 }
+ *
+ * @param[in] entry
+ * @return 1 in case of successful print else 0
+ */
+int hmap_print(HEntry *entry);
+
+/**
  * @brief Print all hashmap entries
  *
- * Print all key values
+ * Print pattern
+ * { key: *key, value, *value }
+ *
+ * Example
+ * { key:690c9cb47da9ec53f99414de, value:112 }
  *
  * @param[in] map
  */
