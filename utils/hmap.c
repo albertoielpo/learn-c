@@ -69,14 +69,10 @@ void hmap_destroy(HMap *map)
         return;
     }
 
-    HEntry **entries = map->entries;
-    HEntry *entry = *entries;
     for (size_t ii = 0; ii < map->capacity; ii++)
     {
-        if (entry)
-            hentry_destroy(entry);
-        entries++;
-        entry = *entries;
+        if (map->entries[ii] != NULL)
+            hentry_destroy(map->entries[ii]);
     }
 
     free(map->entries);
@@ -107,6 +103,18 @@ static size_t hmap_build_idx(char *key, size_t capacity)
     return acc & (capacity - 1);
 }
 
+static size_t hmap_build_idx_improved(char *key, size_t capacity)
+{
+    size_t hash = 5381;
+    int c;
+
+    while ((c = *key++))
+        hash = ((hash << 5) + hash) + c; // hash * 33 + c
+
+    // Efficient modulo for power-of-2 capacity
+    return hash & (capacity - 1);
+}
+
 /**
  * @brief Hash map get first element given a key
  *
@@ -129,7 +137,13 @@ static HEntry *hmap_get_first(HMap *map, char *key, size_t *out_idx)
 /** @copydoc hmap_get */
 HEntry *hmap_get(HMap *map, char *key)
 {
+    if (map == NULL)
+        return NULL;
+
     size_t idx = hmap_build_idx(key, map->capacity);
+    size_t start_idx = idx; // Remember where we started
+    size_t probes = 0;
+
     HEntry *cur = map->entries[idx];
     if (cur == NULL)
         return NULL;
@@ -137,11 +151,14 @@ HEntry *hmap_get(HMap *map, char *key)
     // if the element was previously deleted OR the key is a collision then find the next spot
     while (cur->type == HE_TYPE_NULL || strcmp(cur->key, key) != 0)
     {
-        idx++;
+        // Use wraparound instead of giving up
+        // Efficient wraparound (capacity is power of 2)
+        idx = (idx + 1) & (map->capacity - 1);
 
-        // check overflow
-        if (idx >= map->capacity)
-            return NULL;
+        // Prevent infinite loop if we've searched the entire table
+        probes++;
+        if (idx == start_idx || probes >= map->capacity)
+            return NULL; // Searched entire table, not found
 
         cur = map->entries[idx];
 
@@ -149,6 +166,7 @@ HEntry *hmap_get(HMap *map, char *key)
         if (cur == NULL)
             return NULL;
     }
+
     // element found!
     return cur;
 }
@@ -190,22 +208,38 @@ static size_t hmap_grow(HMap *map)
     void *temp = calloc(sizeof(HEntry *), new_capacity);
     if (!temp)
     {
-        perror("Reallocation failed! The old data are still valid");
+        perror("[hmap_grow] Reallocation failed! The old data are still valid");
         return 0;
     }
 
     // rehashing
     HEntry **new_entries = (HEntry **)temp;
-    for (size_t ii = 0; ii < map->capacity; ii++)
+    size_t ele_count = map->len;
+
+    for (size_t ii = 0; ii < map->capacity && ele_count > 0; ii++)
     {
         if (map->entries[ii] == NULL)
             continue;
+
+        // Skip and free tombstones during rehashing
+        if (map->entries[ii]->type == HE_TYPE_NULL)
+        {
+            hentry_destroy(map->entries[ii]);
+            continue;
+        }
+
         size_t new_idx = hmap_build_idx(map->entries[ii]->key, new_capacity);
+
+        // Add bounds checking to prevent buffer overflow
         while (new_entries[new_idx] != NULL)
         {
             new_idx++;
+            if (new_idx >= new_capacity) // Bounds check
+                new_idx = 0;             // Wrap around
         }
+
         new_entries[new_idx] = map->entries[ii];
+        ele_count--;
     }
 
     free(map->entries); // frees old entries
@@ -219,8 +253,12 @@ static size_t hmap_grow(HMap *map)
 /** @copydoc hmap_add */
 int hmap_add(HMap *map, char *key, void *value, HEType type, uint32_t value_size)
 {
-    if (map->capacity == map->len)
+    if (map == NULL)
+        return 0;
+
+    if (map->len > map->capacity / 2)
     {
+        // hash map grows when capacity is half of the occupied len
         if (!hmap_grow(map))
             return 0;
     }
@@ -234,13 +272,32 @@ int hmap_add(HMap *map, char *key, void *value, HEType type, uint32_t value_size
         return 0;
     }
 
+    size_t probes = 0;
+
     while (cur != NULL)
     {
-        // the spot is already occupied
-        if (cur->type == HE_TYPE_NULL || strcmp(cur->key, key) == 0)
+        // Prevent infinite loop
+        if (probes++ >= map->capacity)
         {
-            // if the key is equals or the previous element is deleted logically then override
-            cur->key = key; // reassign the key in case of collision
+            fprintf(stderr, "[hmap_add] Table full, cannot insert\n");
+            return 0;
+        }
+
+        // the spot is already occupied
+        if (cur->type == HE_TYPE_NULL)
+        {
+            // the previous element is deleted logically then override
+            cur->key = key; // reassign the key
+            cur->value = value;
+            cur->type = type;
+            cur->value_size = value_size;
+            map->len++;
+            return 1;
+        }
+
+        if (strcmp(cur->key, key) == 0)
+        {
+            // if the key is equals
             cur->value = value;
             cur->type = type;
             cur->value_size = value_size;
@@ -259,6 +316,7 @@ int hmap_add(HMap *map, char *key, void *value, HEType type, uint32_t value_size
             // Restart from scratch with new capacity
             idx = (size_t)-1;
             cur = hmap_get_first(map, key, &idx);
+            probes = 0;
             continue;
         }
         else
@@ -270,6 +328,12 @@ int hmap_add(HMap *map, char *key, void *value, HEType type, uint32_t value_size
 
     // add element in the spot
     HEntry *entry = calloc(sizeof(HEntry), 1);
+    if (entry == NULL)
+    {
+        perror("[hmap_add] Cannot allocate entry");
+        return 0;
+    }
+
     entry->key = key;
     entry->value = value;
     entry->type = type;
@@ -283,20 +347,28 @@ int hmap_add(HMap *map, char *key, void *value, HEType type, uint32_t value_size
 /** @copydoc hmap_remove */
 int hmap_remove(HMap *map, char *key)
 {
+    if (map == NULL)
+        return 0;
+
     HEntry *entry = hmap_get(map, key);
     if (entry == NULL)
         return 0;
     entry->type = HE_TYPE_NULL;
+    map->len--;
     return 1;
 }
 
 /** @copydoc hmap_print_all */
 void hmap_print_all(HMap *map)
 {
-    for (size_t ii = 0; ii < map->capacity; ii++)
+    if (map == NULL)
+        return;
+
+    size_t ele_count = map->len;
+    for (size_t ii = 0; ii < map->capacity && ele_count > 0; ii++)
     {
         HEntry *entry = map->entries[ii];
-        if (entry == NULL)
+        if (entry == NULL || entry->type == HE_TYPE_NULL) // Already fixed in v2
             continue;
 
         printf("{ key:%s, value:", entry->key);
@@ -329,10 +401,8 @@ void hmap_print_all(HMap *map)
             for (size_t kk = 0; kk < entry->value_size; kk++)
                 printf("%ld ", value[kk]);
         }
-        // else if (entry->type == HE_TYPE_NULL)
-        // {
-        //     printf("this element is deleted ");
-        // }
+
+        ele_count--;
         printf("}\n");
     }
 }
@@ -340,7 +410,7 @@ void hmap_print_all(HMap *map)
 // gcc -Wall -Wextra -Wpedantic -O2 -g -std=c99 hmap.c
 int main(void)
 {
-    size_t init_capacity = 16;
+    size_t init_capacity = 1024;
     HMap *map = hmap_create(init_capacity);
     if (map == NULL)
         return 1;
@@ -358,6 +428,7 @@ int main(void)
 
     // 'Q' is 'a' - init_capacity
     hmap_add(map, "Q", &x, HE_TYPE_INT8, 1); // replaced
+    hmap_add(map, "a", &x, HE_TYPE_INT8, 1); // added after 'e'
 
     hmap_print_all(map);
     hmap_destroy(map);
