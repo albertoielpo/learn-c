@@ -161,7 +161,7 @@ int al_remove(AList *list, size_t idx)
     }
 
     // left shift
-    for (size_t ii = idx; ii < list->size; ii++)
+    for (size_t ii = idx; ii < list->size - 1; ii++)
     {
         list->data[ii] = list->data[ii + 1];
     }

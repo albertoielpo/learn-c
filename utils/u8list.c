@@ -18,7 +18,7 @@ U8List *u8list_create(size_t capacity)
     }
     list->capacity = capacity;
     list->size = 0;
-    list->data = malloc(sizeof(void *) * capacity);
+    list->data = malloc(sizeof(uint8_t) * capacity);
     return list;
 }
 
@@ -161,7 +161,7 @@ int u8list_remove(U8List *list, size_t idx)
     }
 
     // left shift
-    for (size_t ii = idx; ii < list->size; ii++)
+    for (size_t ii = idx; ii < list->size - 1; ii++)
     {
         list->data[ii] = list->data[ii + 1];
     }
