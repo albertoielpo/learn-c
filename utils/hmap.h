@@ -1,6 +1,8 @@
 /**
  * @brief Hash map linear probing implementation
  * @author Alberto Ielpo <alberto.ielpo@gmail.com>
+ *
+ * This hash map implementation does not own the data
  */
 #ifndef HMAP_H
 #define HMAP_H

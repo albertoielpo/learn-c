@@ -4,6 +4,8 @@
  * Homogeneous Array list implementation
  * All elements must be of the same type defined as ALType
  *
+ * This Array list implementation does not own the data
+ *
  * @author Alberto Ielpo <alberto.ielpo@gmail.com>
  */
 #ifndef ALIST_H
