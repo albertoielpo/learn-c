@@ -25,7 +25,7 @@ HMap *hmap_create(size_t capacity)
         return NULL;
     }
 
-    HMap *map = calloc(sizeof(HMap), 1);
+    HMap *map = calloc(1, sizeof(HMap));
     if (map == NULL)
     {
         perror("[hmap_create] Cannot create hmap: out of memory\n");
@@ -34,7 +34,7 @@ HMap *hmap_create(size_t capacity)
 
     map->len = 0;
     map->capacity = capacity;
-    map->entries = calloc(sizeof(HEntry *), capacity);
+    map->entries = calloc(capacity, sizeof(HEntry *));
     if (map->entries == NULL)
     {
         perror("[hmap_create] Cannot create entries: out of memory\n");
@@ -206,7 +206,7 @@ static size_t hmap_grow(HMap *map)
 {
     // if capacity if full then resize
     size_t new_capacity = map->capacity * 2;
-    void *temp = calloc(sizeof(HEntry *), new_capacity);
+    void *temp = calloc(new_capacity, sizeof(HEntry *));
     if (!temp)
     {
         perror("[hmap_grow] Reallocation failed! The old data are still valid");
@@ -328,7 +328,7 @@ int hmap_add(HMap *map, char *key, void *value, HEType type, uint32_t value_size
     }
 
     // add element in the spot
-    HEntry *entry = calloc(sizeof(HEntry), 1);
+    HEntry *entry = calloc(1, sizeof(HEntry));
     if (entry == NULL)
     {
         perror("[hmap_add] Cannot allocate entry");

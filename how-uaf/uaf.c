@@ -16,7 +16,7 @@ int main(void)
     printf("%p to data\n", data);
     free(data);
     printf("data now is free\n");
-    // d = NULL;    // should be set to NULL
+    // data = NULL; // should be set to NULL
 
     Data *data_2 = malloc(sizeof(Data));
     printf("%p to data_2\n", data_2);
