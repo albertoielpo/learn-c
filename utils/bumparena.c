@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "bumparena.h"
 
+/** @copydoc bumparena_create */
 BumpArena *bumparena_create(size_t capacity)
 {
     BumpArena *arena = malloc(sizeof(BumpArena));
@@ -22,6 +23,7 @@ BumpArena *bumparena_create(size_t capacity)
     return arena;
 }
 
+/** @copydoc bumparena_destroy */
 void bumparena_destroy(BumpArena *arena)
 {
     if (arena == NULL)
@@ -36,6 +38,14 @@ void bumparena_destroy(BumpArena *arena)
     free(arena);
 }
 
+/**
+ * @brief Resize arena
+ *
+ * Increase the arena capacity by *2 factor
+ *
+ * @param[in] arena BumpArena pointer
+ * @return 1 if good, 0 in case of error
+ */
 static int bumparena_grow(BumpArena *arena)
 {
     size_t new_cap = arena->capacity * 2;
@@ -47,20 +57,12 @@ static int bumparena_grow(BumpArena *arena)
     }
     arena->start = tmp;
     // recalculate the offset because start can be changed
-    arena->offset = (arena->start) + arena->len;
+    arena->offset = arena->start + arena->len;
     arena->capacity = new_cap;
     return 1;
 }
 
-/**
- * @brief Alloc element into the arena
- *
- * Alloc element into the arena stack.
- *
- * @param[in] arena
- * @param[in] len in bytes
- * @return Return a void* because it's caller responsability to use it properly
- */
+/** @copydoc bumparena_alloc */
 void *bumparena_alloc(BumpArena *arena, size_t len)
 {
     if (arena == NULL)
@@ -76,7 +78,7 @@ void *bumparena_alloc(BumpArena *arena, size_t len)
     // result is the pointer where the caller can write data
     uint8_t *result = arena->offset;
     arena->len += len;
-    arena->offset = (arena->offset) + len; // then increment
+    arena->offset = arena->offset + len; // then increment
 
     return (void *)result;
 }

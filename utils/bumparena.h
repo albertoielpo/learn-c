@@ -23,8 +23,28 @@ typedef struct
     uint8_t *offset; // heap offset pointer
 } BumpArena;
 
+/**
+ * @brief Create a bump arena
+ * This method reserve an heap space for a bump arena
+ * @param[in] capacity Reserved bytes
+ * @return Bump Arena pointer
+ */
 BumpArena *bumparena_create(size_t capacity);
+
+/**
+ * @brief Deallocate bump arena
+ * This method free from heap the bump arena reserved
+ * @param[in] arena
+ */
 void bumparena_destroy(BumpArena *arena);
+
+/**
+ * @brief Alloc element into the arena
+ * Alloc element into the arena stack.
+ * @param[in] arena
+ * @param[in] len in bytes
+ * @return Return a void* because it's caller responsability to use it properly
+ */
 void *bumparena_alloc(BumpArena *arena, size_t len);
 
 #endif

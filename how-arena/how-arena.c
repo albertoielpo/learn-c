@@ -68,6 +68,12 @@ static uint8_t *read_entire_file(const char *filepath, size_t *res_file_size, Bu
     return buffer;
 }
 
+static void safe_exit(BumpArena *arena)
+{
+    bumparena_destroy(arena);
+    exit(1);
+}
+
 // gcc -Wall -Wextra -Wpedantic -O2 -g -std=c99 ../utils/bumparena.c how-arena.c
 int main(void)
 {
@@ -77,6 +83,8 @@ int main(void)
         size_t buffer_size = 192;
 
         uint8_t *my_data = bumparena_alloc(arena, buffer_size);
+        if (!my_data)
+            safe_exit(arena);
         for (size_t ii = 0; ii < buffer_size; ii++)
         {
             (*(my_data + ii)) = (ii + 57) & 0xFF; // ensure uint8 size
@@ -88,11 +96,8 @@ int main(void)
         size_t file_size = 0;
         char *buffer = (char *)read_entire_file("how-arena.c", &file_size, arena);
         if (buffer == NULL)
-        {
-            bumparena_destroy(arena);
-            return 1;
-        }
-        printf("%s \n", buffer);
+            safe_exit(arena);
+        printf("%.16s...\n", buffer); // print only the first 16 chars
         printf("File size: %ld bytes\n", file_size);
     }
 
