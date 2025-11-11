@@ -15,8 +15,8 @@ typedef struct
 {
     size_t capacity; // total capacity (bytes)
     size_t len;      // current occupied capacity (bytes).
-    void *start;     // heap allocated start pointer
-    void *offset;    // heap offset pointer
+    uint8_t *start;  // heap allocated start pointer
+    uint8_t *offset; // heap offset pointer
 } Starena;
 
 // .c
@@ -56,33 +56,52 @@ void starena_destroy(Starena *arena)
         free(arena->start);
         arena->start = NULL;
     }
+    free(arena);
 }
 
+static int starena_grow(Starena *arena)
+{
+    size_t new_cap = arena->capacity * 2;
+    uint8_t *tmp = realloc(arena->start, new_cap);
+    if (tmp == NULL)
+    {
+        perror("[starena_push] cannot realloc. Old data are still valid");
+        return 0;
+    }
+    arena->start = tmp;
+    // recalculate the offset because start can be changed
+    arena->offset = (arena->start) + arena->len;
+    arena->capacity = new_cap;
+    return 1;
+}
+
+/**
+ * @brief Push element into the arena
+ *
+ * Push element into the arena stack.
+ *
+ * @param[in] arena
+ * @param[in] len in bytes
+ * @return Return a void* because it's caller responsability to use it properly
+ */
 void *starena_push(Starena *arena, size_t len)
 {
     if (arena == NULL)
-    {
-        // TODO
         return NULL;
-    }
 
-    if (arena->len + len >= arena->capacity)
+    // arena grows until the len is inside the capacity
+    while (arena->len + len >= arena->capacity)
     {
-        // arena resize
-        size_t new_cap = arena->capacity * 2;
-        void *tmp = realloc(arena->start, new_cap);
-        if (tmp == NULL)
-        {
-            perror("[starena_push] cannot realloc. Old data are still valid");
+        if (!starena_grow(arena))
             return NULL;
-        }
-        arena->start = tmp;
-        arena->capacity = new_cap;
     }
-    arena->len += len; // add length
-    arena->offset = ((uint8_t *)arena->offset) + len;
 
-    return arena->offset;
+    // result is the pointer where the caller can write data
+    uint8_t *result = arena->offset;
+    arena->len += len;
+    arena->offset = (arena->offset) + len; // then increment
+
+    return (void *)result;
 }
 
 // gcc -Wall -Wextra -Wpedantic -O2 -g -std=c99 starena.c
@@ -91,17 +110,12 @@ int main(void)
     Starena *arena = starena_create(16, 1);
     {
         // I would like to reserve 16 bytes to place some numbers...
-        size_t buffer_size = 32;
+        size_t buffer_size = 192;
+
         uint8_t *my_data = starena_push(arena, buffer_size);
         for (size_t ii = 0; ii < buffer_size; ii++)
         {
             (*(my_data + ii)) = (ii + 57) & 0xFF; // ensure uint8 size
-        }
-
-        for (size_t ii = 0; ii < buffer_size; ii++)
-        {
-            uint8_t *cur = my_data + ii;
-            printf("%d %p\n", *cur, cur);
         }
     }
 
