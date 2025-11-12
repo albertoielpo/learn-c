@@ -5,7 +5,7 @@
 /** @copydoc al_create */
 AList *al_create(size_t capacity, ALType type)
 {
-    if (capacity <= 0)
+    if (capacity == 0)
     {
         printf("Invalid capacity\n");
         return NULL;
@@ -21,6 +21,12 @@ AList *al_create(size_t capacity, ALType type)
     list->size = 0;
     list->type = type;
     list->data = malloc(sizeof(void *) * capacity);
+    if (list->data == NULL)
+    {
+        perror("[al_create] Cannot create a new array list");
+        free(list);
+        return NULL;
+    }
     return list;
 }
 
@@ -32,6 +38,24 @@ void al_destroy(AList *list)
 
     if (list->data != NULL)
         free(list->data);
+
+    list->capacity = 0;
+    list->size = 0;
+    free(list);
+}
+
+/** @copydoc al_destroy_deep */
+void al_destroy_deep(AList *list)
+{
+    if (list == NULL)
+        return;
+
+    if (list->data != NULL)
+    {
+        for (size_t ii = 0; ii < list->size; ii++)
+            free(list->data[ii]);
+        free(list->data);
+    }
 
     list->capacity = 0;
     list->size = 0;
@@ -92,7 +116,7 @@ size_t al_insert(AList *list, void *ele, size_t idx)
     if (idx > list->size)
     {
         printf("Index out of bound\n");
-        return -1;
+        return -1; // FIXME
     }
 
     // check capacity
@@ -102,7 +126,7 @@ size_t al_insert(AList *list, void *ele, size_t idx)
         if (!al_grow(list))
         {
             printf("Cannot append a new element\n");
-            return -1;
+            return -1; // FIXME
         }
     }
 
@@ -143,10 +167,10 @@ void *al_get(AList *list, size_t idx)
 /** @copydoc al_remove */
 int al_remove(AList *list, size_t idx)
 {
-    if (idx > list->size)
+    if (idx >= list->size)
     {
-        printf("Index out of bound\n");
-        return -1;
+        fprintf(stderr, "Index out of bound\n");
+        return 0;
     }
 
     // check capacity
@@ -155,7 +179,7 @@ int al_remove(AList *list, size_t idx)
         // if capacity is double the size then resize--
         if (!al_shrink(list))
         {
-            printf("Cannot remove the element with index %ld\n", idx);
+            fprintf(stderr, "Cannot remove the element with index %ld\n", idx);
             return 0;
         }
     }

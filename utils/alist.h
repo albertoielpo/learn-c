@@ -1,10 +1,16 @@
 /**
  * @brief Array List implementation
  *
- * Homogeneous Array list implementation
- * All elements must be of the same type defined as ALType
+ * Homogeneous array list implementation where all elements must be of the same type,
+ * as defined by ALType.
  *
- * This Array list implementation does not own the data
+ * This array list stores pointers to data rather than the data itself.
+ *
+ * Memory management:
+ * - If the data is not owned by the AList (e.g., stack-allocated or managed elsewhere),
+ *   use al_destroy() to free only the list structure. The data will remain valid.
+ * - If the data is heap-allocated specifically for the AList (e.g., via malloc or strdup),
+ *   use al_destroy_deep() to free both the list structure and the data contents.
  *
  * @author Alberto Ielpo <alberto.ielpo@gmail.com>
  */
@@ -49,6 +55,15 @@ AList *al_create(size_t capacity, ALType type);
  * @param[in] list List pointer
  */
 void al_destroy(AList *list);
+
+/**
+ * @brief Array list deallocation with data
+ *
+ * Deallocate an array list and all its data when they are owned by the AList
+ *
+ * @param[in] list List pointer
+ */
+void al_destroy_deep(AList *list);
 
 /**
  * @brief Append an element at the end of the array list
