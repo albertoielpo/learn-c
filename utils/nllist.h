@@ -66,9 +66,9 @@ NLLNode *nll_add(NLList *list, size_t elem, size_t idx);
  * Remove element at specified index
  * @param[in] list Pointer to the list
  * @param[in] idx Zero-based index
- * @returns New size of list after removal, or (size_t)-1 on failure
+ * @returns 0 in case of error , 1 OK
  */
-size_t nll_remove(NLList *list, size_t idx);
+int nll_remove(NLList *list, size_t idx);
 
 /**
  * Print list from head to tail

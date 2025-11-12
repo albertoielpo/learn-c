@@ -28,7 +28,7 @@ NLList *nll_create(void)
     NLList *cur = malloc(sizeof(NLList));
     if (cur == NULL)
     {
-        perror("Cannot create a new linked list");
+        fprintf(stderr, "[nll_create] Cannot create a new linked list");
         return NULL;
     }
     cur->head = NULL;
@@ -65,7 +65,7 @@ static NLLNode *nll_create_node(NLLNode *prev, size_t elem, NLLNode *next)
     NLLNode *node = malloc(sizeof(NLLNode));
     if (node == NULL)
     {
-        perror("Cannot create a new node");
+        perror("[nll_create_node] Cannot create a new node");
         return NULL;
     }
     node->prev = prev;
@@ -91,7 +91,7 @@ NLLNode *nll_get(const NLList *list, size_t idx)
 {
     if (list == NULL || list->size <= idx)
     {
-        printf("Index %zu not valid because size is %zu\n", idx, list ? list->size : 0);
+        fprintf(stderr, "[nll_get] Index %zu not valid because size is %zu\n", idx, list ? list->size : 0);
         return NULL;
     }
 
@@ -119,7 +119,7 @@ NLLNode *nll_add(NLList *list, size_t elem, size_t idx)
 {
     if (list == NULL || idx > list->size)
     {
-        printf("Index %zu out of bounds (size: %zu)\n", idx, list ? list->size : 0);
+        fprintf(stderr, "[nll_add] Index %zu out of bounds (size: %zu)\n", idx, list ? list->size : 0);
         return NULL;
     }
 
@@ -164,7 +164,7 @@ NLLNode *nll_add(NLList *list, size_t elem, size_t idx)
     NLLNode *cur = nll_get(list, idx);
     if (cur == NULL)
     {
-        printf("Cannot insert element in the list\n");
+        fprintf(stderr, "[nll_add] Cannot insert element in the list\n");
         return NULL;
     }
 
@@ -179,19 +179,19 @@ NLLNode *nll_add(NLList *list, size_t elem, size_t idx)
 }
 
 /** @copydoc nll_remove */
-size_t nll_remove(NLList *list, size_t idx)
+int nll_remove(NLList *list, size_t idx)
 {
     if (list == NULL)
     {
-        printf("Cannot remove element from NULL list\n");
-        return (size_t)-1;
+        fprintf(stderr, "[nll_remove] Cannot remove element from NULL list\n");
+        return 0;
     }
 
     NLLNode *node = nll_get(list, idx);
     if (node == NULL)
     {
-        printf("Cannot remove element from the list\n");
-        return (size_t)-1;
+        fprintf(stderr, "[nll_remove] Cannot remove element from the list\n");
+        return 0;
     }
 
     NLLNode *prevNode = node->prev;
@@ -209,7 +209,8 @@ size_t nll_remove(NLList *list, size_t idx)
     else
         nextNode->prev = prevNode;
 
-    return nll_remove_node(list, node);
+    nll_remove_node(list, node);
+    return 1;
 }
 
 /** @copydoc nll_print */
@@ -217,7 +218,7 @@ void nll_print(const NLList *list)
 {
     if (list == NULL)
     {
-        printf("(empty list)\n");
+        fprintf(stderr, "[nll_print] (empty list)\n");
         return;
     }
 
@@ -235,7 +236,7 @@ void nll_print_reverse(const NLList *list)
 {
     if (list == NULL)
     {
-        printf("(empty list)\n");
+        fprintf(stderr, "[nll_print_reverse] (empty list)\n");
         return;
     }
 
@@ -278,7 +279,7 @@ int nll_pop(NLList *list, size_t *res)
     NLLNode *node = nll_get(list, list->size - 1);
     if (node == NULL)
     {
-        perror("Cannot get element");
+        fprintf(stderr, "[nll_pop] Cannot get element\n");
         return 0;
     }
     *res = node->elem;
@@ -292,7 +293,7 @@ int nll_get_value(NLList *list, size_t idx, size_t *res)
     NLLNode *node = nll_get(list, idx);
     if (node == NULL)
     {
-        perror("Cannot get element");
+        fprintf(stderr, "[nll_get_value] Cannot get element\n");
         return 0;
     }
     *res = node->elem;
@@ -311,7 +312,7 @@ int nll_get_value_head(NLList *list, size_t *res)
     NLLNode *head = nll_get_head(list);
     if (head == NULL)
     {
-        perror("Cannot get head");
+        fprintf(stderr, "[nll_get_value_head] Cannot get head\n");
         return 0;
     }
     *res = head->elem;
@@ -330,7 +331,7 @@ int nll_get_value_tail(NLList *list, size_t *res)
     NLLNode *tail = nll_get_tail(list);
     if (tail == NULL)
     {
-        perror("Cannot get tail");
+        fprintf(stderr, "[nll_get_value_tail] Cannot get tail\n");
         return 0;
     }
     *res = tail->elem;

@@ -86,10 +86,10 @@ LLNode *ll_add(LList *list, void *elem, uint32_t elem_size, LLNodeType type, siz
  * Remove element at specified index
  * @param[in] list Pointer to the list
  * @param[in] idx Zero-based index
- * @returns New size of list after removal, or (size_t)-1 on failure
+ * @returns 0 in case of error, 1 OK
  * @note Does not free the element data, only the node
  */
-size_t ll_remove(LList *list, size_t idx);
+int ll_remove(LList *list, size_t idx);
 
 void ll_print_node(const LLNode *cur);
 

@@ -31,7 +31,7 @@ LList *ll_create(void)
     LList *cur = malloc(sizeof(LList));
     if (cur == NULL)
     {
-        perror("Cannot create a new linked list");
+        perror("[ll_create] Cannot create a new linked list");
         return NULL;
     }
     cur->head = NULL;
@@ -72,7 +72,7 @@ static LLNode *ll_create_node(LLNode *prev, void *elem, uint32_t elem_size, LLNo
     LLNode *node = malloc(sizeof(LLNode));
     if (node == NULL)
     {
-        perror("Cannot create a new node");
+        perror("[ll_create_node] Cannot create a new node");
         return NULL;
     }
     // elem_size is unsigned, no checks needed
@@ -105,7 +105,7 @@ LLNode *ll_get(LList *list, size_t idx)
 {
     if (list->size <= idx)
     {
-        printf("Index %zu not valid because size is %zu\n", idx, list->size);
+        fprintf(stderr, "[ll_get] Index %zu not valid because size is %zu\n", idx, list->size);
         return NULL;
     }
 
@@ -135,7 +135,7 @@ LLNode *ll_add(LList *list, void *elem, uint32_t elem_size, LLNodeType type, siz
 {
     if (idx > list->size)
     {
-        printf("Index %zu out of bounds (size: %zu)\n", idx, list->size);
+        fprintf(stderr, "[ll_add] Index %zu out of bounds (size: %zu)\n", idx, list->size);
         return NULL;
     }
 
@@ -180,7 +180,7 @@ LLNode *ll_add(LList *list, void *elem, uint32_t elem_size, LLNodeType type, siz
     LLNode *cur = ll_get(list, idx);
     if (cur == NULL)
     {
-        perror("Cannot insert element in the list");
+        fprintf(stderr, "[ll_add] Cannot insert element in the list\n");
         return NULL;
     }
 
@@ -197,13 +197,13 @@ LLNode *ll_add(LList *list, void *elem, uint32_t elem_size, LLNodeType type, siz
 /**
  * @copydoc ll_remove
  */
-size_t ll_remove(LList *list, size_t idx)
+int ll_remove(LList *list, size_t idx)
 {
     LLNode *node = ll_get(list, idx);
     if (node == NULL)
     {
-        printf("Cannot remove element from the list\n");
-        return (size_t)-1;
+        fprintf(stderr, "[ll_remove] Cannot remove element from the list\n");
+        return 0;
     }
 
     LLNode *prevNode = node->prev;
@@ -221,7 +221,8 @@ size_t ll_remove(LList *list, size_t idx)
     else
         nextNode->prev = prevNode;
 
-    return ll_remove_node(list, node);
+    ll_remove_node(list, node);
+    return 1;
 }
 
 /** @copydoc ll_print_node */
@@ -229,13 +230,13 @@ void ll_print_node(const LLNode *cur)
 {
     if (cur == NULL || cur->elem == NULL)
     {
-        printf("Invalid node\n");
+        fprintf(stderr, "[ll_print_node] Invalid node\n");
         return;
     }
 
     if (cur->elem_size == 0)
     {
-        printf("Empty node\n");
+        fprintf(stderr, "[ll_print_node] Empty node\n");
         return;
     }
 
@@ -337,7 +338,7 @@ int ll_pop(LList *list, LLNode *res)
     LLNode *node = ll_get(list, list->size - 1);
     if (node == NULL)
     {
-        perror("Cannot pop element");
+        fprintf(stderr, "[ll_pop] Cannot pop element\n");
         return 0;
     }
 
@@ -376,7 +377,7 @@ LLNode *ll_change(LList *list, void *elem, uint32_t elem_size, LLNodeType type, 
     LLNode *node = ll_get(list, idx);
     if (node == NULL)
     {
-        printf("Node at index %ld not found", idx);
+        fprintf(stderr, "[ll_change] Node at index %ld not found", idx);
         return NULL;
     }
     node->elem = elem;
