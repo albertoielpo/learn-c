@@ -20,6 +20,7 @@
 
 #define BROOM_VERSION 1
 #define BROOM_PATH_SIZE 10024
+#define BROOM_LIST_CAPACITY 256
 #define DOT_GIT ".git"
 #define GIT_SUFFIX "/" DOT_GIT
 #define GIT_SUFFIX_LEN 5
@@ -320,7 +321,7 @@ int main(int argc, char *argv[])
     printf("Searching for %s directories...\n\n", DOT_GIT);
 
     // Create list to store found project directories
-    AList *dir_list = al_create(256, AL_TYPE_STR);
+    AList *dir_list = al_create(BROOM_LIST_CAPACITY, AL_TYPE_STR);
     if (!dir_list)
     {
         fprintf(stderr, "Failed to create directory list\n");
