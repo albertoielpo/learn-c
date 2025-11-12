@@ -7,14 +7,14 @@ AList *al_create(size_t capacity, ALType type)
 {
     if (capacity == 0)
     {
-        printf("Invalid capacity\n");
+        fprintf(stderr, "[al_create] Invalid capacity\n");
         return NULL;
     }
 
     AList *list = malloc(sizeof(AList));
     if (list == NULL)
     {
-        perror("Cannot create a new array list");
+        perror("[al_create] Cannot create a new array list");
         return NULL;
     }
     list->capacity = capacity;
@@ -77,7 +77,7 @@ static size_t al_grow(AList *list)
     void *temp = realloc(list->data, sizeof(void *) * new_capacity);
     if (!temp)
     {
-        perror("Reallocation failed! The old data are still valid");
+        perror("[al_grow] Reallocation failed! The old data are still valid");
         return 0;
     }
     // capacity logic
@@ -101,7 +101,7 @@ static size_t al_shrink(AList *list)
     void *temp = realloc(list->data, sizeof(void *) * new_capacity);
     if (!temp)
     {
-        perror("Reallocation failed! The old data are still valid");
+        perror("[al_shrink] Reallocation failed! The old data are still valid");
         return 0;
     }
     // capacity logic
@@ -111,12 +111,12 @@ static size_t al_shrink(AList *list)
 }
 
 /** @copydoc al_insert */
-size_t al_insert(AList *list, void *ele, size_t idx)
+int al_insert(AList *list, void *ele, size_t idx)
 {
     if (idx > list->size)
     {
-        printf("Index out of bound\n");
-        return -1; // FIXME
+        fprintf(stderr, "[al_insert] Index out of bound\n");
+        return 0;
     }
 
     // check capacity
@@ -125,8 +125,8 @@ size_t al_insert(AList *list, void *ele, size_t idx)
         // if capacity is full then resize++
         if (!al_grow(list))
         {
-            printf("Cannot append a new element\n");
-            return -1; // FIXME
+            fprintf(stderr, "[al_insert] Cannot append a new element\n");
+            return 0;
         }
     }
 
@@ -138,17 +138,17 @@ size_t al_insert(AList *list, void *ele, size_t idx)
     list->data[idx] = ele;
     list->size++;
 
-    return idx;
+    return 1;
 }
 
 /** @copydoc al_append */
-size_t al_append(AList *list, void *ele)
+int al_append(AList *list, void *ele)
 {
     return al_insert(list, ele, list->size);
 }
 
 /** @copydoc al_prepend */
-size_t al_prepend(AList *list, void *ele)
+int al_prepend(AList *list, void *ele)
 {
     return al_insert(list, ele, 0);
 }

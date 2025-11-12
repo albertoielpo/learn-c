@@ -72,9 +72,9 @@ void al_destroy_deep(AList *list);
  *
  * @param[in] list List pointer
  * @param[in] ele Pointer to the element
- * @return element index or -1 in case of error
+ * @return 1 if OK or 0 in case of error
  */
-size_t al_append(AList *list, void *ele);
+int al_append(AList *list, void *ele);
 
 /**
  * @brief Prepend an element at the beginning of the array list
@@ -83,9 +83,9 @@ size_t al_append(AList *list, void *ele);
  *
  * @param[in] list List pointer
  * @param[in] ele Pointer to the element
- * @return element index or -1 in case of error
+ * @return 1 if OK or 0 in case of error
  */
-size_t al_prepend(AList *list, void *ele);
+int al_prepend(AList *list, void *ele);
 
 /**
  * @brief Get al element from the array list
@@ -106,9 +106,9 @@ void *al_get(AList *list, size_t idx);
  *
  * @param[in] list List pointer
  * @param[in] ele Pointer to the element
- * @return element index or -1 in case of error
+ * @return 1 if OK or 0 in case of error
  */
-size_t al_insert(AList *list, void *ele, size_t idx);
+int al_insert(AList *list, void *ele, size_t idx);
 
 /**
  * @brief Remove an element at the index
