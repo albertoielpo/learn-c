@@ -126,7 +126,7 @@ static void find_by_name(const char *path, const char *target_name, AList *list)
         }
 
         // Get file stats
-        if (stat(full_path, &statbuf) == -1)
+        if (lstat(full_path, &statbuf) == -1)
             continue;
 
         // If it's a directory, recurse into it
@@ -162,7 +162,7 @@ int remove_directory(const char *path)
     int result = 0;
 
     // Check if path exists
-    if (stat(path, &statbuf) != 0)
+    if (lstat(path, &statbuf) != 0)
         return 1; // Doesn't exist - not an error in cleanup context
 
     // Check if it's a directory
@@ -197,7 +197,7 @@ int remove_directory(const char *path)
         }
 
         // Get file stats
-        if (stat(full_path, &statbuf) == -1)
+        if (lstat(full_path, &statbuf) == -1)
         {
             perror("[remove_directory] stat failed");
             result = 3;
