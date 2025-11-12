@@ -18,8 +18,8 @@
 #include <unistd.h>
 #include "../utils/alist.h"
 
-#define BROOM_VERSION 1
-#define BROOM_PATH_SIZE 10024
+#define BROOM_VERSION "1.0"
+#define BROOM_PATH_SIZE 4096
 #define BROOM_LIST_CAPACITY 256
 #define DOT_GIT ".git"
 #define GIT_SUFFIX "/" DOT_GIT
@@ -71,11 +71,10 @@ static void find_by_name(const char *path, const char *target_name, AList *list)
 
     // Open directory
     dir = opendir(path);
+
+    // Silently skip directories we can't read (like find does)
     if (dir == NULL)
-    {
-        // Silently skip directories we can't read (like find does)
         return;
-    }
 
     // Read directory entries
     while ((entry = readdir(dir)) != NULL)
@@ -107,7 +106,7 @@ static void find_by_name(const char *path, const char *target_name, AList *list)
             size_t len = strlen(heap_path);
             if (len >= GIT_SUFFIX_LEN && strcmp(heap_path + len - GIT_SUFFIX_LEN, GIT_SUFFIX) == 0)
             {
-                heap_path[len - GIT_SUFFIX_LEN] = '\0';
+                heap_path[len - GIT_SUFFIX_LEN] = 0;
             }
             else
             {
@@ -164,14 +163,12 @@ int remove_directory(const char *path)
 
     // Check if path exists
     if (stat(path, &statbuf) != 0)
-    {
         return 1; // Doesn't exist - not an error in cleanup context
-    }
 
     // Check if it's a directory
     if (!S_ISDIR(statbuf.st_mode))
     {
-        fprintf(stderr, "%s is not a directory\n", path);
+        fprintf(stderr, "[remove_directory] %s is not a directory\n", path);
         return 2;
     }
 
@@ -179,7 +176,7 @@ int remove_directory(const char *path)
     dir = opendir(path);
     if (dir == NULL)
     {
-        perror("opendir failed");
+        perror("[remove_directory] opendir failed");
         return 3;
     }
 
@@ -188,15 +185,13 @@ int remove_directory(const char *path)
     {
         // Skip . and ..
         if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
-        {
             continue;
-        }
 
         // Build full path with length validation
         int written = snprintf(full_path, sizeof(full_path), "%s/%s", path, entry->d_name);
         if (written >= (int)sizeof(full_path))
         {
-            fprintf(stderr, "Path too long: %s/%s\n", path, entry->d_name);
+            fprintf(stderr, "[remove_directory] Path too long: %s/%s\n", path, entry->d_name);
             result = 3;
             break;
         }
@@ -204,7 +199,7 @@ int remove_directory(const char *path)
         // Get file stats
         if (stat(full_path, &statbuf) == -1)
         {
-            perror("stat failed");
+            perror("[remove_directory] stat failed");
             result = 3;
             break;
         }
@@ -223,7 +218,7 @@ int remove_directory(const char *path)
         {
             if (unlink(full_path) != 0)
             {
-                perror("unlink failed");
+                perror("[remove_directory] unlink failed");
                 result = 3;
                 break;
             }
@@ -234,14 +229,12 @@ int remove_directory(const char *path)
 
     // If there was an error during removal, don't try to remove the directory
     if (result != 0)
-    {
         return result;
-    }
 
     // Finally remove the directory itself
     if (rmdir(path) != 0)
     {
-        perror("rmdir failed");
+        perror("[remove_directory] rmdir failed");
         return 3;
     }
 
@@ -270,7 +263,7 @@ static void clean_up_targets(const char *path)
         // Validate path length
         if (written >= (int)sizeof(broom_path))
         {
-            fprintf(stderr, "Path too long: %s/%s\n", path, broom_targets[ii]);
+            fprintf(stderr, "[clean_up_targets] Path too long: %s/%s\n", path, broom_targets[ii]);
             continue;
         }
 
@@ -278,12 +271,11 @@ static void clean_up_targets(const char *path)
         int errcode = remove_directory(broom_path);
 
         // Report results
+        // errcode == 1 means directory doesn't exist (not an error in cleanup context)
         if (errcode == 0)
             printf("✓ Cleaned %s\n", broom_path);
-
-        // errcode == 1 means directory doesn't exist (not an error in cleanup context)
         else if (errcode > 1)
-            fprintf(stderr, "✗ Failed to clean %s (error code: %d)\n", broom_path, errcode);
+            fprintf(stderr, "[clean_up_targets] Failed to clean %s (error code: %d)\n", broom_path, errcode);
     }
 }
 
@@ -308,7 +300,7 @@ static void clean_up_targets(const char *path)
  */
 int main(int argc, char *argv[])
 {
-    printf("git-broom v%d\n", BROOM_VERSION);
+    printf("git-broom v%s\n", BROOM_VERSION);
     printf("Cleaning development artifacts from git repositories\n\n");
 
     // Parse command line arguments
