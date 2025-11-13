@@ -96,8 +96,13 @@ static size_t al_grow(AList *list)
  */
 static size_t al_shrink(AList *list)
 {
-    // resize with double capacity
+    // resize with half capacity
     size_t new_capacity = list->capacity / 2;
+
+    // don't shrink
+    if (new_capacity < 2)
+        return list->capacity;
+
     void *temp = realloc(list->data, sizeof(void *) * new_capacity);
     if (!temp)
     {
@@ -113,6 +118,12 @@ static size_t al_shrink(AList *list)
 /** @copydoc al_insert */
 int al_insert(AList *list, void *ele, size_t idx)
 {
+    if (list == NULL)
+    {
+        fprintf(stderr, "[al_insert] List is NULL\n");
+        return 0;
+    }
+
     if (idx > list->size)
     {
         fprintf(stderr, "[al_insert] Index out of bound\n");
@@ -156,9 +167,15 @@ int al_prepend(AList *list, void *ele)
 /** @copydoc al_get */
 void *al_get(AList *list, size_t idx)
 {
+    if (list == NULL)
+    {
+        fprintf(stderr, "[al_get] List is NULL\n");
+        return NULL;
+    }
+
     if (idx >= list->size)
     {
-        printf("Index out of bound\n");
+        fprintf(stderr, "[al_get] Index out of bound\n");
         return NULL;
     }
     return list->data[idx];
@@ -167,9 +184,15 @@ void *al_get(AList *list, size_t idx)
 /** @copydoc al_remove */
 int al_remove(AList *list, size_t idx)
 {
+    if (list == NULL)
+    {
+        fprintf(stderr, "[al_remove] List is NULL\n");
+        return 0;
+    }
+
     if (idx >= list->size)
     {
-        fprintf(stderr, "Index out of bound\n");
+        fprintf(stderr, "[al_remove] Index out of bound\n");
         return 0;
     }
 
@@ -179,7 +202,49 @@ int al_remove(AList *list, size_t idx)
         // if capacity is double the size then resize--
         if (!al_shrink(list))
         {
-            fprintf(stderr, "Cannot remove the element with index %ld\n", idx);
+            fprintf(stderr, "Cannot remove the element with index %zu\n", idx);
+            return 0;
+        }
+    }
+
+    // left shift
+    for (size_t ii = idx; ii < list->size - 1; ii++)
+    {
+        list->data[ii] = list->data[ii + 1];
+    }
+    list->size--;
+
+    return 1;
+}
+
+/** @copydoc al_remove_deep */
+int al_remove_deep(AList *list, size_t idx)
+{
+    if (list == NULL)
+    {
+        fprintf(stderr, "[al_remove_deep] List is NULL\n");
+        return 0;
+    }
+
+    if (idx >= list->size)
+    {
+        fprintf(stderr, "[al_remove_deep] Index out of bound\n");
+        return 0;
+    }
+
+    // Free the element before removing
+    if (list->data[idx] != NULL)
+    {
+        free(list->data[idx]);
+    }
+
+    // check capacity
+    if (list->size == (list->capacity / 2))
+    {
+        // if capacity is double the size then resize--
+        if (!al_shrink(list))
+        {
+            fprintf(stderr, "[al_remove_deep] Cannot remove the element with index %zu\n", idx);
             return 0;
         }
     }
@@ -197,6 +262,9 @@ int al_remove(AList *list, size_t idx)
 /** @copydoc al_print */
 void al_print(AList *list)
 {
+    if (list == NULL)
+        return;
+
     ALType type = list->type;
     void **data = list->data;
     if (type == AL_TYPE_STR)

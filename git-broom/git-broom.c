@@ -290,6 +290,9 @@ static void clean_up_targets(const char *path)
  * Usage: ./git-broom [path]
  *   path: Starting directory (default: current directory ".")
  *
+ * Build: gcc -Wall -Wpedantic -O2 -g -std=c99 ../utils/alist.c git-broom.c
+ * Build static: gcc -static -Wall -Wpedantic -O2 -g -std=c99 ../utils/alist.c git-broom.c
+ *
  * Example:
  *   ./git-broom /home/user/projects
  *   ./git-broom >stdout.txt 2>stderr.txt

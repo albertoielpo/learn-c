@@ -5,12 +5,13 @@
  * as defined by ALType.
  *
  * This array list stores pointers to data rather than the data itself.
+ * If you are interested to store size_t data, @see nalist.h
  *
  * Memory management:
  * - If the data is not owned by the AList (e.g., stack-allocated or managed elsewhere),
- *   use al_destroy() to free only the list structure. The data will remain valid.
+ *   use al_destroy() and al_remove() to free only the list structure. The data will remain valid.
  * - If the data is heap-allocated specifically for the AList (e.g., via malloc or strdup),
- *   use al_destroy_deep() to free both the list structure and the data contents.
+ *   use al_destroy_deep() and al_remove_deep() to free both the list structure and the data contents.
  *
  * @author Alberto Ielpo <alberto.ielpo@gmail.com>
  */
@@ -106,6 +107,7 @@ void *al_get(AList *list, size_t idx);
  *
  * @param[in] list List pointer
  * @param[in] ele Pointer to the element
+ * @param[in] idx Index
  * @return 1 if OK or 0 in case of error
  */
 int al_insert(AList *list, void *ele, size_t idx);
@@ -121,6 +123,19 @@ int al_insert(AList *list, void *ele, size_t idx);
  * @return 1 OK, 0 Error
  */
 int al_remove(AList *list, size_t idx);
+
+/**
+ * @brief Remove an element at the index and free its memory
+ *
+ * Dynamic array with autoscale feature using realloc.
+ * The element at the index is freed before removal.
+ * Use this when the element is heap-allocated and owned by the AList.
+ *
+ * @param[in] list List pointer
+ * @param[in] idx Index
+ * @return 1 OK, 0 Error
+ */
+int al_remove_deep(AList *list, size_t idx);
 
 /**
  * @brief Print all elements

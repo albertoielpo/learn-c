@@ -1,6 +1,8 @@
+#define _POSIX_C_SOURCE 200809L
 #include <stdio.h>
 #include <assert.h>
 #include <stdint.h>
+#include <string.h>
 #include "../utils/alist.h"
 
 void test_1(void)
@@ -97,6 +99,19 @@ void test_3(void)
     al_destroy(list);
 }
 
+void test_4(void)
+{
+    AList *list = al_create(10, AL_TYPE_STR);
+    al_append(list, strdup("hello")); // here list own the element
+    al_append(list, strdup("hello")); // this is another hello
+    // al_remove(list, 0)  // 💩 leak
+    al_remove_deep(list, 0); // remove deep first hello because is owned by AList
+    al_print(list);
+
+    // al_destroy(list);  // 💩 leak
+    al_destroy_deep(list);
+}
+
 // gcc -Wall -Wextra -Wpedantic -O2 -g -std=c99 ../utils/alist.c how-array-list.c
 int main(void)
 {
@@ -106,5 +121,7 @@ int main(void)
     test_2();
     printf("------- Test 3 -------\n");
     test_3();
+    printf("------- Test 4 -------\n");
+    test_4();
     return 0;
 }
