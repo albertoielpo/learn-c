@@ -8,7 +8,7 @@
  * in each project found.
  *
  * @author Alberto Ielpo <alberto.ielpo@gmail.com>
- * @version 1.0
+ * @version 1.1
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,7 +18,7 @@
 #include <unistd.h>
 #include "../utils/alist.h"
 
-#define BROOM_VERSION "1.0"
+#define BROOM_VERSION "1.1"
 #define BROOM_PATH_SIZE 4096
 #define BROOM_LIST_CAPACITY 256
 #define DOT_GIT ".git"
@@ -281,6 +281,27 @@ static void clean_up(const char *path, const char *const *broom_targets, size_t 
     }
 }
 
+static void print_usage(void)
+{
+    printf("Usage: git-broom [path] [target1] [target2] ...\n\n");
+    printf("Arguments:\n");
+    printf("  path      Starting directory to search (default: current directory '.')\n");
+    printf("  targets   Optional list of directories to clean (default: predefined list)\n\n");
+    printf("Examples:\n");
+    printf("  git-broom\n");
+    printf("      Clean default targets in current directory\n\n");
+    printf("  git-broom /home/user/projects\n");
+    printf("      Clean default targets in specified path\n\n");
+    printf("  git-broom . node_modules dist\n");
+    printf("      Clean only node_modules and dist in current directory\n\n");
+    printf("  git-broom /home/user/projects node_modules\n");
+    printf("      Clean only node_modules in specified path\n\n");
+    printf("  git-broom >stdout.txt 2>stderr.txt\n");
+    printf("      Redirect output to separate files\n\n");
+    printf("Default targets: node_modules, dist, build, .next, .nuxt, out,\n");
+    printf("                 coverage, .turbo, target, generated\n\n");
+}
+
 /**
  * @brief Main entry point for git-broom
  *
@@ -311,6 +332,20 @@ int main(const int argc, const char *argv[])
 {
     printf("git-broom v%s\n", BROOM_VERSION);
     printf("Cleaning development artifacts from git repositories\n\n");
+    if (argc >= 2 && argv[1][0] == '-')
+    {
+        if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)
+        {
+            print_usage();
+            return 0;
+        }
+        else
+        {
+            fprintf(stderr, "Error: Unknown option '%s'\n\n", argv[1]);
+            print_usage();
+            return 1;
+        }
+    }
 
     // Parse command line arguments
     const char *start_path = ".";
