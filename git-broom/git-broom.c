@@ -26,12 +26,12 @@
 #define GIT_SUFFIX_LEN 5
 
 /**
- * @brief List of target directories to clean
+ * @brief Default list of target directories to clean
  *
  * Common build output and dependency directories across various
  * programming languages and frameworks.
  */
-const char *broom_targets[] = {
+const char *default_broom_targets[] = {
     "node_modules", // npm/yarn/pnpm dependencies (JavaScript/TypeScript)
     "dist",         // distribution/build output (JavaScript/TypeScript)
     "build",        // build output (various languages)
@@ -43,7 +43,7 @@ const char *broom_targets[] = {
     "target",       // Maven/Cargo build directory (Java/Rust)
     "generated",    // generated resources (various languages)
 };
-const size_t broom_targets_count = sizeof(broom_targets) / sizeof(broom_targets[0]);
+const size_t default_broom_targets_count = sizeof(default_broom_targets) / sizeof(default_broom_targets[0]);
 
 /**
  * @brief Find directories by name recursively
@@ -242,18 +242,20 @@ int remove_directory(const char *path)
 }
 
 /**
- * @brief Clean up target directories in a project
+ * @brief Clean up broom_targets directories in a project
  *
  * Iterates through the list of target directories (node_modules, dist, etc.)
  * and attempts to remove each one from the specified project directory.
  * Prints success messages to stdout and errors to stderr.
  *
  * @param[in] path Project directory path
+ * @param[in] broom_targets Array of target directory names to clean
+ * @param[in] broom_targets_count Number of targets in the array
  *
  * @note Error code 1 (directory doesn't exist) is not reported as an error
  * @note All other error codes are reported to stderr
  */
-static void clean_up_targets(const char *path)
+static void clean_up(const char *path, const char *const *broom_targets, size_t broom_targets_count)
 {
     for (size_t ii = 0; ii < broom_targets_count; ii++)
     {
@@ -263,7 +265,7 @@ static void clean_up_targets(const char *path)
         // Validate path length
         if (written >= (int)sizeof(broom_path))
         {
-            fprintf(stderr, "[clean_up_targets] Path too long: %s/%s\n", path, broom_targets[ii]);
+            fprintf(stderr, "[clean_up] Path too long: %s/%s\n", path, broom_targets[ii]);
             continue;
         }
 
@@ -275,7 +277,7 @@ static void clean_up_targets(const char *path)
         if (errcode == 0)
             printf("✓ Cleaned %s\n", broom_path);
         else if (errcode > 1)
-            fprintf(stderr, "[clean_up_targets] Failed to clean %s (error code: %d)\n", broom_path, errcode);
+            fprintf(stderr, "[clean_up] Failed to clean %s (error code: %d)\n", broom_path, errcode);
     }
 }
 
@@ -287,33 +289,54 @@ static void clean_up_targets(const char *path)
  * 2. For each project found, clean up target directories
  * 3. Report results to stdout (cleaned) and stderr (errors)
  *
- * Usage: ./git-broom [path]
+ * Usage: ./git-broom [path] [target1] [target2] ...
  *   path: Starting directory (default: current directory ".")
+ *   broom_targets: Optional list of directories to clean (defaults to predefined list)
  *
- * Build: gcc -Wall -Wpedantic -O2 -g -std=c99 ../utils/alist.c git-broom.c
- * Build static: gcc -static -Wall -Wpedantic -O2 -g -std=c99 ../utils/alist.c git-broom.c
+ * Build: gcc -Wall -Wextra -Wpedantic -O2 -g -std=c99 ../utils/alist.c git-broom.c
+ * Build static: gcc -static -Wextra -Wall -Wpedantic -O2 -g -std=c99 ../utils/alist.c git-broom.c
  *
- * Example:
- *   ./git-broom /home/user/projects
+ * Examples:
+ *   ./git-broom                                    # Clean default broom_targets in current directory
+ *   ./git-broom /home/user/projects                # Clean default broom_targets in specified path
+ *   ./git-broom . node_modules dist                # Clean only node_modules and dist
+ *   ./git-broom /home/user/projects node_modules   # Clean only node_modules in specified path
  *   ./git-broom >stdout.txt 2>stderr.txt
  *
  * @param argc Argument count
  * @param argv Argument vector
  * @return 0 on success, 1 on initialization failure
  */
-int main(int argc, char *argv[])
+int main(const int argc, const char *argv[])
 {
     printf("git-broom v%s\n", BROOM_VERSION);
     printf("Cleaning development artifacts from git repositories\n\n");
 
     // Parse command line arguments
     const char *start_path = ".";
+    const char *const *broom_targets = default_broom_targets; // pointer to const pointer to const char
+    size_t broom_targets_count = default_broom_targets_count;
 
     if (argc >= 2)
+    {
         start_path = argv[1];
 
+        // If additional arguments are provided, use them as custom targets
+        if (argc >= 3)
+        {
+            broom_targets = (const char *const *)&argv[2];
+            broom_targets_count = argc - 2;
+        }
+    }
+
     printf("Working directory: %s\n", start_path);
-    printf("Searching for %s directories...\n\n", DOT_GIT);
+    printf("Searching for %s directories...\n", DOT_GIT);
+    printf("Targets to clean: ");
+    for (size_t i = 0; i < broom_targets_count; i++)
+    {
+        printf("%s%s", broom_targets[i], i < broom_targets_count - 1 ? ", " : "");
+    }
+    printf("\n\n");
 
     // Create list to store found project directories
     AList *dir_list = al_create(BROOM_LIST_CAPACITY, AL_TYPE_STR);
@@ -345,7 +368,7 @@ int main(int argc, char *argv[])
             printf("Project %zu/%zu: %s\n", ii + 1, dir_list->size, cur_dir);
             printf("---------------------------\n");
 
-            clean_up_targets(cur_dir);
+            clean_up(cur_dir, broom_targets, broom_targets_count);
             printf("\n");
         }
     }
