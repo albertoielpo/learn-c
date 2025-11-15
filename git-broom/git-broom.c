@@ -368,9 +368,8 @@ int main(const int argc, const char *argv[])
     printf("Searching for %s directories...\n", DOT_GIT);
     printf("Targets to clean: ");
     for (size_t i = 0; i < broom_targets_count; i++)
-    {
         printf("%s%s", broom_targets[i], i < broom_targets_count - 1 ? ", " : "");
-    }
+
     printf("\n\n");
 
     // Create list to store found project directories

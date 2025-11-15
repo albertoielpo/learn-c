@@ -4,9 +4,12 @@
 #include "llist.h"
 
 /**
- * Increment list size by one
+ * @brief Increment list size by one
+ *
+ * Internal helper to atomically increment the list size.
+ *
  * @param[in] list A valid (non-NULL) LList pointer
- * @returns The new list size after incrementing
+ * @return The new list size after incrementing
  */
 static size_t ll_increment_size(LList *list)
 {
@@ -14,9 +17,12 @@ static size_t ll_increment_size(LList *list)
 }
 
 /**
- * Decrement list size by one
+ * @brief Decrement list size by one
+ *
+ * Internal helper to atomically decrement the list size.
+ *
  * @param[in] list A valid (non-NULL) LList pointer
- * @returns The new list size after decrementing
+ * @return The new list size after decrementing
  */
 static size_t ll_decrement_size(LList *list)
 {
@@ -59,13 +65,44 @@ void ll_destroy(LList *list)
 }
 
 /**
- * Create a new linked list node
+ * @copydoc ll_destroy_deep
+ */
+void ll_destroy_deep(LList *list)
+{
+    if (list == NULL)
+        return;
+
+    LLNode *cur = list->head;
+    while (cur != NULL)
+    {
+        LLNode *next = cur->next;
+
+        // Free the element data if it exists
+        if (cur->elem != NULL)
+            free(cur->elem);
+
+        // Free the node itself
+        free(cur);
+        cur = next;
+    }
+
+    // Free the list structure
+    free(list);
+}
+
+/**
+ * @brief Create a new linked list node
+ *
+ * Internal helper to allocate and initialize a new node with the given data.
+ * Links the node to its neighbors in the list.
+ *
  * @param[in] prev Pointer to previous node (NULL if first node)
  * @param[in] elem Pointer to element data
- * @param[in] elem_size 1 or >1 in case of array
+ * @param[in] elem_size Number of elements (1 for single value, >1 for array)
  * @param[in] type Type of the element
  * @param[in] next Pointer to next node (NULL if last node)
- * @returns Pointer to newly allocated LLNode, or NULL on allocation failure
+ *
+ * @return Pointer to newly allocated LLNode, or NULL on allocation failure
  */
 static LLNode *ll_create_node(LLNode *prev, void *elem, uint32_t elem_size, LLNodeType type, LLNode *next)
 {
@@ -86,16 +123,51 @@ static LLNode *ll_create_node(LLNode *prev, void *elem, uint32_t elem_size, LLNo
 }
 
 /**
- * Remove a node from the list and free its memory
+ * @brief Internal removal implementation with optional deep cleanup
+ *
+ * Handles node removal logic with optional element data freeing.
+ * Unlinks the node, optionally frees element data, frees the node, and updates size.
+ *
  * @param[in] list Pointer to the list
- * @param[in] node Pointer to node to remove
- * @returns The new list size after removal
- * @note Does not free the element data, only the node structure
+ * @param[in] idx Index of node to remove
+ * @param[in] deep If 1, free element data; if 0, keep element data
+ *
+ * @return 1 on success, 0 on failure
  */
-static size_t ll_remove_node(LList *list, LLNode *node)
+static int ll_remove_internal(LList *list, size_t idx, int deep)
 {
+    LLNode *node = ll_get(list, idx);
+    if (node == NULL)
+    {
+        fprintf(stderr, "[ll_remove%s] Cannot remove element from the list\n",
+                deep ? "_deep" : "");
+        return 0;
+    }
+
+    LLNode *prevNode = node->prev;
+    LLNode *nextNode = node->next;
+
+    // Update head if removing first node
+    if (prevNode == NULL)
+        list->head = nextNode;
+    else
+        prevNode->next = nextNode;
+
+    // Update tail if removing last node
+    if (nextNode == NULL)
+        list->tail = prevNode;
+    else
+        nextNode->prev = prevNode;
+
+    // Optionally free the element data
+    if (deep && node->elem != NULL)
+        free(node->elem);
+
+    // Free the node and decrement size
     free(node);
-    return ll_decrement_size(list);
+    ll_decrement_size(list);
+
+    return 1;
 }
 
 /**
@@ -199,30 +271,15 @@ LLNode *ll_add(LList *list, void *elem, uint32_t elem_size, LLNodeType type, siz
  */
 int ll_remove(LList *list, size_t idx)
 {
-    LLNode *node = ll_get(list, idx);
-    if (node == NULL)
-    {
-        fprintf(stderr, "[ll_remove] Cannot remove element from the list\n");
-        return 0;
-    }
+    return ll_remove_internal(list, idx, 0);
+}
 
-    LLNode *prevNode = node->prev;
-    LLNode *nextNode = node->next;
-
-    // Update head if removing first node
-    if (prevNode == NULL)
-        list->head = nextNode;
-    else
-        prevNode->next = nextNode;
-
-    // Update tail if removing last node
-    if (nextNode == NULL)
-        list->tail = prevNode;
-    else
-        nextNode->prev = prevNode;
-
-    ll_remove_node(list, node);
-    return 1;
+/**
+ * @copydoc ll_remove_deep
+ */
+int ll_remove_deep(LList *list, size_t idx)
+{
+    return ll_remove_internal(list, idx, 1);
 }
 
 /** @copydoc ll_print_node */
