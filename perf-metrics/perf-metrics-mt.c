@@ -262,10 +262,10 @@ void print_system_info(int num_cpus)
  *   ./perf-metrics-mt 4      # Use only 4 CPUs (useful for testing scaling)
  *
  * Compile with:
- * gcc -Wall -Wextra -Wpedantic -g -std=c99 perf-metrics-mt.c -lm -lpthread
+ * gcc -Wall -Wextra -Wpedantic -g -std=c99 -o perf-metrics-mt perf-metrics-mt.c -lm -lpthread
  *
  * Static version
- * gcc -Wall -Wextra -Wpedantic -g -std=c99 perf-metrics-mt.c -lm -lpthread -static
+ * gcc -Wall -Wextra -Wpedantic -g -std=c99 -o perf-metrics-mt perf-metrics-mt.c -lm -lpthread -static
  *
  * @param argc Argument count
  * @param argv Argument vector (argv[1] = optional CPU count)
