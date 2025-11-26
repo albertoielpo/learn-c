@@ -32,6 +32,8 @@
 #include <pthread.h>
 #include <unistd.h>
 
+#define PERF_METRICS_VERSION "1.1"
+
 // Benchmark configuration
 #define ITERATIONS 100000000 // Number of operations per benchmark
 #define ARRAY_SIZE 10000000  // Array size for memory tests (10M elements)
@@ -227,6 +229,46 @@ void *thread_benchmark(void *arg)
 }
 
 /**
+ * Print help message
+ * Displays usage information and program description
+ */
+void print_help(void)
+{
+    printf("DESCRIPTION:\n");
+    printf("  This benchmark tests CPU and memory performance using multiple threads.\n");
+    printf("  Each thread runs the complete workload to stress all cores simultaneously,\n");
+    printf("  revealing real-world bottlenecks like memory bandwidth saturation,\n");
+    printf("  cache contention, and thermal throttling.\n\n");
+
+    printf("USAGE:\n");
+    printf("  perf-metrics-mt [OPTIONS] [NUM_CPUS]\n\n");
+
+    printf("OPTIONS:\n");
+    printf("  -h, --help    Display this help message and exit\n\n");
+
+    printf("ARGUMENTS:\n");
+    printf("  NUM_CPUS      Number of CPU cores to use (default: all available)\n");
+    printf("                Must be between 1 and the number of available CPUs\n\n");
+
+    printf("EXAMPLES:\n");
+    printf("  perf-metrics-mt           # Use all available CPUs\n");
+    printf("  perf-metrics-mt 4         # Use only 4 CPUs\n");
+    printf("  perf-metrics-mt --help    # Display this help message\n\n");
+
+    printf("BENCHMARK TESTS:\n");
+    printf("  - Integer arithmetic (addition, multiplication, division, XOR)\n");
+    printf("  - Floating-point operations (sqrt, sin)\n");
+    printf("  - Memory bandwidth (sequential and random access)\n\n");
+
+    printf("OUTPUT:\n");
+    printf("  The program runs 5 iterations and reports:\n");
+    printf("  - Per-thread timing and scores\n");
+    printf("  - Wall time (actual elapsed time)\n");
+    printf("  - Parallel efficiency (scaling effectiveness)\n");
+    printf("  - Average total score (higher is better)\n\n");
+}
+
+/**
  * Print system information
  * Displays OS details and CPU count using uname system call
  *
@@ -273,6 +315,14 @@ void print_system_info(int num_cpus)
  */
 int main(int argc, char const *argv[])
 {
+    printf("=== Performance metrics multithread v%s ===\n\n", PERF_METRICS_VERSION);
+    // Check for help flag before any other processing
+    if (argc > 1 && (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0))
+    {
+        print_help();
+        return 0;
+    }
+
     // Auto-detect number of online CPUs using POSIX sysconf
     // _SC_NPROCESSORS_ONLN returns the number of processors currently online
     int64_t num_cpus = sysconf(_SC_NPROCESSORS_ONLN);
@@ -284,8 +334,6 @@ int main(int argc, char const *argv[])
 
     // Store the machine's total CPU count for final reporting
     int64_t machine_cpus = num_cpus;
-
-    printf("=== Multi-Threaded CPU Benchmark Tool ===\n\n");
     print_system_info((int)num_cpus);
 
     // Parse command-line argument to optionally limit CPU usage
@@ -298,7 +346,8 @@ int main(int argc, char const *argv[])
         // Validate the CPU count
         if (selected_cpu < 1 || selected_cpu > num_cpus)
         {
-            fprintf(stderr, "Invalid selected cpu: must be between 1 and %ld\n", num_cpus);
+            fprintf(stderr, "Invalid selected cpu: must be between 1 and %ld\n\n", num_cpus);
+            print_help();
             return 1;
         }
 
