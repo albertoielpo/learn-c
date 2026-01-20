@@ -33,8 +33,7 @@ Formatting rules are defined in the `.clang-format` file.
 
 ```sh
 # Format all files
-find . -name "*.c" -o -name "*.h" | xargs ~/.vscode/extensions/ms-vscode.cpptools-1.30.1-linux-x64/LLVM/bin/clang-format
- -i
+find . -name "*.c" -o -name "*.h" | xargs ~/.vscode/extensions/ms-vscode.cpptools-*/LLVM/bin/clang-format -i
  ```
 
 ## License
