@@ -13,6 +13,19 @@ Some examples including vscode configuration to make the approach easier
 - Press ctrl+maiusc+B to launch the default task
 - Press F5 to build and attach in debug mode
 
+## Release
+
+Some utilities in this repository are useful standalone tools. Pre-built binaries are available via `GitHub Releases`.
+
+### Building release binaries
+
+```sh
+# Clean up
+make clean
+# Build all binaries to release
+make
+```
+
 ## Format
 Code is formatted using `clang-format`, bundled with the `ms-vscode.cpptools` extension (see [.vscode/extensions.json](.vscode/extensions.json)).
 
