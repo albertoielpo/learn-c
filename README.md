@@ -13,6 +13,17 @@ Some examples including vscode configuration to make the approach easier
 - Press ctrl+maiusc+B to launch the default task
 - Press F5 to build and attach in debug mode
 
+## Format
+Code is formatted using `clang-format`, bundled with the `ms-vscode.cpptools` extension (see [.vscode/extensions.json](.vscode/extensions.json)).
+
+Formatting rules are defined in the `.clang-format` file.
+
+```sh
+# Format all files
+find . -name "*.c" -o -name "*.h" | xargs ~/.vscode/extensions/ms-vscode.cpptools-1.30.1-linux-x64/LLVM/bin/clang-format
+ -i
+ ```
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

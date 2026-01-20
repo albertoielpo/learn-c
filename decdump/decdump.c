@@ -1,10 +1,10 @@
 /**
  * This program simulates the behavior of hexdump -C <filename>
  */
-#include <stdio.h>
 #include <ctype.h>
-#include <stdlib.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #define VISUAL_ROW 16
 #define DOT 46
@@ -12,13 +12,11 @@
 /**
  * Print human readable dec characters
  */
-void print_human(uint8_t *str, size_t row_offset)
-{
+void print_human(uint8_t *str, size_t row_offset) {
     size_t offset = row_offset % VISUAL_ROW == 0 ? VISUAL_ROW : row_offset % VISUAL_ROW;
     printf("\t|");
     size_t ii = 0;
-    for (; ii < offset; ii++)
-    {
+    for (; ii < offset; ii++) {
         uint8_t cur = str[row_offset - offset + ii];
         printf("%c", isprint(cur) ? cur : DOT); // if is not printable then print a dot (".")
     }
@@ -29,10 +27,8 @@ void print_human(uint8_t *str, size_t row_offset)
 /**
  * Print pad in the dec part if is not divisible by ROW_LENGTH
  */
-void print_pad(size_t pad)
-{
-    for (size_t ii = 0; ii < pad; ii++)
-    {
+void print_pad(size_t pad) {
+    for (size_t ii = 0; ii < pad; ii++) {
         printf("    ");
     }
 }
@@ -41,16 +37,13 @@ void print_pad(size_t pad)
  * Decdump implementation
  * It simulates the hexdump behavior except that print in dec
  */
-void dec_dump(uint8_t *buf, uint8_t len, uint32_t row_counter)
-{
+void dec_dump(uint8_t *buf, uint8_t len, uint32_t row_counter) {
     size_t ii = 0;
     printf("%08d  ", row_counter);
     printf("%03d ", buf[ii]); // print the left side (dec value)
-    for (ii = 1; ii < len; ii++)
-    {
+    for (ii = 1; ii < len; ii++) {
 
-        if (ii % 8 == 0)
-        {
+        if (ii % 8 == 0) {
             putchar(' '); // additional space every 8 bytes
         }
 
@@ -65,8 +58,7 @@ void dec_dump(uint8_t *buf, uint8_t len, uint32_t row_counter)
     }
 
     size_t rem = len % VISUAL_ROW;
-    if (rem > 0)
-    {
+    if (rem > 0) {
         print_pad(VISUAL_ROW - rem); // print pad in the left side
     }
     print_human(buf, ii); // print the right side
@@ -75,10 +67,8 @@ void dec_dump(uint8_t *buf, uint8_t len, uint32_t row_counter)
 /**
  * Close a file
  */
-int close_file(FILE *file)
-{
-    if (fclose(file) == EOF)
-    {
+int close_file(FILE *file) {
+    if (fclose(file) == EOF) {
         fprintf(stderr, "Cannot close file\n");
         return 1;
     }
@@ -88,11 +78,9 @@ int close_file(FILE *file)
 /**
  * Read a file and produce decdump
  */
-int file_dump(char *filename)
-{
+int file_dump(char *filename) {
     FILE *file = fopen(filename, "r");
-    if (file == NULL)
-    {
+    if (file == NULL) {
         fprintf(stderr, "Cannot open file\n");
         exit(1);
     }
@@ -102,12 +90,10 @@ int file_dump(char *filename)
     uint8_t ii = 0;          // max goes to VISUAL_ROW value
     uint32_t row_counter = 0;
 
-    while ((cur = fgetc(file)) != EOF)
-    {
+    while ((cur = fgetc(file)) != EOF) {
         buf[ii] = cur;
         ii++;
-        if (ii % VISUAL_ROW == 0)
-        {
+        if (ii % VISUAL_ROW == 0) {
             // dump
             dec_dump(buf, VISUAL_ROW, row_counter);
             ii = 0;
@@ -119,10 +105,8 @@ int file_dump(char *filename)
     return close_file(file);
 }
 
-int main(int argc, char **argv)
-{
-    if (argc != 2)
-    {
+int main(int argc, char **argv) {
+    if (argc != 2) {
         printf("Usage: %s <filename>\n", argv[0]);
         return EXIT_FAILURE;
     }

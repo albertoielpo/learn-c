@@ -13,14 +13,14 @@
  *
  */
 
+#include <arpa/inet.h>
+#include <errno.h>
+#include <limits.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <arpa/inet.h>
-#include <signal.h>
-#include <limits.h>
-#include <errno.h>
 
 #define BUFFER_SIZE 1024
 #define CONN_QUEUE_SIZE 128
@@ -33,10 +33,8 @@ int socket_fd = -1;
 /**
  * client close function
  */
-void c_close(int client_fd)
-{
-    if (client_fd != -1)
-    {
+void c_close(int client_fd) {
+    if (client_fd != -1) {
         close(client_fd);
     }
     printf("Client connection closed for client_fd %d\n", client_fd);
@@ -45,11 +43,9 @@ void c_close(int client_fd)
 /**
  * server socket init
  */
-void s_socket()
-{
+void s_socket() {
     // AF_INET (Ipv4), SOCK_STREAM (byte stream), 0 (AUTO)
-    if ((socket_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-    {
+    if ((socket_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         printf("Cannot open socket\n");
         exit(1);
     }
@@ -60,12 +56,10 @@ void s_socket()
 /**
  * server close socket
  */
-void s_close()
-{
+void s_close() {
     // close the socket server (fd)
     printf("Socker server closing...\n");
-    if (socket_fd != -1)
-    {
+    if (socket_fd != -1) {
         close(socket_fd);
     }
     printf("Socket server is closed\n");
@@ -74,16 +68,14 @@ void s_close()
 /**
  * server bind socket to port
  */
-void s_bind(uint16_t port)
-{
+void s_bind(uint16_t port) {
     // server address
     struct sockaddr_in server_addr;
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY; // listen on all interfaces
     server_addr.sin_port = htons(port);
     // bind socket on port
-    if (bind(socket_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
-    {
+    if (bind(socket_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
         printf("Cannot bind socket on port %d\n", port);
         s_close();
         exit(1);
@@ -94,10 +86,8 @@ void s_bind(uint16_t port)
 /**
  * server listen to socket fd
  */
-void s_listen(int conn_queue_size)
-{
-    if (listen(socket_fd, conn_queue_size) < 0)
-    {
+void s_listen(int conn_queue_size) {
+    if (listen(socket_fd, conn_queue_size) < 0) {
         printf("Socket is not listening\n");
         s_close();
         exit(1);
@@ -108,14 +98,12 @@ void s_listen(int conn_queue_size)
 /**
  * server accept on socket_fd
  */
-int s_accept()
-{
+int s_accept() {
     struct sockaddr_in client_addr;
     socklen_t client_len = sizeof(client_addr);
 
     int client_fd;
-    if ((client_fd = accept(socket_fd, (struct sockaddr *)&client_addr, &client_len)) < 0)
-    {
+    if ((client_fd = accept(socket_fd, (struct sockaddr *)&client_addr, &client_len)) < 0) {
         printf("Cannot accept client\n");
         s_close();
         exit(1);
@@ -127,10 +115,8 @@ int s_accept()
 /**
  * server write data to the client
  */
-void s_write_client(int client_fd, char *msg, size_t msg_length)
-{
-    if (write(client_fd, msg, msg_length) < 0)
-    {
+void s_write_client(int client_fd, char *msg, size_t msg_length) {
+    if (write(client_fd, msg, msg_length) < 0) {
         printf("Buffer not written to server");
     }
 };
@@ -138,17 +124,14 @@ void s_write_client(int client_fd, char *msg, size_t msg_length)
 /**
  * server read data from client
  */
-void s_read_client(int client_fd)
-{
+void s_read_client(int client_fd) {
     char buffer[BUFFER_SIZE];
 
     // until I have data...
-    while (1)
-    {
+    while (1) {
         memset(buffer, 0, BUFFER_SIZE); // reset the buffer
         int bytes_read = read(client_fd, buffer, BUFFER_SIZE - 1);
-        if (bytes_read <= 0)
-        {
+        if (bytes_read <= 0) {
             // no bytes read
             printf("Client disconnected\n");
             break;
@@ -162,8 +145,7 @@ void s_read_client(int client_fd)
 /**
  * server handle sigint signal (ctrl+c or kill -2)
  */
-void c_handle_sigint(int sig)
-{
+void c_handle_sigint(int sig) {
     printf("\nReceived sigint %d\n", sig);
     s_close();
     exit(0);
@@ -172,16 +154,13 @@ void c_handle_sigint(int sig)
 /**
  * server start
  */
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const *argv[]) {
     uint16_t port = SERVER_DEFAULT_PORT;
-    if (argc > 1)
-    {
+    if (argc > 1) {
         char *endptr;
         errno = 0;
         uint64_t argv_port = strtoul(argv[1], &endptr, 10);
-        if (errno != 0 || *endptr != '\0' || argv_port > USHRT_MAX)
-        {
+        if (errno != 0 || *endptr != '\0' || argv_port > USHRT_MAX) {
             printf("Conversion error or out of range\n");
             exit(1);
         }
@@ -204,8 +183,7 @@ int main(int argc, char const *argv[])
     signal(SIGINT, c_handle_sigint);
 
     // server is running until a stop signal is received
-    while (1)
-    {
+    while (1) {
         // accept incoming request from client
         int client_fd = s_accept();
 

@@ -16,18 +16,14 @@
  *
  * build: gcc -Wall -Wextra -Wpedantic -O2 -g -std=c99 char2hex.c
  */
-int main(int argc, char **argv)
-{
-    if (argc < 2)
-    {
+int main(int argc, char **argv) {
+    if (argc < 2) {
         printf("Usage: %s <str_1> <str_2>...<str_n>\n", argv[0]);
         return 1;
     }
 
-    for (int ii = 1; ii < argc; ii++)
-    {
-        for (size_t jj = 0; jj < strlen(argv[ii]); jj++)
-        {
+    for (int ii = 1; ii < argc; ii++) {
+        for (size_t jj = 0; jj < strlen(argv[ii]); jj++) {
             unsigned char cur = argv[ii][jj]; // convert into an unsigned char
             printf("%d ", cur);
         }

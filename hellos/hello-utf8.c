@@ -1,11 +1,10 @@
+#include "utf8.h"
 #include <stdio.h>
 #include <string.h>
-#include "utf8.h"
 
 // utf8.h usage: https://github.com/sheredom/utf8.h
 
-int main(void)
-{
+int main(void) {
     // utf8_int8_t is char (signed) to facilitate string literal init
     // signed overflow in not guarantee across C version / compiler and so on...
     // in contrary unsigned overflow is guarantee and for this reason utf8 is unsigned

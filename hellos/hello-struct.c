@@ -12,14 +12,12 @@ typedef struct
     int y;
 } Point;
 
-void edit_x_point(Point *p, int new_value)
-{
+void edit_x_point(Point *p, int new_value) {
     // (*p).x = 99; // can be written as p->x = 99
     p->x = new_value;
 }
 
-int main(void)
-{
+int main(void) {
     // init
     Point p1 = {10, 20};
 
@@ -49,10 +47,8 @@ int main(void)
 
     // matrix
     int data[2][3] = {{1, 2, 3}, {4, 5, 6}};
-    for (int ii = 0; ii < 2; ii++)
-    {
-        for (int jj = 0; jj < 3; jj++)
-        {
+    for (int ii = 0; ii < 2; ii++) {
+        for (int jj = 0; jj < 3; jj++) {
             printf("%d", data[ii][jj]);
         }
     }
@@ -80,8 +76,7 @@ int main(void)
     (points + 2)->x = 3;
     (points + 2)->y = 3;
 
-    for (int ii = 0; ii < point_length; ii++)
-    {
+    for (int ii = 0; ii < point_length; ii++) {
         printf("%d (%d,%d)\n", ii, points[ii].x, points[ii].y);
     }
 

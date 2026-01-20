@@ -9,9 +9,9 @@
 #ifndef SHA1_H
 #define SHA1_H
 
-#include <stdint.h>
-#include <stddef.h>
 #include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 
 #define SHA1_LENGTH 20
 #define SHA1_LENGTH_CHAR 41 // 40 + \0

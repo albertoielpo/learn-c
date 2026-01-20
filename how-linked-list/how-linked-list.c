@@ -1,11 +1,10 @@
-#include <stdio.h>
-#include <stdint.h>
-#include <assert.h>
-#include "../utils/nllist.h"
 #include "../utils/llist.h"
+#include "../utils/nllist.h"
+#include <assert.h>
+#include <stdint.h>
+#include <stdio.h>
 
-void test_1(void)
-{
+void test_1(void) {
     NLList *list = nll_create();
     nll_append(list, 150);
     nll_prepend(list, 151);
@@ -31,8 +30,7 @@ void test_1(void)
     nll_destroy(list);
 }
 
-void test_2()
-{
+void test_2() {
     printf("LLNode size: %zu bytes\n", sizeof(LLNode));
     printf("prev offset: %zu\n", offsetof(LLNode, prev));
     printf("elem offset: %zu\n", offsetof(LLNode, elem));
@@ -64,15 +62,13 @@ void test_2()
     ll_remove(list, list->size - 1);
 
     LLNode *head = ll_get_head(list);
-    if (head != NULL && head->elem != NULL)
-    {
+    if (head != NULL && head->elem != NULL) {
         char *vh = (char *)(head->elem);
         printf("head ele %s\n", vh);
     }
 
     LLNode *tail = ll_get_tail(list);
-    if (tail != NULL && tail->elem != NULL)
-    {
+    if (tail != NULL && tail->elem != NULL) {
         int *vt = (int *)(tail->elem);
         printf("tail ele %d\n", *vt);
     }
@@ -91,8 +87,7 @@ void test_2()
     ll_destroy(list);
 }
 
-void test_3(void)
-{
+void test_3(void) {
     LList *list = ll_create();
     {
         char h, e, l, o;
@@ -107,11 +102,9 @@ void test_3(void)
         ll_append(list, &o, 1, LL_TYPE_INT8);
         ll_print(list);
 
-        for (size_t ii = 0; ii < list->size; ii++)
-        {
+        for (size_t ii = 0; ii < list->size; ii++) {
             LLNode *node = ll_get(list, ii);
-            if (node != NULL && node->elem != NULL)
-            {
+            if (node != NULL && node->elem != NULL) {
                 char *val = (char *)node->elem;
                 if (node->elem_size == 1) // security check
                     putchar(*val);
@@ -123,8 +116,7 @@ void test_3(void)
     ll_destroy(list);
 }
 
-void test_4(void)
-{
+void test_4(void) {
     LList *list = ll_create();
     {
         int8_t int8_array[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -140,8 +132,7 @@ void test_4(void)
     ll_destroy(list);
 }
 
-void test_5(void)
-{
+void test_5(void) {
     LList *list = ll_create();
     {
         int8_t elem1[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -153,16 +144,14 @@ void test_5(void)
         ll_print(list);
 
         LLNode node;
-        if (!ll_pop(list, &node))
-        {
+        if (!ll_pop(list, &node)) {
             printf("Cannot pop the element!\n");
             return;
         }
 
         printf("popped elem size: %d\n", node.elem_size);
         char *cur = (char *)node.elem;
-        for (size_t ii = 0; ii < node.elem_size; ii++)
-        {
+        for (size_t ii = 0; ii < node.elem_size; ii++) {
             printf("%d ", *cur);
             cur++;
         }
@@ -179,8 +168,7 @@ void test_5(void)
     ll_destroy(list);
 }
 
-void test_6()
-{
+void test_6() {
     // empty array
     LList *list = ll_create();
     {
@@ -195,8 +183,7 @@ void test_6()
 
         LLNode *head = ll_get_head(list);
 
-        while (head != NULL)
-        {
+        while (head != NULL) {
             ll_print_node(head);
             printf("Remove the head\n");
             ll_remove(list, 0);
@@ -207,8 +194,7 @@ void test_6()
 }
 
 // gcc -Wall -Wextra -Wpedantic -O2 -g -std=c99 ../utils/llist.c ../utils/nllist.c how-linked-list.c
-int main(void)
-{
+int main(void) {
     printf("--------- numeric list test ---------\n");
     test_1();
     printf("---------- void* list test ----------\n");

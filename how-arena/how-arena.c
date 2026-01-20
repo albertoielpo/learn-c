@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include "../utils/bumparena.h"
+#include <stdio.h>
 
 /**
  * @brief Read entire file contents into a buffer
@@ -9,26 +9,22 @@
  * @param[in] area Bump arena pointer
  * @return Allocated buffer containing file contents, or NULL on error
  */
-static uint8_t *read_entire_file(const char *filepath, size_t *res_file_size, BumpArena *arena)
-{
+static uint8_t *read_entire_file(const char *filepath, size_t *res_file_size, BumpArena *arena) {
     FILE *file = fopen(filepath, "r");
-    if (file == NULL)
-    {
+    if (file == NULL) {
         perror("[read_entire_file] fopen");
         return NULL;
     }
 
     // Get file size
-    if (fseek(file, 0, SEEK_END) != 0)
-    {
+    if (fseek(file, 0, SEEK_END) != 0) {
         perror("[read_entire_file] fseek");
         fclose(file);
         return NULL;
     }
 
     long file_size = ftell(file);
-    if (file_size < 0)
-    {
+    if (file_size < 0) {
         perror("[read_entire_file] ftell");
         fclose(file);
         return NULL;
@@ -38,8 +34,7 @@ static uint8_t *read_entire_file(const char *filepath, size_t *res_file_size, Bu
 
     // Allocate buffer
     uint8_t *buffer = bumparena_alloc(arena, file_size + 1);
-    if (buffer == NULL)
-    {
+    if (buffer == NULL) {
         perror("[read_entire_file] bumparena_alloc");
         fclose(file);
         return NULL;
@@ -47,8 +42,7 @@ static uint8_t *read_entire_file(const char *filepath, size_t *res_file_size, Bu
 
     // Read entire file
     size_t bytes_read = fread(buffer, 1, file_size, file);
-    if (bytes_read != (size_t)file_size)
-    {
+    if (bytes_read != (size_t)file_size) {
         if (feof(file))
             fprintf(stderr, "[read_entire_file] Unexpected EOF\n");
         else if (ferror(file))
@@ -68,15 +62,13 @@ static uint8_t *read_entire_file(const char *filepath, size_t *res_file_size, Bu
     return buffer;
 }
 
-static void safe_exit(BumpArena *arena)
-{
+static void safe_exit(BumpArena *arena) {
     bumparena_destroy(arena);
     exit(1);
 }
 
 // gcc -Wall -Wextra -Wpedantic -O2 -g -std=c99 ../utils/bumparena.c how-arena.c
-int main(void)
-{
+int main(void) {
     BumpArena *arena = bumparena_create(1024);
     {
         // I would like to reserve some bytes to place some numbers...
@@ -85,8 +77,7 @@ int main(void)
         uint8_t *my_data = bumparena_alloc(arena, buffer_size);
         if (!my_data)
             safe_exit(arena);
-        for (size_t ii = 0; ii < buffer_size; ii++)
-        {
+        for (size_t ii = 0; ii < buffer_size; ii++) {
             (*(my_data + ii)) = (ii + 57) & 0xFF; // ensure uint8 size
         }
     }

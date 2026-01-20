@@ -7,8 +7,8 @@
 
 #include "../utils/hmap.h"
 #include <stdio.h>
-#include <time.h>
 #include <string.h>
+#include <time.h>
 
 /**
  * @brief Generate a random key string
@@ -16,11 +16,9 @@
  * @param buffer Output buffer for the key
  * @param length Length of the key to generate
  */
-void generate_random_key(char *buffer, size_t length)
-{
+void generate_random_key(char *buffer, size_t length) {
     const char charset[] = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    for (size_t i = 0; i < length - 1; i++)
-    {
+    for (size_t i = 0; i < length - 1; i++) {
         buffer[i] = charset[rand() % (sizeof(charset) - 1)];
     }
     buffer[length - 1] = '\0';
@@ -29,16 +27,14 @@ void generate_random_key(char *buffer, size_t length)
 /**
  * @brief Get elapsed time in milliseconds
  */
-double get_elapsed_ms(struct timespec start, struct timespec end)
-{
+double get_elapsed_ms(struct timespec start, struct timespec end) {
     return (end.tv_sec - start.tv_sec) * 1000.0 +
            (end.tv_nsec - start.tv_nsec) / 1000000.0;
 }
 
 // gcc -Wall -Wextra -Wpedantic -O2 -g -std=c99 ../utils/hmap.c how-hashmap.c
 // valgrind ./a.out
-int main(void)
-{
+int main(void) {
     srand((unsigned int)time(NULL)); // seed
 
     const size_t test_size = 1000000;
@@ -49,8 +45,7 @@ int main(void)
     char *key_ref[test_size]; // pointer array
     HMap *map = hmap_create(16);
 
-    for (size_t ii = 0; ii < test_size; ii++)
-    {
+    for (size_t ii = 0; ii < test_size; ii++) {
         char *key = malloc(sizeof(char) * 32);
         key_ref[ii] = key;
         generate_random_key(key, 32);            // 32 chars rnd key
@@ -75,10 +70,8 @@ int main(void)
 
     // comparision with O(n) search, array
     clock_gettime(CLOCK_MONOTONIC, &start);
-    for (size_t ii = 0; ii < test_size; ii++)
-    {
-        if (strcmp(key_ref[test_idx], key_ref[ii]) == 0)
-        {
+    for (size_t ii = 0; ii < test_size; ii++) {
+        if (strcmp(key_ref[test_idx], key_ref[ii]) == 0) {
             printf("found %s\n", key_ref[ii]);
             break;
         }

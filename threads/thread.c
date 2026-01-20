@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include <pthread.h>
+#include <stdio.h>
 #include <unistd.h>
 
 typedef struct
@@ -8,8 +8,7 @@ typedef struct
     int sleep_seconds;
 } FooParam;
 
-void *foo(void *param)
-{
+void *foo(void *param) {
     FooParam *num = (FooParam *)(param);
     sleep(num->sleep_seconds); // sleep in seconds
     printf("Thread %s that sleep %d seconds\n", num->name, num->sleep_seconds);
@@ -17,8 +16,7 @@ void *foo(void *param)
     return NULL;
 }
 
-int main(void)
-{
+int main(void) {
 
     // Result is ...
     // This is the main thread

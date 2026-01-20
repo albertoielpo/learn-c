@@ -1,27 +1,23 @@
-#include <stdio.h>
-#include <stdint.h>
 #include "nalist.h"
+#include <stdint.h>
+#include <stdio.h>
 
 /** @copydoc nal_create */
-NAList *nal_create(size_t capacity)
-{
-    if (capacity == 0)
-    {
+NAList *nal_create(size_t capacity) {
+    if (capacity == 0) {
         fprintf(stderr, "[nal_create] Invalid capacity\n");
         return NULL;
     }
 
     NAList *list = malloc(sizeof(NAList));
-    if (list == NULL)
-    {
+    if (list == NULL) {
         perror("[nal_create] Cannot create a new array list");
         return NULL;
     }
     list->capacity = capacity;
     list->size = 0;
     list->data = malloc(sizeof(size_t) * capacity);
-    if (list->data == NULL)
-    {
+    if (list->data == NULL) {
         perror("[nal_create] Cannot create a new array list");
         free(list);
         return NULL;
@@ -30,8 +26,7 @@ NAList *nal_create(size_t capacity)
 }
 
 /** @copydoc nal_destroy */
-void nal_destroy(NAList *list)
-{
+void nal_destroy(NAList *list) {
     if (list == NULL)
         return;
 
@@ -51,13 +46,11 @@ void nal_destroy(NAList *list)
  * @param[in] list List pointer
  * @return new capacity or 0 in case of error
  */
-static size_t nal_grow(NAList *list)
-{
+static size_t nal_grow(NAList *list) {
     // resize with double capacity
     size_t new_capacity = list->capacity * 2;
     void *temp = realloc(list->data, sizeof(size_t) * new_capacity);
-    if (!temp)
-    {
+    if (!temp) {
         perror("[nal_grow] Reallocation failed! The old data are still valid");
         return 0;
     }
@@ -75,8 +68,7 @@ static size_t nal_grow(NAList *list)
  * @param[in] list List pointer
  * @return new capacity or 0 in case of error
  */
-static size_t nal_shrink(NAList *list)
-{
+static size_t nal_shrink(NAList *list) {
     // resize with half capacity
     size_t new_capacity = list->capacity / 2;
 
@@ -85,8 +77,7 @@ static size_t nal_shrink(NAList *list)
         return list->capacity;
 
     void *temp = realloc(list->data, sizeof(size_t) * new_capacity);
-    if (!temp)
-    {
+    if (!temp) {
         perror("[nal_shrink] Reallocation failed! The old data are still valid");
         return 0;
     }
@@ -97,34 +88,28 @@ static size_t nal_shrink(NAList *list)
 }
 
 /** @copydoc nal_insert */
-int nal_insert(NAList *list, size_t ele, size_t idx)
-{
-    if (list == NULL)
-    {
+int nal_insert(NAList *list, size_t ele, size_t idx) {
+    if (list == NULL) {
         fprintf(stderr, "[nal_insert] List is NULL\n");
         return 0;
     }
 
-    if (idx > list->size)
-    {
+    if (idx > list->size) {
         fprintf(stderr, "[nal_insert] Index out of bound\n");
         return 0;
     }
 
     // check capacity
-    if (list->size == list->capacity)
-    {
+    if (list->size == list->capacity) {
         // if capacity is full then resize++
-        if (!nal_grow(list))
-        {
+        if (!nal_grow(list)) {
             fprintf(stderr, "[nal_insert] Cannot append a new element\n");
             return 0;
         }
     }
 
     // right shift
-    for (size_t ii = list->size; ii > idx; ii--)
-    {
+    for (size_t ii = list->size; ii > idx; ii--) {
         list->data[ii] = list->data[ii - 1];
     }
     list->data[idx] = ele;
@@ -134,34 +119,28 @@ int nal_insert(NAList *list, size_t ele, size_t idx)
 }
 
 /** @copydoc nal_append */
-int nal_append(NAList *list, size_t ele)
-{
+int nal_append(NAList *list, size_t ele) {
     return nal_insert(list, ele, list->size);
 }
 
 /** @copydoc nal_prepend */
-int nal_prepend(NAList *list, size_t ele)
-{
+int nal_prepend(NAList *list, size_t ele) {
     return nal_insert(list, ele, 0);
 }
 
 /** @copydoc nal_get */
-int nal_get(NAList *list, size_t idx, size_t *res)
-{
-    if (list == NULL)
-    {
+int nal_get(NAList *list, size_t idx, size_t *res) {
+    if (list == NULL) {
         fprintf(stderr, "[nal_get] List is NULL\n");
         return 0;
     }
 
-    if (res == NULL)
-    {
+    if (res == NULL) {
         fprintf(stderr, "[nal_get] Result pointer is NULL\n");
         return 0;
     }
 
-    if (idx >= list->size)
-    {
+    if (idx >= list->size) {
         fprintf(stderr, "[nal_get] Index out of bound\n");
         return 0;
     }
@@ -170,34 +149,28 @@ int nal_get(NAList *list, size_t idx, size_t *res)
 }
 
 /** @copydoc nal_remove */
-int nal_remove(NAList *list, size_t idx)
-{
-    if (list == NULL)
-    {
+int nal_remove(NAList *list, size_t idx) {
+    if (list == NULL) {
         fprintf(stderr, "[nal_remove] List is NULL\n");
         return 0;
     }
 
-    if (idx >= list->size)
-    {
+    if (idx >= list->size) {
         fprintf(stderr, "[nal_remove] Index out of bound\n");
         return 0;
     }
 
     // check capacity
-    if (list->size == (list->capacity / 2))
-    {
+    if (list->size == (list->capacity / 2)) {
         // if capacity is double the size then resize--
-        if (!nal_shrink(list))
-        {
+        if (!nal_shrink(list)) {
             fprintf(stderr, "[nal_remove] Cannot remove the element with index %zu\n", idx);
             return 0;
         }
     }
 
     // left shift
-    for (size_t ii = idx; ii < list->size - 1; ii++)
-    {
+    for (size_t ii = idx; ii < list->size - 1; ii++) {
         list->data[ii] = list->data[ii + 1];
     }
     list->size--;
@@ -206,8 +179,7 @@ int nal_remove(NAList *list, size_t idx)
 }
 
 /** @copydoc nal_print */
-void nal_print(NAList *list)
-{
+void nal_print(NAList *list) {
     if (list == NULL)
         return;
     for (size_t ii = 0; ii < list->size; ii++)

@@ -32,8 +32,7 @@
  *
  * Each AList instance is restricted to a single type to ensure homogeneity.
  */
-typedef enum
-{
+typedef enum {
     AL_TYPE_STR,   // Null-terminated string (char*)
     AL_TYPE_INT8,  // Pointer to 8-bit signed integer (int8_t*)
     AL_TYPE_INT16, // Pointer to 16-bit signed integer (int16_t*)

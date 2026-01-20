@@ -12,8 +12,8 @@
 
 #ifndef BUMPARENA_H
 #define BUMPARENA_H
-#include <stdlib.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 typedef struct
 {

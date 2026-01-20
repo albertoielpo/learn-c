@@ -22,14 +22,14 @@
  * @author Alberto Ielpo <alberto.ielpo@gmail.com>
  */
 #define _POSIX_C_SOURCE 199309L
+#include <math.h>
+#include <pthread.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
-#include <time.h>
 #include <string.h>
 #include <sys/utsname.h>
-#include <stdint.h>
-#include <pthread.h>
+#include <time.h>
 #include <unistd.h>
 
 #define PERF_METRICS_VERSION "1.1"
@@ -65,15 +65,13 @@ typedef struct
  * @param iterations Number of loop iterations to perform
  * @return Elapsed time in seconds
  */
-double benchmark_int_ops(int thread_id, int64_t iterations)
-{
+double benchmark_int_ops(int thread_id, int64_t iterations) {
     struct timespec start, end;
     clock_gettime(CLOCK_MONOTONIC, &start);
 
     // volatile prevents compiler from optimizing away the loop
     volatile int64_t result = 0;
-    for (int64_t ii = 0; ii < iterations; ii++)
-    {
+    for (int64_t ii = 0; ii < iterations; ii++) {
         result += ii * 13 + thread_id; // Addition and multiplication
         result -= ii / 7;              // Subtraction and division
         result ^= ii;                  // Bitwise XOR
@@ -99,15 +97,13 @@ double benchmark_int_ops(int thread_id, int64_t iterations)
  * @param iterations Number of loop iterations to perform
  * @return Elapsed time in seconds
  */
-double benchmark_float_ops(int thread_id, int64_t iterations)
-{
+double benchmark_float_ops(int thread_id, int64_t iterations) {
     struct timespec start, end;
     clock_gettime(CLOCK_MONOTONIC, &start);
 
     // volatile prevents compiler from optimizing away the calculations
     volatile double result = (double)thread_id;
-    for (int64_t ii = 1; ii < iterations; ii++)
-    {
+    for (int64_t ii = 1; ii < iterations; ii++) {
         result += sqrt((double)ii);       // Square root (expensive operation)
         result *= 1.0001;                 // Multiplication
         result = sin(result / 1000000.0); // Sine function (very expensive)
@@ -135,8 +131,7 @@ double benchmark_float_ops(int thread_id, int64_t iterations)
  * @param array_size Number of elements in test array
  * @return Elapsed time in seconds, or -1.0 on allocation failure
  */
-double benchmark_memory_ops(int thread_id, int64_t array_size)
-{
+double benchmark_memory_ops(int thread_id, int64_t array_size) {
     struct timespec start, end;
 
     // Calculate memory needed (8 bytes per int64_t element)
@@ -145,8 +140,7 @@ double benchmark_memory_ops(int thread_id, int64_t array_size)
     // Allocate memory from heap (not stack - stack is limited to ~8MB)
     int64_t *array = (int64_t *)malloc(bytes_needed);
 
-    if (!array)
-    {
+    if (!array) {
         fprintf(stderr, "Thread %d: Memory allocation failed\n", thread_id);
         return -1.0;
     }
@@ -170,8 +164,7 @@ double benchmark_memory_ops(int thread_id, int64_t array_size)
     // Test 3: Random access pattern (tests cache misses and latency)
     // Uses prime number (7919) to create pseudo-random access pattern
     // This pattern causes many cache misses, stressing memory latency
-    for (int64_t ii = 0; ii < array_size / 10; ii++)
-    {
+    for (int64_t ii = 0; ii < array_size / 10; ii++) {
         // Use long long (LL) suffix to prevent integer overflow
         int64_t idx = (ii * 7919LL + thread_id) % array_size;
         array[idx] = array[idx] * 2 + 1;
@@ -201,8 +194,7 @@ double benchmark_memory_ops(int thread_id, int64_t array_size)
  * @param arg Pointer to thread_result_t structure
  * @return NULL (required by pthread API, return value not used)
  */
-void *thread_benchmark(void *arg)
-{
+void *thread_benchmark(void *arg) {
     thread_result_t *result = (thread_result_t *)arg;
     int tid = result->thread_id;
 
@@ -232,8 +224,7 @@ void *thread_benchmark(void *arg)
  * Print help message
  * Displays usage information and program description
  */
-void print_help(void)
-{
+void print_help(void) {
     printf("DESCRIPTION:\n");
     printf("  This benchmark tests CPU and memory performance using multiple threads.\n");
     printf("  Each thread runs the complete workload to stress all cores simultaneously,\n");
@@ -274,11 +265,9 @@ void print_help(void)
  *
  * @param num_cpus Number of online CPUs detected
  */
-void print_system_info(int num_cpus)
-{
+void print_system_info(int num_cpus) {
     struct utsname sys_info;
-    if (uname(&sys_info) == 0)
-    {
+    if (uname(&sys_info) == 0) {
         printf("System Information:\n");
         printf("  OS: %s\n", sys_info.sysname);      // e.g., "Linux"
         printf("  Node: %s\n", sys_info.nodename);   // Hostname
@@ -313,12 +302,10 @@ void print_system_info(int num_cpus)
  * @param argv Argument vector (argv[1] = optional CPU count)
  * @return 0 on success, 1 on error
  */
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const *argv[]) {
     printf("=== Performance metrics multithread v%s ===\n\n", PERF_METRICS_VERSION);
     // Check for help flag before any other processing
-    if (argc > 1 && (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0))
-    {
+    if (argc > 1 && (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)) {
         print_help();
         return 0;
     }
@@ -326,8 +313,7 @@ int main(int argc, char const *argv[])
     // Auto-detect number of online CPUs using POSIX sysconf
     // _SC_NPROCESSORS_ONLN returns the number of processors currently online
     int64_t num_cpus = sysconf(_SC_NPROCESSORS_ONLN);
-    if (num_cpus <= 0)
-    {
+    if (num_cpus <= 0) {
         fprintf(stderr, "Failed to detect CPU count, defaulting to 1\n");
         num_cpus = 1;
     }
@@ -338,14 +324,12 @@ int main(int argc, char const *argv[])
 
     // Parse command-line argument to optionally limit CPU usage
     // This is useful for testing scaling behavior or limiting resource usage
-    if (argc > 1)
-    {
+    if (argc > 1) {
         // Convert string argument to integer
         int selected_cpu = atoi(argv[1]);
 
         // Validate the CPU count
-        if (selected_cpu < 1 || selected_cpu > num_cpus)
-        {
+        if (selected_cpu < 1 || selected_cpu > num_cpus) {
             fprintf(stderr, "Invalid selected cpu: must be between 1 and %ld\n\n", num_cpus);
             print_help();
             return 1;
@@ -370,8 +354,7 @@ int main(int argc, char const *argv[])
     pthread_t *threads = malloc(num_cpus * sizeof(pthread_t));
     thread_result_t *results = malloc(num_cpus * sizeof(thread_result_t));
 
-    if (!threads || !results)
-    {
+    if (!threads || !results) {
         fprintf(stderr, "Failed to allocate thread resources\n");
         return 1;
     }
@@ -382,8 +365,7 @@ int main(int argc, char const *argv[])
 
     // Run benchmark 5 times for statistical stability
     // Multiple runs help average out system noise and give more reliable results
-    for (int test = 0; test < 5; test++)
-    {
+    for (int test = 0; test < 5; test++) {
         printf("=== Test %d ===\n", test + 1);
 
         // Measure wall clock time for the entire parallel execution
@@ -392,16 +374,14 @@ int main(int argc, char const *argv[])
         clock_gettime(CLOCK_MONOTONIC, &test_start);
 
         // Create and launch all threads
-        for (int64_t i = 0; i < num_cpus; i++)
-        {
+        for (int64_t i = 0; i < num_cpus; i++) {
             // Initialize thread parameters
             results[i].thread_id = i;
             results[i].total_threads = num_cpus;
 
             // pthread_create: creates a new thread that executes thread_benchmark
             // Parameters: thread handle, attributes (NULL=default), function, argument
-            if (pthread_create(&threads[i], NULL, thread_benchmark, &results[i]) != 0)
-            {
+            if (pthread_create(&threads[i], NULL, thread_benchmark, &results[i]) != 0) {
                 fprintf(stderr, "Failed to create thread %ld\n", i);
                 return 1;
             }
@@ -425,8 +405,7 @@ int main(int argc, char const *argv[])
 
         // Display individual thread results
         printf("\nPer-Thread Results:\n");
-        for (int64_t i = 0; i < num_cpus; i++)
-        {
+        for (int64_t i = 0; i < num_cpus; i++) {
             printf("  Thread %ld: Int=%.4fs Float=%.4fs Mem=%.4fs Total=%.4fs Score=%.2f\n",
                    i, results[i].int_time, results[i].float_time,
                    results[i].mem_time, results[i].total_time, results[i].score);

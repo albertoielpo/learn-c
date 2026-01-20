@@ -14,8 +14,7 @@
 /**
  * Node structure for doubly linked list of numeric values
  */
-typedef struct nllnode
-{
+typedef struct nllnode {
     struct nllnode *prev; // Pointer to previous node
     size_t elem;          // Numeric element value
     struct nllnode *next; // Pointer to next node

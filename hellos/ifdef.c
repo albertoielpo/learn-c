@@ -1,7 +1,6 @@
 #include <stdio.h>
 
-int main(void)
-{
+int main(void) {
 #ifdef DEBUG
     // the code inside DEBUG block is available only if is compiled with -D property
     // ex:gcc -DDEBUG main.c -o main

@@ -8,11 +8,10 @@
 #define HMAP_H
 #define FNV_OFFSET 14695981039346656037UL
 #define FNV_PRIME 1099511628211UL
-#include <stdlib.h>
 #include <stdint.h>
+#include <stdlib.h>
 
-typedef enum
-{
+typedef enum {
     HE_TYPE_NULL,  // tombstone for element deleted
     HE_TYPE_STR,   // string \0 terminated (char*)
     HE_TYPE_INT8,  //  8-bit signed integer pointer

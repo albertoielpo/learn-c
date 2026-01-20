@@ -1,8 +1,8 @@
-#include <stdio.h>
+#include "../third-party/sds/sds.h"
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../third-party/sds/sds.h"
 
 // write and read data using files and sds library
 
@@ -29,8 +29,7 @@ uint8_t write_products_text(char *filename, Product *products, uint32_t total);
  */
 Product *read_products(char *filename, uint32_t *total);
 
-int main(void)
-{
+int main(void) {
 
     char *file_dat = "fsds.dat";
     char *file_txt = "fsds.txt";
@@ -55,8 +54,7 @@ int main(void)
     uint8_t res2 = write_products_text(file_txt, products, products_length);
 
     // deallocate products
-    for (uint8_t ii = 0; ii < products_length; ii++)
-    {
+    for (uint8_t ii = 0; ii < products_length; ii++) {
         // deallocate sds string
         sdsfree(products[ii].value);
     }
@@ -67,8 +65,7 @@ int main(void)
     // -rw-rw-r--  1 alberto alberto   682 Jun 12 12:23 fsds.dat
     // -rw-rw-r--  1 alberto alberto   675 Jun 12 12:23 fsds.txt
 
-    if (res != 0 || res2 != 0)
-    {
+    if (res != 0 || res2 != 0) {
         printf("write_products in error");
         return 1;
     }
@@ -77,8 +74,7 @@ int main(void)
     uint32_t total = 0;
     Product *products_res = read_products(file_dat, &total);
     printf("Read from file %d products\n", total);
-    for (uint32_t ii = 0; ii < total; ii++)
-    {
+    for (uint32_t ii = 0; ii < total; ii++) {
         printf("id %u, name %s\n", products_res[ii].id, products_res[ii].value);
     }
 
@@ -88,8 +84,7 @@ int main(void)
     uint32_t total_text = 0;
     Product *products_res_text = read_products(file_dat, &total_text);
     printf("Read from file text %d products\n", total_text);
-    for (uint32_t ii = 0; ii < total_text; ii++)
-    {
+    for (uint32_t ii = 0; ii < total_text; ii++) {
         printf("id %u, name %s\n", products_res_text[ii].id, products_res_text[ii].value);
     }
 
@@ -98,18 +93,15 @@ int main(void)
     return 0;
 }
 
-uint8_t close_file(FILE *file)
-{
-    if (fclose(file) == EOF)
-    {
+uint8_t close_file(FILE *file) {
+    if (fclose(file) == EOF) {
         printf("Cannot close file");
         return 1;
     }
     return 0;
 }
 
-uint8_t file_err(char *msg, FILE *file)
-{
+uint8_t file_err(char *msg, FILE *file) {
     printf("%s", msg);
     close_file(file);
     return 1;
@@ -119,18 +111,15 @@ uint8_t file_err(char *msg, FILE *file)
  * Return 0 if all good
  * Return 1 if errors
  */
-uint8_t write_products(char *filename, Product *products, uint32_t total)
-{
+uint8_t write_products(char *filename, Product *products, uint32_t total) {
     FILE *file;
     file = fopen(filename, "wb");
-    if (file == NULL)
-    {
+    if (file == NULL) {
         printf("Cannot open file");
         return 1;
     }
 
-    if (fwrite(&total, sizeof(int), 1, file) != 1)
-    {
+    if (fwrite(&total, sizeof(int), 1, file) != 1) {
         return file_err("cannot write total to file", file);
     }
 
@@ -144,25 +133,21 @@ uint8_t write_products(char *filename, Product *products, uint32_t total)
     // }
 
     // here the correct implementation
-    for (uint32_t ii = 0; ii < total; ii++)
-    {
+    for (uint32_t ii = 0; ii < total; ii++) {
         Product *p = &products[ii];
         uint32_t id = p->id;
         uint32_t len = (uint32_t)sdslen(p->value);
 
         // write the ID
-        if (fwrite(&id, sizeof(uint32_t), 1, file) != 1)
-        {
+        if (fwrite(&id, sizeof(uint32_t), 1, file) != 1) {
             return file_err("cannot write id to file", file);
         }
         // write the string length
-        if (fwrite(&len, sizeof(uint32_t), 1, file) != 1)
-        {
+        if (fwrite(&len, sizeof(uint32_t), 1, file) != 1) {
             return file_err("cannot write str len to file", file);
         }
         // write the string bytes (no trailing ‘\0’)
-        if (fwrite(p->value, sizeof(char), len, file) != len)
-        {
+        if (fwrite(p->value, sizeof(char), len, file) != len) {
             return file_err("cannot write str to file", file);
         }
     }
@@ -170,25 +155,20 @@ uint8_t write_products(char *filename, Product *products, uint32_t total)
     return close_file(file);
 }
 
-uint8_t write_products_text(char *filename, Product *products, uint32_t total)
-{
+uint8_t write_products_text(char *filename, Product *products, uint32_t total) {
     FILE *file;
     file = fopen(filename, "w");
-    if (file == NULL)
-    {
+    if (file == NULL) {
         printf("Cannot open file");
         return 1;
     }
 
-    if (fprintf(file, "%d", total) < 0)
-    {
+    if (fprintf(file, "%d", total) < 0) {
         return file_err("cannot write total to file", file);
     }
-    for (uint32_t ii = 0; ii < total; ii++)
-    {
+    for (uint32_t ii = 0; ii < total; ii++) {
         // here .value resolve automatically the pointer and write the actual value
-        if (fprintf(file, "%d%s", products[ii].id, products[ii].value) < 0)
-        {
+        if (fprintf(file, "%d%s", products[ii].id, products[ii].value) < 0) {
             return file_err("cannot write products to file", file);
         }
     }
@@ -196,43 +176,36 @@ uint8_t write_products_text(char *filename, Product *products, uint32_t total)
     return close_file(file);
 }
 
-Product *read_products(char *filename, uint32_t *total)
-{
+Product *read_products(char *filename, uint32_t *total) {
     FILE *file = fopen(filename, "rb");
-    if (file == NULL)
-    {
+    if (file == NULL) {
         printf("Cannot open file");
         return NULL;
     }
 
     // Read count
     uint32_t count;
-    if (fread(&count, sizeof(uint32_t), 1, file) != 1)
-    {
+    if (fread(&count, sizeof(uint32_t), 1, file) != 1) {
         file_err("cannot read products", file);
         return NULL;
     }
 
     Product *products = malloc(count * sizeof(Product));
 
-    for (uint32_t i = 0; i < count; i++)
-    {
+    for (uint32_t i = 0; i < count; i++) {
         uint32_t id, len;
-        if (fread(&id, sizeof(uint32_t), 1, file) != 1)
-        {
+        if (fread(&id, sizeof(uint32_t), 1, file) != 1) {
             file_err("cannot read id", file);
             return NULL;
         }
-        if (fread(&len, sizeof(uint32_t), 1, file) != 1)
-        {
+        if (fread(&len, sizeof(uint32_t), 1, file) != 1) {
             file_err("cannot read len", file);
             return NULL;
         }
 
         // allocate an sds string of exactly 'len' bytes
         sds str = sdsnewlen(NULL, len);
-        if (fread(str, sizeof(char), len, file) != len)
-        {
+        if (fread(str, sizeof(char), len, file) != len) {
             file_err("cannot read len", file);
             return NULL;
         }

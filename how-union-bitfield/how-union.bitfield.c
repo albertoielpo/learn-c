@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 
 typedef struct
 {
@@ -26,8 +26,7 @@ typedef struct
     uint8_t c : 8; // 8 bit
 } zap;
 
-int main(void)
-{
+int main(void) {
     foo fool;
     fool.a = 256;
     fool.b[0] = 1;

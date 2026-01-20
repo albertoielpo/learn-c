@@ -1,12 +1,11 @@
-#include <stdio.h>
 #include "my-lib.h"
+#include <stdio.h>
 
 /**
  * build chain
  * gcc -c my_lib.c && gcc -c program.c && gcc program.o my_lib.o -o program
  */
-int main(void)
-{
+int main(void) {
     int a = 10;
     int b = 20;
     printf("before swap > a: %d, b: %d\n", a, b);

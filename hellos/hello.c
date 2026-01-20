@@ -1,22 +1,19 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define DATA_SIZE 10
 
-void print_it(char *x)
-{
+void print_it(char *x) {
     printf("%s\n", x);
     x[1] = 'y';
 }
 
 // string example
-int main2(void)
-{
+int main2(void) {
     char test[] = "test"; // sizeof 5 strlen 4
     printf("%ld\n", sizeof(test));
-    for (size_t ii = 0; ii < strlen(test); ii++)
-    {
+    for (size_t ii = 0; ii < strlen(test); ii++) {
         printf("%c\n", test[ii]);
     }
     print_it(test); // test and &test[0] are equals if test is an array and the function accept a *
@@ -25,20 +22,17 @@ int main2(void)
     return 0;
 }
 
-void modify_int(int *src, int dst)
-{
+void modify_int(int *src, int dst) {
     *src = dst; // assign dst to the ref in memory of src
 }
 
-void swap_int(int *src, int *dst)
-{
+void swap_int(int *src, int *dst) {
     int tmp = *src;
     *src = *dst;
     *dst = tmp;
 }
 
-int main_3(void)
-{
+int main_3(void) {
     // int x = 5;
     // int *y = &x;
     // // *y = 10;                                 // dereference the pointer and change the content
@@ -54,8 +48,7 @@ int main_3(void)
     return 0;
 }
 
-int main_str(void)
-{
+int main_str(void) {
     // this string is allocated in the stack
     char stack_str[] = "my_string"; // read write
     printf("%p %s\n", stack_str, stack_str);
@@ -115,8 +108,7 @@ int main_str(void)
 //     return 0;
 // }
 
-int main_utf8(void)
-{
+int main_utf8(void) {
     char emoji[] = "😃"; // 4 bytes for emoji
     char eur[] = "€";    // 3 bytes for eur
     // char problem = '€';        // this is a problem (overflow)
@@ -125,8 +117,7 @@ int main_utf8(void)
     return 0;
 }
 
-void print_binary_recursive(unsigned int x, int bits)
-{
+void print_binary_recursive(unsigned int x, int bits) {
 
     if (bits == 0)
         return;
@@ -136,8 +127,7 @@ void print_binary_recursive(unsigned int x, int bits)
     putchar(((x & 1U) ? '1' : '0'));
 }
 
-int main(void)
-{
+int main(void) {
     unsigned char a = 32;
     unsigned char b = ~a; // 223
     printf("%u %u\n", a, b);

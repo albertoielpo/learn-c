@@ -13,14 +13,12 @@ typedef struct
 // pointer to a struct fract
 typedef fract *fractptr;
 
-errorcode foo(void)
-{
+errorcode foo(void) {
     errorcode a = -20;
     return a;
 }
 
-int main(void)
-{
+int main(void) {
     printf("%d\n", foo());
     fract f;
     f.n = 10;

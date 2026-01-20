@@ -1,8 +1,7 @@
-#include <stdio.h>
 #include "../third-party/sds/sds.h"
+#include <stdio.h>
 
-int main(void)
-{
+int main(void) {
     // SDS_TYPE_5 (length is in the header)
     sds sds_string = sdsnew("Hello World!");
     printf("%s\nlength %ld\n", sds_string, sdslen(sds_string));

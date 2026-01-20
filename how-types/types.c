@@ -1,9 +1,8 @@
-#include <stdio.h>
 #include <limits.h>
 #include <stdint.h>
+#include <stdio.h>
 
-int main(void)
-{
+int main(void) {
     // in C standard types lenght is not guarantee
     // in x86_64 arch is usually like this
     char c = 'c';     // 1 byte

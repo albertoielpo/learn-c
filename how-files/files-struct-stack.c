@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -28,8 +28,7 @@ uint8_t write_products_text(char *filename, Product *products, uint32_t total);
  */
 Product *read_products(char *filename, uint32_t *total);
 
-int main(void)
-{
+int main(void) {
 
     char *file_dat = "fss.dat";
     char *file_txt = "fss.txt";
@@ -59,8 +58,7 @@ int main(void)
     // -rw-rw-r--  1 alberto alberto   116 Jun 12 11:04 fss.dat
     // -rw-rw-r--  1 alberto alberto    42 Jun 12 11:04 fss.txt
 
-    if (res != 0 || res2 != 0)
-    {
+    if (res != 0 || res2 != 0) {
         printf("write_products in error");
         return 1;
     }
@@ -69,8 +67,7 @@ int main(void)
     uint32_t total = 0;
     Product *products_res = read_products(file_dat, &total);
     printf("Read from file %d products\n", total);
-    for (uint32_t ii = 0; ii < total; ii++)
-    {
+    for (uint32_t ii = 0; ii < total; ii++) {
         printf("id %d, name %s\n", products_res[ii].id, products_res[ii].value);
     }
 
@@ -80,8 +77,7 @@ int main(void)
     uint32_t total_text = 0;
     Product *products_res_text = read_products(file_dat, &total_text);
     printf("Read from file text %d products\n", total_text);
-    for (uint32_t ii = 0; ii < total_text; ii++)
-    {
+    for (uint32_t ii = 0; ii < total_text; ii++) {
         printf("id %d, name %s\n", products_res_text[ii].id, products_res_text[ii].value);
     }
 
@@ -90,10 +86,8 @@ int main(void)
     return 0;
 }
 
-uint8_t close_file(FILE *file)
-{
-    if (fclose(file) == EOF)
-    {
+uint8_t close_file(FILE *file) {
+    if (fclose(file) == EOF) {
         printf("Cannot close file");
         return 1;
     }
@@ -104,25 +98,21 @@ uint8_t close_file(FILE *file)
  * Return 0 if all good
  * Return 1 if errors
  */
-uint8_t write_products(char *filename, Product *products, uint32_t total)
-{
+uint8_t write_products(char *filename, Product *products, uint32_t total) {
     FILE *file;
     file = fopen(filename, "wb");
-    if (file == NULL)
-    {
+    if (file == NULL) {
         printf("Cannot open file");
         return 1;
     }
 
-    if (fwrite(&total, sizeof(int), 1, file) != 1)
-    {
+    if (fwrite(&total, sizeof(int), 1, file) != 1) {
         printf("cannot write total to file");
         fclose(file);
         return 1;
     }
 
-    if (fwrite(products, sizeof(Product), total, file) != total)
-    {
+    if (fwrite(products, sizeof(Product), total, file) != total) {
         printf("cannot write products to file");
         close_file(file);
         return 1;
@@ -131,26 +121,21 @@ uint8_t write_products(char *filename, Product *products, uint32_t total)
     return close_file(file);
 }
 
-uint8_t write_products_text(char *filename, Product *products, uint32_t total)
-{
+uint8_t write_products_text(char *filename, Product *products, uint32_t total) {
     FILE *file;
     file = fopen(filename, "w");
-    if (file == NULL)
-    {
+    if (file == NULL) {
         printf("Cannot open file");
         return 1;
     }
 
-    if (fprintf(file, "%d", total) < 0)
-    {
+    if (fprintf(file, "%d", total) < 0) {
         printf("cannot write total to file");
         fclose(file);
         return 1;
     }
-    for (uint32_t ii = 0; ii < total; ii++)
-    {
-        if (fprintf(file, "%d%s", products[ii].id, products[ii].value) < 0)
-        {
+    for (uint32_t ii = 0; ii < total; ii++) {
+        if (fprintf(file, "%d%s", products[ii].id, products[ii].value) < 0) {
             printf("cannot write products to file");
             fclose(file);
             return 1;
@@ -160,33 +145,28 @@ uint8_t write_products_text(char *filename, Product *products, uint32_t total)
     return close_file(file);
 }
 
-Product *read_products(char *filename, uint32_t *total)
-{
+Product *read_products(char *filename, uint32_t *total) {
     FILE *file;
     file = fopen(filename, "rb");
-    if (file == NULL)
-    {
+    if (file == NULL) {
         printf("Cannot open file");
         return NULL;
     }
 
-    if (fread(total, sizeof(int), 1, file) != 1)
-    {
+    if (fread(total, sizeof(int), 1, file) != 1) {
         printf("Cannot read file");
         close_file(file);
         return NULL;
     }
 
     Product *products = malloc(sizeof(Product) * *total);
-    if (fread(products, sizeof(Product), *total, file) != *total)
-    {
+    if (fread(products, sizeof(Product), *total, file) != *total) {
         printf("Cannot read products");
         close_file(file);
         return NULL;
     }
 
-    if (close_file(file) != 0)
-    {
+    if (close_file(file) != 0) {
         printf("Cannot close file");
     }
     return products;

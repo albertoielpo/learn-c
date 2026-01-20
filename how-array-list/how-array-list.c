@@ -1,12 +1,11 @@
 #define _POSIX_C_SOURCE 200809L
-#include <stdio.h>
+#include "../utils/alist.h"
 #include <assert.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
-#include "../utils/alist.h"
 
-void test_1(void)
-{
+void test_1(void) {
     AList *list = al_create(3, AL_TYPE_STR);
     {
         char str1[] = {"Append world!"};
@@ -23,8 +22,7 @@ void test_1(void)
 
         printf("--- print element index 1 ---\n");
         void *data;
-        if ((data = al_get(list, 1)))
-        {
+        if ((data = al_get(list, 1))) {
             char *data_str = (char *)data;
             printf("%s\n", data_str);
             assert(data_str[0] == 'A');
@@ -42,8 +40,7 @@ void test_1(void)
     al_destroy(list);
 }
 
-void test_2(void)
-{
+void test_2(void) {
     AList *list = al_create(10, AL_TYPE_INT32);
     {
         int32_t a, b, c;
@@ -72,8 +69,7 @@ void test_2(void)
     al_destroy(list);
 }
 
-void test_3(void)
-{
+void test_3(void) {
     AList *list = al_create(10, AL_TYPE_INT8);
 
     {
@@ -88,8 +84,7 @@ void test_3(void)
         al_append(list, &o);
 
         al_print(list);
-        for (size_t ii = 0; ii < list->size; ii++)
-        {
+        for (size_t ii = 0; ii < list->size; ii++) {
             char *val = (char *)al_get(list, ii); // get char*
             putchar(*val);                        // dereference
         }
@@ -99,8 +94,7 @@ void test_3(void)
     al_destroy(list);
 }
 
-void test_4(void)
-{
+void test_4(void) {
     AList *list = al_create(10, AL_TYPE_STR);
     al_append(list, strdup("hello")); // here list own the element
     al_append(list, strdup("hello")); // this is another hello
@@ -113,8 +107,7 @@ void test_4(void)
 }
 
 // gcc -Wall -Wextra -Wpedantic -O2 -g -std=c99 ../utils/alist.c how-array-list.c
-int main(void)
-{
+int main(void) {
     printf("------- Test 1 -------\n");
     test_1();
     printf("------- Test 2 -------\n");

@@ -8,8 +8,7 @@ typedef struct
     int b;
 } Data;
 
-int main(void)
-{
+int main(void) {
     Data *data = malloc(sizeof(Data));
     data->a = 2;
     data->b = 3;

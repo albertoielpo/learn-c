@@ -1,24 +1,21 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include "../utils/sha1.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 /**
  * This program calculate sha1 hash of some input strings
  * @param[in]  argc  args count
  * @param[in]  argv  strings
  */
-int main(int argc, char *argv[])
-{
-    if (argc < 2)
-    {
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
         printf("hashs calculate the sha1 of some input strings\n");
         printf("usage: %s <str1>...<strn>\n", argv[0]);
         return EXIT_FAILURE;
     }
 
-    for (int ii = 1; ii < argc; ii++)
-    {
+    for (int ii = 1; ii < argc; ii++) {
         uint8_t hash[SHA1_LENGTH];
         if (!sha1((uint8_t *)argv[ii], strlen(argv[ii]), hash))
             return EXIT_FAILURE;

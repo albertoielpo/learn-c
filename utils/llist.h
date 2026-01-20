@@ -34,8 +34,7 @@
  *
  * Each node can store a different type, enabling mixed-type lists.
  */
-typedef enum
-{
+typedef enum {
     LL_TYPE_STR,   // Null-terminated string (char*)
     LL_TYPE_INT8,  // Pointer to 8-bit signed integer(s) (int8_t*)
     LL_TYPE_INT16, // Pointer to 16-bit signed integer(s) (int16_t*)
@@ -48,8 +47,7 @@ typedef enum
  *
  * Each node maintains bidirectional links and stores metadata about its element.
  */
-typedef struct llnode
-{
+typedef struct llnode {
     struct llnode *prev; // Pointer to previous node (NULL for head)
     void *elem;          // Pointer to element data
     struct llnode *next; // Pointer to next node (NULL for tail)

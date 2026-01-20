@@ -4,13 +4,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void hello(void)
-{
+void hello(void) {
     printf("Hello!\n");
 }
 
-void baubau(void)
-{
+void baubau(void) {
     printf("Bau Bau!\n");
 }
 
@@ -18,10 +16,8 @@ void baubau(void)
  * @param[in] n how many time
  * @param[in] x function to call
  */
-void call_n_times(int n, void (*x)(void))
-{
-    while (n--)
-    {
+void call_n_times(int n, void (*x)(void)) {
+    while (n--) {
         x();
     }
 }
@@ -30,8 +26,7 @@ void call_n_times(int n, void (*x)(void))
  * @param[in] a pointer to the first element
  * @param[in] b pointer to the second element
  */
-int sort_asc(const void *a, const void *b)
-{
+int sort_asc(const void *a, const void *b) {
     const int *ap = a;
     const int *bp = b;
     if (*ap > *bp)
@@ -41,8 +36,7 @@ int sort_asc(const void *a, const void *b)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     // declaration of function pointer
     void (*x)(void);
     // assignment
@@ -64,8 +58,7 @@ int main(void)
     // example using quick sort with a function*
     int ELEMS = 10;
     int a[ELEMS];
-    for (int ii = 0; ii < ELEMS; ii++)
-    {
+    for (int ii = 0; ii < ELEMS; ii++) {
         // rand() is deterministic
         // for pseudo random numbers use a seed
         a[ii] = rand() & 0xFF; // take only last byte
