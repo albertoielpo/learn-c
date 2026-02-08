@@ -1,14 +1,14 @@
+/**
+ * Classless Inter-Domain Routing calculator
+ *
+ * @author Alberto Ielpo <alberto.ielpo@gmail.com>
+ */
+#include "../utils/semver.h"
 #include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-/**
- * Example
- * subnet: FFFFFF00 (255.255.255.0)
- * @param label
- * @param ip
- */
+uint32_t VERSION = BUILD_VERSION(1, 0, 0);
+
 static void print_ip(const char *label, uint32_t ip) {
     printf("%s: %0X (%d.%d.%d.%d)\n", label, ip,
            (ip >> 24) & 0xFF,
@@ -17,18 +17,11 @@ static void print_ip(const char *label, uint32_t ip) {
            ip & 0xFF);
 }
 
-static uint32_t ip_to_32(char *ip_s) {
-    int a = atoi(strtok(ip_s, "."));
-    int b = atoi(strtok(NULL, "."));
-    int c = atoi(strtok(NULL, "."));
-    int d = atoi(strtok(NULL, "."));
-
-    return ((uint32_t)a << 24) | (b << 16) | (c << 8) | d;
-}
-
+// gcc -Wall -Wextra -Wpedantic -O2 -g -std=c99 ../utils/semver.c cidr
 int main(int argc, char const *argv[]) {
     if (argc != 2) {
-        fprintf(stderr, "Usage: %s <cidr>\n", argv[0]);
+        Semver semver = get_human(VERSION);
+        fprintf(stderr, "Classless Inter-Domain Routing calculator v%s\nusage: %s A.B.C.D/N\nexample: %s 192.168.1.0/24\n", semver.value, argv[0], argv[0]);
         return 1;
     }
 

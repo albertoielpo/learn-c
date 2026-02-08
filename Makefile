@@ -10,6 +10,7 @@ TARGETS = $(RELEASE_DIR)/char2dec \
           $(RELEASE_DIR)/decdump \
           $(RELEASE_DIR)/deldup \
           $(RELEASE_DIR)/git-broom \
+          $(RELEASE_DIR)/cidr \
           $(RELEASE_DIR)/perf-metrics-mt
 
 .PHONY: all clean
@@ -20,8 +21,8 @@ $(RELEASE_DIR):
 	mkdir -p $(RELEASE_DIR)
 
 # char2dec - character to decimal converter
-$(RELEASE_DIR)/char2dec: char2/char2dec.c | $(RELEASE_DIR)
-	$(CC) $(CFLAGS) -o $@ $<
+$(RELEASE_DIR)/char2dec: char2/char2dec.c utils/semver.c | $(RELEASE_DIR)
+	$(CC) $(CFLAGS) -o $@ char2/char2dec.c utils/semver.c
 
 # char2hex - character to hexadecimal converter
 $(RELEASE_DIR)/char2hex: char2/char2hex.c | $(RELEASE_DIR)
@@ -42,6 +43,10 @@ $(RELEASE_DIR)/git-broom: git-broom/git-broom.c utils/alist.c | $(RELEASE_DIR)
 # perf-metrics-mt - CPU benchmark tool
 $(RELEASE_DIR)/perf-metrics-mt: perf-metrics/perf-metrics-mt.c | $(RELEASE_DIR)
 	$(CC) $(CFLAGS) -o $@ $< -lm -lpthread
+
+# cidr calculator
+$(RELEASE_DIR)/cidr: cidr/cidr.c utils/semver.c | $(RELEASE_DIR)
+	$(CC) $(CFLAGS) -o $@ cidr/cidr.c utils/semver.c
 
 clean:
 	rm -rf $(RELEASE_DIR)
