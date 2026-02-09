@@ -26,6 +26,20 @@ make clean
 make
 ```
 
+## Convention
+typedef style convention
+
+```c
+// Struct types: PascalCase
+typedef struct {
+    int x;
+    int y;
+} Point;
+
+// Simple type aliases: lowercase_t
+typedef uint32_t port_t;
+```
+
 ## Format
 Code is formatted using `clang-format`, bundled with the `ms-vscode.cpptools` extension (see [.vscode/extensions.json](.vscode/extensions.json)).
 
