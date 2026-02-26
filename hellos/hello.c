@@ -157,8 +157,11 @@ int main(void) {
     char *ab = calloc(1, sizeof(char));
     char *buffer = ab;
     *buffer = 'A';
-    printf("%p %d %d", ab, *ab, *buffer);
+    printf("%p %d %d\n", ab, *ab, *buffer);
     free(ab);
+
+    int q = (10,0,500);
+    printf("%d\n", q);  // print 500
 
     return 0;
 }

@@ -26,3 +26,5 @@ deldup/hash
 deldup/hashs
 deldup/deldup
 release
+how-printf/test*.txt
+*.swp
