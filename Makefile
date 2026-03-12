@@ -11,7 +11,8 @@ TARGETS = $(RELEASE_DIR)/char2dec \
           $(RELEASE_DIR)/deldup \
           $(RELEASE_DIR)/git-broom \
           $(RELEASE_DIR)/cidr \
-          $(RELEASE_DIR)/perf-metrics-mt
+          $(RELEASE_DIR)/perf-metrics-mt \
+          $(RELEASE_DIR)/rndstr \
 
 .PHONY: all clean
 
@@ -47,6 +48,10 @@ $(RELEASE_DIR)/perf-metrics-mt: perf-metrics/perf-metrics-mt.c | $(RELEASE_DIR)
 # cidr calculator
 $(RELEASE_DIR)/cidr: cidr/cidr.c utils/semver.c | $(RELEASE_DIR)
 	$(CC) $(CFLAGS) -o $@ cidr/cidr.c utils/semver.c
+
+# random string generator
+$(RELEASE_DIR)/rndstr: rndstr/rndstr.c utils/semver.c | $(RELEASE_DIR)
+	$(CC) $(CFLAGS) -o $@ rndstr/rndstr.c utils/semver.c
 
 clean:
 	rm -rf $(RELEASE_DIR)
