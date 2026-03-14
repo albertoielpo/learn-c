@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+REQUIRED_USER="deploysrv"
+CURRENT_USER=$(whoami)
+
+# Authorized user: pass through immediately
+if [ "$CURRENT_USER" = "$REQUIRED_USER" ]; then
+  exec /usr/bin/docker "$@"
+fi
+
+# Called from a script (non-interactive): pass through immediately
+if /usr/local/bin/docker-check; then
+  exec /usr/bin/docker "$@"
+fi
+
+# Interactive unauthorized user: warn and prompt
+echo ""
+echo "Warning: You are running Docker as '$CURRENT_USER'"
+echo "The designated Docker user is '$REQUIRED_USER'."
+echo "Proceeding may cause permission issues or unexpected behavior."
+echo ""
+printf "Do you want to proceed at your own risk? [y/N]: "
+read -r REPLY < /dev/tty
+echo ""
+
+case $REPLY in
+  [Yy])
+    echo "Proceeding as '$CURRENT_USER'..."
+    echo ""
+    exec /usr/bin/docker "$@"
+    ;;
+  *)
+    echo "Aborted"
+    exit 1
+    ;;
+esac
