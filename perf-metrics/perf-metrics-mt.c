@@ -76,6 +76,7 @@ double benchmark_int_ops(int thread_id, int64_t iterations) {
         result -= ii / 7;              // Subtraction and division
         result ^= ii;                  // Bitwise XOR
     }
+    (void)result;
 
     clock_gettime(CLOCK_MONOTONIC, &end);
 
@@ -160,6 +161,7 @@ double benchmark_memory_ops(int thread_id, int64_t array_size) {
     volatile int64_t sum = 0;
     for (int64_t ii = 0; ii < array_size; ii++)
         sum += array[ii];
+    (void)sum;
 
     // Test 3: Random access pattern (tests cache misses and latency)
     // Uses prime number (7919) to create pseudo-random access pattern
@@ -400,7 +402,6 @@ int main(int argc, char const *argv[]) {
                            (test_end.tv_nsec - test_start.tv_nsec) / 1e9;
 
         // Aggregate results from all threads
-        double total_int_time = 0.0, total_float_time = 0.0, total_mem_time = 0.0;
         double total_time = 0.0, total_score = 0.0;
 
         // Display individual thread results
@@ -411,9 +412,6 @@ int main(int argc, char const *argv[]) {
                    results[i].mem_time, results[i].total_time, results[i].score);
 
             // Sum up all thread times (this is CPU time, not wall time)
-            total_int_time += results[i].int_time;
-            total_float_time += results[i].float_time;
-            total_mem_time += results[i].mem_time;
             total_time += results[i].total_time;
             total_score += results[i].score;
         }

@@ -13,6 +13,7 @@ TARGETS = $(RELEASE_DIR)/char2dec \
           $(RELEASE_DIR)/cidr \
           $(RELEASE_DIR)/perf-metrics-mt \
           $(RELEASE_DIR)/rndstr \
+          $(RELEASE_DIR)/rndnum \
           $(RELEASE_DIR)/docker-check
 
 .PHONY: all clean
@@ -53,6 +54,10 @@ $(RELEASE_DIR)/cidr: cidr/cidr.c utils/semver.c | $(RELEASE_DIR)
 # random string generator
 $(RELEASE_DIR)/rndstr: rndstr/rndstr.c utils/semver.c | $(RELEASE_DIR)
 	$(CC) $(CFLAGS) -o $@ rndstr/rndstr.c utils/semver.c
+
+# random number generator
+$(RELEASE_DIR)/rndnum: rndstr/rndstr.c utils/semver.c | $(RELEASE_DIR)
+	$(CC) $(CFLAGS) -o $@ rndstr/rndnum.c utils/semver.c
 
 # docker check
 $(RELEASE_DIR)/docker-check: docker-check/docker-check.c | $(RELEASE_DIR)

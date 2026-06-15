@@ -24,7 +24,7 @@ int main(void) {
     int16_t i16 = 1;
     int32_t i32 = 2;
     int64_t i64 = 3;
-    size_t st = -4; // max allowed
+    size_t st = 4; // max allowed
 
     printf("int8_t size: %lu byte\n", sizeof(i8));
     printf("int16_t size: %lu bytes\n", sizeof(i16));
