@@ -20,7 +20,7 @@ int main(int argc, char const *argv[]) {
     int rnd_len = DEF_RND_LEN;
     if (argc == 2) {
         rnd_len = atoi(argv[1]);
-        if (rnd_len == 0) {
+        if (rnd_len <= 0) {
             Semver semver = get_human(VERSION);
             fprintf(stderr, "Random string generator v%s\nUsage: %s [number]\n", semver.value, argv[0]);
             exit(EXIT_FAILURE);
