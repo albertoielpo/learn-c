@@ -6,12 +6,12 @@
 #ifndef IELP_H
 #define IELP_H
 
-#define print_binary(val, bits)            \
-    do {                                   \
-        int ii = bits;                     \
-        for (; ii >= 0; ii--)              \
-            printf("%d", (val >> ii) & 1); \
-        printf("\n");                      \
+#define print_binary(val, bits)              \
+    do {                                     \
+        int ii = (bits) - 1;                 \
+        for (; ii >= 0; ii--)                \
+            printf("%d", ((val) >> ii) & 1); \
+        printf("\n");                        \
     } while (0)
 
 #endif // IELP_H
